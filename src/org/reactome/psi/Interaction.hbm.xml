@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.reactome.psi">
+    <class name="Interaction" table="Interaction">
+        <id name="dbId" column="dbId">
+            <generator class="native"></generator>
+        </id>
+        <property name="id" />
+        <many-to-one name="names" cascade="persist"/>
+        <many-to-one name="xref" cascade="persist"></many-to-one>
+        <list name="experimentList" table="InteractionExperiment" cascade="persist">
+            <key column="interactionId" />
+            <list-index column="listIndex"></list-index>
+            <many-to-many column="experimentId" class="Experiment"></many-to-many>
+        </list>
+        <list name="participantList" table="InteractionParticipant" cascade="persist">
+            <key column="interactionId" />
+            <list-index column="listIndex" />
+            <many-to-many column="participantId" class="Participant" />
+        </list>
+        <list name="inferredInteractionList" table="InteractionInferredInteraction" cascade="persist">
+            <key column="interactionId" />
+            <list-index column="listIndex" />
+            <many-to-many column="inferredId" class="InferredInteraction" />
+        </list>
+        <many-to-one name="interactionType" cascade="persist"></many-to-one>
+        <property name="modelled" type="boolean" />
+        <property name="intraMolecular" type="boolean" />
+        <property name="negative" type="boolean" />
+        <many-to-one name="availability" cascade="persist" />
+        <list name="confidenceList" table="InteractionConfidence" cascade="persist">
+            <key column="interactionId" />
+            <list-index column="listIndex"></list-index>
+            <many-to-many column="confidenceId" class="Confidence"></many-to-many>
+        </list>
+        <list name="attributeList" table="InteractionAttribute" cascade="persist">
+            <key column="interactionId" />
+            <list-index column="listIndex"></list-index>
+            <many-to-many column="attributeId" class="Attribute"></many-to-many>
+        </list>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.reactome.psi">
+    <class name="Xref" table="Xref">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <many-to-one name="primaryRef" column="primaryRef" cascade="persist"/>
+        <list name="secondaryRefList" table="XrefSecondaryRef" cascade="persist">
+            <key column="xrefId" />
+            <list-index column="listIndex" />
+            <many-to-many column="dbReferenceId" class="DbReference" />
+        </list>
+    </class>
+</hibernate-mapping>

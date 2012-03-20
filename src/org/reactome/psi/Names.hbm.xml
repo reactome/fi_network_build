@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.Names" table="Names">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <property name="shortLabel"/>
+        <property name="fullName" type="text"/>
+        <list name="alias" table="NamesAlias" cascade="persist">
+            <key column="namesId"/>
+            <list-index column="listIndex" />
+            <element column="alias" type="string"/>
+        </list>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.BaseLocation" table="BaseLocation">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <many-to-one name="startStatus" cascade="persist"/>
+        <!-- One one of the following value should be assigned. However, there is
+            no way to enforce this in both Java and Database. -->
+        <property name="begin" />
+        <component name="beginInterval">
+            <property name="start" column="beginIntervalStart" />
+            <property name="end" column="beginIntervalEnd" />
+        </component>
+        <many-to-one name="endStatus" cascade="persist"/>
+        <!-- as in start, only one of the following value can be assigned. -->
+        <property name="end" />
+        <component name="endInterval">
+            <property name="start" column="endIntervalStart" />
+            <property name="end" column="endIntervalEnd" />
+        </component>
+        <property name="isLink" />
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.Bibref" table="Bibref">
+        <id name="dbId">
+            <generator class="native"></generator>
+        </id>
+        
+        <many-to-one name="xref" column="xref" cascade="persist" />
+        
+        <list name="attributeList" table="BibrefAttribute" cascade="persist">
+            <key column="BibrefId"></key>
+            <list-index column="listIndex"></list-index>
+            <many-to-many column="attributeId" class="org.reactome.psi.Attribute"/>
+        </list>
+        
+    </class>
+</hibernate-mapping>

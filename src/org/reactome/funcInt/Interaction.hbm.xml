@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.reactome.funcInt">
+    <!-- For some unknown reason, Hibernate generates tables in lower cases under MacOS X -->
+    <class name="Interaction" table="Interaction" batch-size="100">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <many-to-one name="firstProtein" column="firstProtein" cascade="persist"/>
+        <many-to-one name="secondProtein" column="secondProtein" cascade="persist"/>
+        <set name="reactomeSources" table="InteractionReactomeSources" cascade="persist">
+            <key column="interactionDbId" />
+            <many-to-many column="reactomeSourceId" class="ReactomeSource" />
+        </set>
+        <!-- make Interaction to Evidence one-to-one mapping using many-to-one -->
+        <many-to-one name="evidence" column="evidence" unique="true" cascade="persist" />
+    </class>
+</hibernate-mapping>

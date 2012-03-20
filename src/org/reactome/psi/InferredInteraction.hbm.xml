@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.InferredInteraction" table="InferredInteraction">
+        <id name="dbId">
+            <generator class="native" />
+        </id>
+        <list name="participants" table="InferredInteractionParticipant">
+            <key column="inferredInteractionId" />
+            <list-index column="listIndex" />
+            <many-to-many column="participantId" class="org.reactome.psi.Participant"></many-to-many>
+        </list>
+        <list name="participantFeatures" table="InferredInteraectionParticipantFeature">
+            <key column="inferredInteractionId" />
+            <list-index column="listIndex" />
+            <many-to-many column="featureId" class="org.reactome.psi.Feature" />
+        </list>
+    </class>
+</hibernate-mapping>

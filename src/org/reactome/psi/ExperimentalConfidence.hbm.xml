@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.ExperimentalConfidence" table="ExperimentalConfidence">
+        <id name="dbId">
+            <generator class="native" />
+        </id>
+        <many-to-one name="confidence" cascade="persist"/>
+        <list name="experiments" table="ExperimentalConfidenceExperiment" cascade="persist">
+            <key column="experimentalConfidenceId" />
+            <list-index column="listIndex" />
+            <many-to-many column="experimentId" class="org.reactome.psi.Experiment"/>
+        </list>
+    </class>
+</hibernate-mapping>

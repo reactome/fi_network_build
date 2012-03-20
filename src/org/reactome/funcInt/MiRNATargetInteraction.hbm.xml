@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.reactome.funcInt">
+  <class name="MiRNATargetInteraction">
+    <id name="dbId">
+        <generator class="native"/>
+    </id>
+    <one-to-one name="score"></one-to-one>
+    <one-to-one name="secondaryScore"></one-to-one>
+    <many-to-one name="mRNA" cascade="persist"></many-to-one>
+    <many-to-one name="miRNA" cascade="persist"></many-to-one>
+  </class>
+</hibernate-mapping>

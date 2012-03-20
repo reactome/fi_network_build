@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.Entry" table="Entry">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <many-to-one name="source" cascade="persist"></many-to-one>
+        <list name="experimentList" table="EntryExperiment" cascade="persist">
+            <key column="entryId" />
+            <list-index column="listIndex" />
+            <many-to-many column="experimentId" class="org.reactome.psi.Experiment"></many-to-many>
+        </list>
+        <list name="interactorList" table="EntryInteractor" cascade="persist">
+            <key column="entryId" />
+            <list-index column="listIndex" />
+            <many-to-many column="interactorId" class="org.reactome.psi.Interactor" />
+        </list>
+        <list name="interactionList" table="EntryInteraction" cascade="persist">
+            <key column="entryId" />
+            <list-index column="listIndex" />
+            <many-to-many column="interactionId" class="org.reactome.psi.Interaction" />
+        </list>
+        <list name="attributeList" table="EntryAttribute" cascade="persist">
+            <key column="entryId" />
+            <list-index column="listIndex" />
+            <many-to-many column="attributeId" class="org.reactome.psi.Attribute" />
+        </list>
+        <list name="availabilityList" table="EntryAvailability" cascade="persist">
+            <key column="entryId" />
+            <list-index column="listIndex" />
+            <many-to-many column="availabilityId" class="org.reactome.psi.Availability" />
+        </list>
+    </class>
+</hibernate-mapping>

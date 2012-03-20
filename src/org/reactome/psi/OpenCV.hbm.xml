@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.OpenCV" table="OpenCV">
+        <id name="dbId">
+            <generator class="native" />
+        </id>
+        
+        <many-to-one name="names" column="names" cascade="all">
+        </many-to-one>
+        
+        <many-to-one name="xref" column="xref" cascade="persist"/>
+        
+        <list name="attributeList" table="OpenCVAttribute" cascade="persist">
+            <key column="openCVId"></key>
+            <list-index column="listIndex"></list-index>
+            <many-to-many column="attribtueid" class="org.reactome.psi.Attribute" />
+        </list>
+        
+    </class>
+</hibernate-mapping>

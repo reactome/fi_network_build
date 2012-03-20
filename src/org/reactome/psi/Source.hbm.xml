@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.Source" table="Source">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <property name="release"></property>
+        <property name="releaseDate" />
+        <many-to-one name="names" cascade="persist"/>
+        <many-to-one name="bibref" cascade="persist"></many-to-one>
+        <many-to-one name="xref" cascade="persist"/>
+        <list name="attributeList" table="SourceAttribute" cascade="persist">
+            <key column="sourceId" />
+            <list-index column="listIndex" />
+            <many-to-many column="attributeId" class="org.reactome.psi.Attribute" />
+        </list>
+    </class>
+</hibernate-mapping>

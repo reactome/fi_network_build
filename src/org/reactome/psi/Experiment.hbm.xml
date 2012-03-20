@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.reactome.psi">
+    <class name="Experiment" table="Experiment">
+        <id name="dbId">
+            <generator class="native" />
+        </id>
+        <property name="id" />
+        <many-to-one name="names" column="names" cascade="persist"></many-to-one>
+        <many-to-one name="xref" column="xref" cascade="persist"></many-to-one>
+        <many-to-one name="bibref" column="bibref" cascade="persist"></many-to-one>
+        <many-to-one name="interactionDetectionMethod" cascade="persist"></many-to-one>
+        <many-to-one name="participantIdentificationMethod" cascade="persist"></many-to-one>
+        <many-to-one name="featureDetectionMethod" cascade="persist"></many-to-one>
+        <list name="hostOrganismList" table="ExperimentHostOrganism" cascade="persist">
+            <key column="experimentDbId"></key>
+            <list-index column="listIndex"></list-index>
+            <many-to-many column="bioSourceDbId" class="BioSource"></many-to-many>
+        </list>
+        <list name="confidenceList" table="ExperimentConfidence" cascade="persist">
+            <key column="experimentDbId" />
+            <list-index column="listIndex" />
+            <many-to-many column="confidenceDbId" class="Confidence" />
+        </list>
+        <list name="attributeList" table="ExperimentAttribute" cascade="persist">
+            <key column="experimentDbId" />
+            <list-index column="listIndex" />
+            <many-to-many column="attributeDbId" class="Attribute" />
+        </list>
+    </class>
+</hibernate-mapping>

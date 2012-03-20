@@ -1,0 +1,94 @@
+# This is a configuration file. Make sure all directories and files correct
+# local database that is used as the data source
+REACTOME_SOURCE_DB_NAME=reactome_40_plus_i
+DB_USER=root
+DB_PWD=macmysql01
+RESULT_DIR=results/v4
+# Two Gene expression data files
+LEE_GENE_EXP_FILE=${RESULT_DIR}/LeeGeneExp.txt
+PRIETO_GENE_EXP_FILE=${RESULT_DIR}/PrietoGeneExp.txt
+# FIs extracted from Reactome and converted pathway DBs
+REACTOME_FI_FILE=${RESULT_DIR}/FIs_Reactome.txt
+NCI_PID_FI_FILE=${RESULT_DIR}/FIs_Pathway Interaction Database.txt
+NCI_PID_BIOCARTA_FI_FILE=${RESULT_DIR}/FIs_BioCarta - Imported by PID.txt
+PANTHER_FI_FILE=${RESULT_DIR}/FIs_pantherdb.txt
+TRED_FI_FILE=${RESULT_DIR}/FIs_TRED.txt
+    
+PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_031512.txt
+INTERACTION_FILE_NAME=${RESULT_DIR}/FIs_043009.txt
+INTERACTION_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIs_042109_BigComp.txt
+GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_041709_BigComp.txt
+GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_031612.txt
+GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_031612.txt
+GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_031612.txt
+CUT_OFF_VALUE=0.50d
+# the data sets directory
+DATA_SET_DIR=datasets
+# Used to control the UniProt version
+UNIPROT_DIR=${DATA_SET_DIR}/UniProt/release_2011_12/
+    
+# Directory for pFam
+PFAM_DIR_NAME=${DATA_SET_DIR}/Pfam/26.0/
+# Directory for RH file
+RH_DIR_NAME=${DATA_SET_DIR}/GenomeResearch_RH_Map/fully_combined_RH_network/
+# These parameters are related to KEGG pathways
+KEGG_DIR=${DATA_SET_DIR}/KEGG/011112/
+# Unzipped human KGML files should be in this directory
+KEGG_HSA_KGML_DIR=${KEGG_DIR}/KGML/hsa/
+# The converted KEGG pathways is saved in this project file
+KEGG_CONVERTED_FILE=${KEGG_DIR}/030112.rtpj
+# This file is used to map KEGG gene ids to UniProt ids
+KEGG_ID_TO_UNIPROT_MAP_FILE=${KEGG_DIR}/hsa_genes_uniprot.list
+# Used for the panther database files
+# Download on Jan 18, 2011
+PANTHER_DIR=${DATA_SET_DIR}/Panther/Version3.0.1/ 
+PANTHER_FILES_DIR=${PANTHER_DIR}/SBML/
+PANTHER_MAPPING_FILE=${PANTHER_DIR}/SequenceAssociationPathway3.01.txt
+PANTHER_CONVERTED_FILE=${PANTHER_DIR}/Panther_3_0_1.rtpj
+    
+# Used for the Nature-PID database files
+NATURE_PID_DIR=${DATA_SET_DIR}/NCI-Pathways/011612/
+NATURE_PID_CURATED=${NATURE_PID_DIR}/NCI-Nature_Curated.bp2.owl
+NATURE_PID_CURATED_CONVERTED=${NATURE_PID_DIR}/NCI-Nature_Curated.bp2.rtpj
+NATURE_PID_BIOCARTA=${NATURE_PID_DIR}/BioCarta.bp2.owl
+NATURE_PID_BIOCARTA_CONVERTED=${NATURE_PID_DIR}/BioCarta.bp2.rtpj
+    
+# This file is used to map Entrez id to UniProt accession number
+IPROCLASS_HUMAN_FILE = ${DATA_SET_DIR}/iproclass/011612/h_sapiens.tb
+ENTREZ_TO_UNIPROT_MAP_FILE_NAME=${DATA_SET_DIR}/iproclass/011612/EntrezToUniProt.txt
+    
+# For IntAct data set
+INTACT_DIR=${DATA_SET_DIR}/IntAct/022412/
+INTACT_HUMAN_DIR=${INTACT_DIR}/human/
+# For NCI_Nature
+NCI_NATURE_DIR=${DATA_SET_DIR}/NCI-Pathways/031709/
+# For ensembl related files
+ENSEMBL_DIR=${DATA_SET_DIR}/Ensembl/release_62/
+ENSEMBL_COMPARA_DATABASE=ensembl_compara_62
+ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies.txt
+# For GO related files
+GO_DIR=${DATA_SET_DIR}/GO/030712/
+# For TRED files
+TRED_DIR=${DATA_SET_DIR}/TRED/
+TRED_CONVERTED_FILE=${TRED_DIR}/TRED_030112.rtpj
+# Constants for iRefIndex data files
+IREFINDEX_DIR=${DATA_SET_DIR}/iRefIndex/9.0/
+IREFINDEX_HUMAN_FILE=${IREFINDEX_DIR}/9606.mitab.10182011.txt
+IREFINDEX_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsInUniProt022712.txt
+IREFINDEX_YEAST_FILE=${IREFINDEX_DIR}/559292.mitab.10182011.txt
+IREFINDEX_YEAST_PPI_FILE=${IREFINDEX_DIR}/YeastPPIsInUniProt022812.txt
+IREFINDEX_YEAST_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromYeastInUniProt030112.txt
+IREFINDEX_FLY_FILE=${IREFINDEX_DIR}/7227.mitab.10182011.txt
+IREFINDEX_FLY_PPI_FILE=${IREFINDEX_DIR}/FLyPPIsInUniProt022812.txt
+IREFINDEX_FLY_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromFLyInUniProt030112.txt
+IREFINDEX_WORM_FILE=${IREFINDEX_DIR}/6239.mitab.10182011.txt
+IREFINDEX_WORM_PPI_FILE=${IREFINDEX_DIR}/WormPPIsInUniProt022812.txt
+IREFINDEX_WORM_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromWormInUniProt030112.txt
+IREFINDEX_MOUSE_FILE=${IREFINDEX_DIR}/10090.mitab.10182011.txt
+IREFINDEX_MOUSE_PPI_FILE=${IREFINDEX_DIR}/MousePPIsInUniProt031412.txt
+IREFINDEX_MOUSE_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromMouseInUniProt031412.txt
+# For storing normalized PPIs mapped from non-human species
+HUMAN_PPIS_FROM_YEAST_FILE=${RESULT_DIR}/HumanPPIsFromYeast030112.txt
+HUMAN_PPIS_FROM_WORM_FILE=${RESULT_DIR}/HumanPPIsFromWorm030112.txt
+HUMAN_PPIS_FROM_FLY_FILE=${RESULT_DIR}/HumanPPIsFromFly030112.txt
+HUMAN_PPIS_FROM_MOUSE_FILE=${RESULT_DIR}/HumanPPIsFromMouse031412.txt

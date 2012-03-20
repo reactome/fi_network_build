@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.reactome.funcInt">
+  <class name="MessengerRNA">
+      <id name="dbId">
+          <generator class="native"></generator>
+      </id>
+      <property name="sequence" type="text" />
+      <property name="checkSum" index="checkSum" />
+      <many-to-one name="primaryDbReference" column="primaryDbReference"
+          unique="true" cascade="persist" />
+      <set name="dbReferences" table="mRNAdbReferences" cascade="persist">
+          <key column="mRNA" />
+          <many-to-many column="dbReference" class="DbReference" />
+      </set>
+      <many-to-one name="protein" unique="true"></many-to-one>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<InteractionTypeMapper>
+    <type name="PPrel: state" reverse="PPrel: state" direction="-" />
+    <type name="physical association" reverse="physical association"
+        direction="-" />
+    <type name="Affinity Capture-Luminescence"
+        reverse="Affinity Capture-Luminescence" direction="-" />
+    <type name="Invivo" reverse="Invivo" direction="-" />
+    <type name="PPrel: inhibition, phosphorylation"
+        reverse="PPrel: inhibited by, phosphorylated by" direction="-|" />
+    <type name="acetylation" reverse="acetylated by" direction="-" />
+    <type name="PCrel: compound" reverse="PCrel: compound"
+        direction="-" />
+    <type name="PCrel" reverse="PCrel" direction="-" />
+    <type name="PPrel: expression" reverse="PPrel: expressed by"
+        direction="->" />
+    <type name="PPrel: dephosphorylation"
+        reverse="PPrel: dephosphorylated" direction="-" />
+    <type name="PPrel: activation, indirect"
+        reverse="PPrel: activated by, indirect" direction="->" />
+    <type name="GErel: repression" reverse="GErel: repressed by"
+        direction="-|" />
+    <type name="PCrel: inhibition" reverse="PCrel: inhibited by"
+        direction="-|" />
+    <type name="Affinity Capture-MS" reverse="Affinity Capture-MS"
+        direction="-" />
+    <type name="enzymatic reaction" reverse="enzymatic reaction by"
+        direction="-" />
+    <type name="Phenotypic Enhancement" reverse="Phenotypic Enhancement by"
+        direction="->" />
+    <type name="PPrel: phosphorylation, indirect"
+        reverse="PPrel: phosphorylated, indirect" direction="-" />
+    <type name="protein cleavage" reverse="protein cleavage by"
+        direction="-" />
+    <type name="PPrel: inhibition, ubiquination"
+        reverse="PPrel: inhibited by, ubiquinated by" direction="-|" />
+    <type name="PPrel: phosphorylation, dissociation"
+        reverse="PPrel: phosphorylated by, dissociation" direction="-" />
+    <type name="neddylation" reverse="neddylated" direction="-" />
+    <type name="phosphotransfer" reverse="phosphotransfer by"
+        direction="-" />
+    <type name="PPrel: dissociation, missing"
+        reverse="PPrel: dissociation, missing" direction="-" />
+    <type name="PPrel: indirect, phosphorylation"
+        reverse="PPrel: indirect, phosphorylated" direction="-" />
+    <type name="dephosphorylation" reverse="dephosphorylated by"
+        direction="-" />
+    <type name="PPrel: ubiquination, inhibition"
+        reverse="PPrel: ubiquinated by, inhibited by" direction="-|" />
+    <type name="sumoylation" reverse="sumoylated by" direction="-" />
+    <type name="ubiquitination" reverse="ubiquitinated by"
+        direction="-|" />
+    <type name="PPrel: missing" reverse="PPrel: missing"
+        direction="-" />
+    <type name="PPrel: inhibition, indirect"
+        reverse="PPrel: inhibited by, indirect" direction="-|" />
+    <type name="Dosage Rescue" reverse="Dosage Rescued by" direction="->" />
+    <type name="PCrel: binding/association"
+        reverse="PCrel: binding/association" direction="-" />
+    <type name="Co-purification" reverse="Co-purification"
+        direction="-" />
+    <type name="palmitoylation" reverse="palmitoylated by"
+        direction="-" />
+    <type name="PPrel: phosphorylation, binding/association"
+        reverse="PPrel: phosphorylation, binding/association"
+        direction="-" />
+    <type name="PPrel: ubiquination" reverse="PPrel: ubiquinated by"
+        direction="-|" />
+    <type name="Phenotypic Suppression" reverse="Phenotypic Suppressed by"
+        direction="-|" />
+    <type name="Protein-peptide" reverse="Protein-peptide"
+        direction="-" />
+    <type name="PPrel: inhibition" reverse="PPrel: inhibited by"
+        direction="-|" />
+    <type name="gtpase reaction" reverse="gtpase reaction"
+        direction="-" />
+    <type name="GErel: expression, indirect"
+        reverse="GErel: expression by, indirect" direction="->" />
+    <type name="PCrel: activation, phosphorylation"
+        reverse="PCrel: activated by, phosphorylation" direction="->" />
+    <type name="PPrel: activation" reverse="PPrel: activated by"
+        direction="->" />
+    <type name="ECrel: hidden compound" reverse="ECrel: hidden compound"
+        direction="-" />
+    <type name="cleavage" reverse="cleavaged by" direction="-" />
+    <type name="PPrel: compound" reverse="PPrel: compound"
+        direction="-" />
+    <type name="Protein-RNA" reverse="Protein-RNA" direction="-" />
+    <type name="PPrel: phosphorylation" reverse="PPrel: phosphorylated by"
+        direction="->" />
+    <type name="association" reverse="association" direction="-" />
+    <type name="deacetylation" reverse="deacetylated by" direction="-" />
+    <type name="Reconstituted Complex" reverse="Reconstituted Complex"
+        direction="-" />
+    <type name="PCrel: activation" reverse="PCrel: activated by"
+        direction="->" />
+    <type name="FRET" reverse="FRET" direction="-" />
+    <type name="PPrel: activation, dephosphorylation"
+        reverse="PPrel: activated by, dephosphorylation" direction="->" />
+    <type name="PPrel: binding/association"
+        reverse="PPrel: binding/association" direction="-" />
+    <type name="covalent binding" reverse="covalent binding"
+        direction="-" />
+    <type name="phosphorylation" reverse="phosphorylated by"
+        direction="-" />
+    <type name="PPrel: inhibition, dephosphorylation"
+        reverse="PPrel: inhibited by, dephosphorylation" direction="-|" />
+    <type name="Co-crystal Structure" reverse="Co-crystal Structure"
+        direction="-" />
+    <type name="direct interaction" reverse="direct interaction"
+        direction="-" />
+    <type name="GErel: expression" reverse="GErel: expression by"
+        direction="->" />
+    <type name="methylation" reverse="methylated by" direction="-" />
+    <type name="demethylation" reverse="demethylated by" direction="-" />
+    <type name="Co-localization" reverse="Co-localization"
+        direction="-" />
+    <type name="elongation" reverse="elongated by" direction="-" />
+    <type name="Affinity Capture-RNA" reverse="Affinity Capture-RNA"
+        direction="-" />
+    <type name="PPrel" reverse="PPrel" direction="-" />
+    <type name="PCrel: missing" reverse="PCrel: missing"
+        direction="-" />
+    <type name="Far Western" reverse="Far Western" direction="-" />
+    <type name="Co-fractionation" reverse="Co-fractionation"
+        direction="-" />
+    <type name="Synthetic Rescue" reverse="Synthetic Rescued by"
+        direction="->" />
+    <type name="PPrel: dissociation" reverse="PPrel: dissociation"
+        direction="-" />
+    <type name="Biochemical Activity" reverse="Biochemical Activity"
+        direction="-" />
+    <type name="ECrel: compound" reverse="ECrel: compound"
+        direction="-" />
+    <type name="adp ribosylation" reverse="adp ribosylationed by"
+        direction="-" />
+    <type name="PPrel: indirect" reverse="PPrel: indirect"
+        direction="-" />
+    <type name="Two-hybrid" reverse="Two-hybrid" direction="-" />
+    <type name="rna cleavage" reverse="rna cleavaged by" direction="-" />
+    <type name="Affinity Capture-Western"
+        reverse="Affinity Capture-Western" direction="-" />
+    <type name="PPrel: activation, phosphorylation"
+        reverse="PPrel: activated by, phosphorylation" direction="->" />
+    <type name="colocalization" reverse="colocalization"
+        direction="-" />
+    <type name="Invitro" reverse="Invitro" direction="-" />
+</InteractionTypeMapper>

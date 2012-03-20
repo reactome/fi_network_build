@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.reactome.psi">
+    <class name="Interactor" table="Interactor">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <property name="id" />
+        <property name="sequence" type="text"/>
+        <many-to-one name="names" cascade="persist"/>
+        <many-to-one name="xref" cascade="persist"/>
+        <many-to-one name="interactorType" cascade="persist"/>
+        <many-to-one name="organism" cascade="persist"/>
+        <list name="attributeList" table="InteractorAttribute" cascade="persist">
+            <key column="interactorId" />
+            <list-index column="listIndex" />
+            <many-to-many column="attributeId" class="Attribute" />
+        </list>
+    </class>
+</hibernate-mapping>

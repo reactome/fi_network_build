@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.reactome.tred">
+  <class name="BindingSite">
+      <id name="id" column="binding_site_id" />
+      <many-to-one name="factorPromoter" column="factor_promoter_id" />
+      <property name="genomeId" column="genome_id"/>
+      <property name="chromosome" />
+      <property name="strand" />
+      <property name="start" />
+      <property name="end" />
+      <property name="siteSequence" column="site_seq"/>
+  </class>
+  <class name="Factor">
+        <id name="id" column="factor_id" />
+        <property name="primaryName" column="primary_name"></property>
+        <property name="species" />
+        <property name="allNames" column="all_names"/>
+        <property name="geneId" column="gene_id"/>
+        <set name="annotations" table="FactorAnnotation" lazy="true">
+            <key column="target_id" not-null="true" />
+            <composite-element class="FactorAnnotation">
+                <many-to-one name="source" column="source_id"/>
+                <property name="sourceAccession" column="source_accession"/>
+                <property name="sourceExtract" column="source_extract" />
+                <property name="sourceRank" column="source_rank"/>
+                <property name="alert" />
+            </composite-element>
+        </set>
+  </class>
+  <class name="FactorPromoter">
+    <id name="id" column="factor_promoter_id" />
+    <many-to-one name="factor" column="factor_id"></many-to-one>
+    <many-to-one name="promoter" column="promoter_id" />
+    <property name="siteName" column="site_name" />
+    <property name="siteSequence" column="site_seq"></property>
+    <property name="startOffset" column="start_offset" />
+    <property name="endOffset" column="end_offset" />
+    <many-to-one name="quality" column="quality_id" />
+    <set name="evidences" table="FactorPromoterEvidence" lazy="true">
+        <key column="target_id" not-null="true"/>
+        <composite-element class="FactorPromoterEvidence">
+            <many-to-one name="source" column="source_id"></many-to-one>
+            <property name="sourceAccession" column="source_accession"></property>
+            <property name="sourceDescription" column="source_desc"></property>
+            <property name="sourceExtract" column="source_extract" />
+            <property name="sourceRank" column="source_rank" />
+            <property name="alert" />
+        </composite-element>
+    </set>
+  </class>
+  <class name="FactorPromoterQuality">
+    <id name="id" column="quality_id" />
+    <property name="name" column="quality_name" />
+    <property name="description" />
+  </class>
+  <class name="Gene">
+    <id name="id" column="gene_id" />
+    <property name="primaryName" column="primary_name" />
+    <property name="allNames" column="all_names" />
+    <property name="species" />
+    <property name="genomeId" column="genome_id" />
+    <property name="chromosome" />
+    <property name="strand" />
+    <property name="start" />
+    <property name="end" />
+    <property name="chromLocation" column="chrom_location" />
+    <property name="gidZx" column="gid_ZX" />
+    <set name="annotations" table="GeneAnnotation" lazy="true">
+        <key column="target_id" not-null="true"></key>
+        <composite-element class="GeneAnnotation">
+            <many-to-one name="source" column="source_id"></many-to-one>
+            <property name="sourceAccession" column="source_accession"></property>
+            <property name="sourceDescription" column="source_desc"></property>
+            <property name="sourceExtract" column="source_extract"></property>
+            <property name="sourceRank" column="source_rank"></property>
+            <property name="alert" />
+        </composite-element>
+    </set>
+  </class>
+  <class name="RefGene">
+    <id name="name"/>
+    <property name="chrom" />
+    <property name="strand"></property>
+    <property name="txStart" />
+    <property name="txEnd" />
+    <property name="cdsStart" />
+    <property name="cdsEnd" />
+    <property name="exonCount" />
+    <property name="exonStarts" />
+    <property name="exonEnds" />
+    <property name="speciesCode" />
+  </class>
+  <class name="Source">
+    <id name="id" column="source_id"></id>
+    <property name="name" column="source_name"></property>
+    <property name="version" column="source_version"></property>
+    <property name="date" column="source_date" />
+    <property name="description" />
+    <property name="baseUri" column="base_uri" />
+  </class>
+  <class name="Promoter">
+    <id name="id" column="promoter_id" />
+    <property name="name" column="promoter_name" />
+    <many-to-one name="gene" column="gene_id" />
+    <property name="chromosome"/>
+    <property name="strand" />
+    <property name="tss" />
+    <property name="sequence" column="promoter_seq" />
+    <property name="upstreamOffset" column="upstream_offset" />
+    <property name="downstreamOffset" column="downstream_offset"/>
+    <property name="firstExonEnd" column="first_exon_end" />
+    <property name="firstIntronEnd" column="first_intron_end" />
+    <many-to-one name="quality" column="quality_id" />
+    <property name="pidZX" column="pid_ZX" />
+    <property name="curated" />
+    <property name="cpg" />
+    <set name="geneEvidences" table="PromoterGeneEvidence">
+        <key column="target_id" not-null="true" />
+        <composite-element class="PromoterGeneEvidence">
+            <many-to-one name="source" column="source_id"></many-to-one>
+            <property name="sourceAccession" column="source_accession"></property>
+            <property name="sourceDescription" column="source_desc"></property>
+            <property name="sourceExtract" column="source_extract"></property>
+            <property name="sourceRank" column="source_rank"></property>
+            <property name="alert" />
+        </composite-element>
+    </set>
+  </class>
+  <class name="PromoterQuality">
+     <id name="id" column="quality_id" />
+    <property name="name" column="quality_name" />
+    <property name="description" />
+  </class>
+</hibernate-mapping>

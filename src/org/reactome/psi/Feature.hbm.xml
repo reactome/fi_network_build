@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.Feature" table="Feature">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <property name="id" />
+        <many-to-one name="names" cascade="persist"/>
+        <many-to-one name="xref" cascade="persist"/>
+        <many-to-one name="featureType" cascade="persist"/>
+        <many-to-one name="featureDetectionMethod" cascade="persist"/>
+        <list name="experimentList" table="FeaturExperiment" cascade="persist">
+            <key column="featureId" />
+            <list-index column="listIndex" />
+            <many-to-many column="experimentId" class="org.reactome.psi.Experiment" />
+        </list>
+        <list name="featureRangeList" table="FeatureFeatureRange" cascade="persist">
+            <key column="featureId" />
+            <list-index column="listIndex" />
+            <many-to-many column="baseLocationId" class="org.reactome.psi.BaseLocation" />
+        </list>
+        <list name="attributeList" table="FeatureAttribute" cascade="persist">
+            <key column="featureId" />
+            <list-index column="listIndex" />
+            <many-to-many column="attributeId" class="org.reactome.psi.Attribute" />
+        </list>
+    </class>
+</hibernate-mapping>

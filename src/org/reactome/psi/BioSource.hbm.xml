@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.BioSource" table="BioSource">
+        <id name="dbId">
+            <generator class="native"></generator>
+        </id>
+        <property name="ncbiTaxId" />
+        <many-to-one name="names" column="names" cascade="persist"></many-to-one>
+        <many-to-one name="cellType" column="cellType" cascade="persist"></many-to-one>
+        <many-to-one name="compartment" column="compartment" cascade="persist"></many-to-one>
+        <many-to-one name="tissue" column="tissue" cascade="persist"></many-to-one>
+    </class>
+</hibernate-mapping>

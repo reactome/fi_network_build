@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.reactome.psi">
+    <class name="DbReference" table="DbReference">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <property name="db" />
+        <property name="dbAc" />
+        <property name="id" />
+        <property name="secondary" />
+        <property name="version" />
+        <property name="refType" />
+        <property name="refTypeAc" />
+        <list name="attributeList" table="DbReferenceAttribute" cascade="persist">
+            <key column="dbReferenceId" />
+            <list-index column="listIndex" />
+            <many-to-many column="attributeId" class="Attribute"/>
+        </list>
+    </class>
+</hibernate-mapping>

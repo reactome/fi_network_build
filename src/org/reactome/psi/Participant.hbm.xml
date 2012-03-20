@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.reactome.psi.Participant" table="Participant">
+        <id name="dbId" column="dbId">
+            <generator class="native" />
+        </id>
+        <property name="id" />
+        <many-to-one name="names" cascade="persist"/>
+        <many-to-one name="xref" cascade="persist"/>
+        <many-to-one name="interactor" cascade="persist"/>
+        <many-to-one name="biologicalRole" cascade="persist"/>
+        <list name="featureList" table="ParticipantFeature" cascade="persist">
+            <key column="participantId" />
+            <list-index column="listIndex"></list-index>
+            <many-to-many column="featureId" class="org.reactome.psi.Feature"></many-to-many>
+        </list>
+        <list name="hostOrganismList" table="ParticipantHostOrganism" cascade="persist">
+            <key column="participantId" />
+            <list-index column="listIndex" />
+            <many-to-many column="bioSourceId" class="org.reactome.psi.BioSource" />
+        </list>
+        <list name="confidenceList" table="ParticipantExperimentalConfidence" cascade="persist">
+            <key column="participantId" />
+            <list-index column="listIndex" />
+            <many-to-many column="experimentalConfidenceId" class="org.reactome.psi.ExperimentalConfidence" />
+        </list>
+        <list name="identificationMethodList" table="ParticipantIdentificationMethod" cascade="persist">
+            <key column="participantId" />
+            <list-index column="listIndex" />
+            <many-to-many column="identificationMethodId" class="org.reactome.psi.OpenCVExperimentalWrapper" />
+        </list>
+        <list name="experimentalRoleList" table="ParticipantExperimentalRole" cascade="persist">
+            <key column="participantId" />
+            <list-index column="listIndex" />
+            <many-to-many column="experimentalRoleId" class="org.reactome.psi.OpenCVExperimentalWrapper" />
+        </list>
+        <list name="experimentalPreparationList" table="ParticipantExperimentalPreparation" cascade="persist">
+            <key column="participantId" />
+            <list-index column="listIndex" />
+            <many-to-many column="experimentalPrepartationId" class="org.reactome.psi.OpenCVExperimentalWrapper" />
+        </list>
+        <list name="experimentalInteractorList" table="ParticipantExperimentalInteractor" cascade="persist">
+            <key column="participantId" />
+            <list-index column="listIndex" />
+            <many-to-many column="experimentalInteractorId" class="org.reactome.psi.ExperimentalInteractor" />
+        </list>
+    </class>
+</hibernate-mapping>
