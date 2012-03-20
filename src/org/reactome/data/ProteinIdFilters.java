@@ -2,7 +2,7 @@
  * Created on May 27, 2008
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.reactome.fi.ProteinSequenceHandler.Sequence;
+import org.reactome.data.ProteinSequenceHandler.Sequence;
 
 
 /**

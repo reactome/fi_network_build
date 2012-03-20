@@ -2,7 +2,7 @@
  * Created on Apr 3, 2009
  *
  */
-package org.reactome.weka;
+package org.reactome.fi.util;
 
 /**
  * This interface is used to check is a pair of proteins should be treated as

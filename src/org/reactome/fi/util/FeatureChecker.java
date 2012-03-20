@@ -2,8 +2,9 @@
  * Created on Mar 31, 2009
  *
  */
-package org.reactome.weka;
+package org.reactome.fi.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,17 +12,22 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
-import org.reactome.fi.ReactomeAnalyzer;
-import org.reactome.fi.util.InteractionUtilities;
 
 /**
- * This method is used to check a feature used in NBC.
+ * This method is used to check a feature's odds ratio.
  * @author wgm
  */
 public class FeatureChecker {
     private Set<String> interactionSet = null;
     
     public FeatureChecker() {
+    }
+    
+    private void loadInteractionSet() throws IOException {
+        if (interactionSet == null) {
+            String fileName = FIConfiguration.getConfiguration().get("REACTOME_FI_FILE");
+            interactionSet = new FileUtility().loadInteractions(fileName);
+        }
     }
     
     /**
@@ -31,11 +37,7 @@ public class FeatureChecker {
      * @throws Exception
      */
     public void checkFeatureOddsRatio(PositiveChecker posChecker) throws Exception {
-        if (interactionSet == null) {
-            ReactomeAnalyzer analyzer = new ReactomeAnalyzer();
-            interactionSet = analyzer.loadFIsFromFile();
-//            interactionSet = new FileUtility().loadInteractions(R3Constants.RESULT_DIR + "FIs_Kegg.txt");
-        }
+        loadInteractionSet();
         checkFeatureOddsRatio(interactionSet,
                               posChecker);
     }
@@ -47,10 +49,7 @@ public class FeatureChecker {
      * @throws Exception
      */
     public void checkFeatureOddsRatio(final Set<String> proteinPairs) throws Exception {
-        if (interactionSet == null) {
-            ReactomeAnalyzer analyzer = new ReactomeAnalyzer();
-            interactionSet = analyzer.loadFIsFromFile();
-        }
+        loadInteractionSet();
         PositiveChecker isPositivev = new PositiveChecker() {
             public boolean isPositive(String pair) {
                 return proteinPairs.contains(pair);

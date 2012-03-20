@@ -15,13 +15,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.reactome.fi.GODataAnalyzerV2;
-import org.reactome.fi.MicroarrayDataAnalyzer;
-import org.reactome.fi.PfamAnalyzer;
-import org.reactome.fi.UniProtAnalyzer;
+import org.reactome.data.GODataAnalyzerV2;
+import org.reactome.data.MicroarrayDataAnalyzer;
+import org.reactome.data.PfamAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
+import org.reactome.fi.util.PositiveChecker;
 import org.reactome.fi.util.Value;
 
 /**

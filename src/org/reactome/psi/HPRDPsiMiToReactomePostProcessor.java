@@ -13,7 +13,7 @@ import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.gk.persistence.XMLFileAdaptor;
 import org.reactome.convert.common.PostProcessHelper;
-import org.reactome.fi.HPRDAnalyzer;
+import org.reactome.data.HPRDAnalyzer;
 
 public class HPRDPsiMiToReactomePostProcessor extends PsiMiToReactomePostProcessor {
     

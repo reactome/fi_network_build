@@ -20,7 +20,7 @@ import org.gk.persistence.XMLFileAdaptor;
 import org.gk.schema.GKSchemaAttribute;
 import org.reactome.convert.common.PostProcessHelper;
 import org.reactome.convert.common.PostProcessTemplate;
-import org.reactome.fi.UniProtAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 
 
 public class PsiMiToReactomePostProcessor extends PostProcessTemplate {

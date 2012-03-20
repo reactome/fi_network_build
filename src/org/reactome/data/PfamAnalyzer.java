@@ -2,7 +2,7 @@
  * Created on Sep 18, 2006
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,10 +12,10 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
+import org.reactome.fi.util.FeatureChecker;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
-import org.reactome.weka.FeatureChecker;
-import org.reactome.weka.PositiveChecker;
+import org.reactome.fi.util.PositiveChecker;
 
 public class PfamAnalyzer {
     private final String PFAM_DIR_NAME = FIConfiguration.getConfiguration().get("PFAM_DIR_NAME");

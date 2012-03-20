@@ -8,11 +8,11 @@ import java.util.Set;
 
 import org.gk.model.GKInstance;
 import org.junit.Test;
-import org.reactome.fi.CPathAnalyzer;
-import org.reactome.fi.ProteinIdFilters;
+import org.reactome.data.CPathAnalyzer;
+import org.reactome.data.ProteinIdFilters;
 import org.reactome.fi.util.FIConfiguration;
+import org.reactome.fi.util.FeatureChecker;
 import org.reactome.fi.util.FileUtility;
-import org.reactome.weka.FeatureChecker;
 
 /**
  * This class is used to handle PPIs that have been dumped into the Reactome database already.

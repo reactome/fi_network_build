@@ -16,9 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.reactome.fi.UniProtAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
+import org.reactome.fi.util.PositiveChecker;
 import org.reactome.fi.util.Value;
 
 /**

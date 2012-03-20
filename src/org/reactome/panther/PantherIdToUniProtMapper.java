@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.reactome.fi.UniProtAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 

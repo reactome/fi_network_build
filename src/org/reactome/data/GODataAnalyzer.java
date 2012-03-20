@@ -2,7 +2,7 @@
  * Created on Apr 28, 2006
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

@@ -2,7 +2,7 @@
  * Created on Mar 31, 2009
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,11 +16,11 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
+import org.reactome.fi.util.FeatureChecker;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
 import org.reactome.fi.util.MathUtilities;
-import org.reactome.weka.FeatureChecker;
-import org.reactome.weka.PositiveChecker;
+import org.reactome.fi.util.PositiveChecker;
 
 /**
  * This is a new analyzer for GO related stuff.

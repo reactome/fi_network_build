@@ -2,7 +2,7 @@
  * Created on Nov 28, 2006
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.io.IOException;
 import java.sql.Connection;

@@ -25,7 +25,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.junit.Test;
-import org.reactome.fi.UniProtAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;

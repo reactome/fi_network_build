@@ -15,7 +15,7 @@ import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.gk.persistence.XMLFileAdaptor;
 import org.reactome.convert.common.PostProcessHelper;
-import org.reactome.fi.UniProtAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 
 /**
  * This class is used to process BioGrid PSI-MI post processing.

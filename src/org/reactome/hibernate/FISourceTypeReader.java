@@ -26,7 +26,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.junit.Test;
-import org.reactome.fi.ReactomeAnalyzerTopicHelper;
+import org.reactome.data.ReactomeAnalyzerTopicHelper;
 import org.reactome.funcInt.FIAnnotation;
 import org.reactome.funcInt.Interaction;
 import org.reactome.funcInt.Protein;

@@ -10,9 +10,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.reactome.fi.GODataAnalyzer;
-import org.reactome.fi.GODataAnalyzer.GOGraphNode;
-import org.reactome.fi.PfamAnalyzer;
+import org.reactome.data.GODataAnalyzer;
+import org.reactome.data.PfamAnalyzer;
+import org.reactome.data.GODataAnalyzer.GOGraphNode;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.Value;

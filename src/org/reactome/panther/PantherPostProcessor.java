@@ -22,8 +22,8 @@ import org.gk.schema.InvalidAttributeException;
 import org.gk.slicing.SlicingEngine;
 import org.reactome.convert.common.PostProcessHelper;
 import org.reactome.convert.common.PostProcessTemplate;
-import org.reactome.fi.ReactomeAnalyzer;
-import org.reactome.fi.UniProtAnalyzer;
+import org.reactome.data.ReactomeAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 
 /**
  * This class is used to add UniProt instances to EntityWithAccessinedSequence instances

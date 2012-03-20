@@ -2,7 +2,7 @@
  * Created on Sep 29, 2006
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
-import org.reactome.fi.ProteinSequenceHandler.Sequence;
+import org.reactome.data.ProteinSequenceHandler.Sequence;
 import org.reactome.funcInt.Interaction;
 import org.reactome.funcInt.Protein;
 import org.reactome.funcInt.ReactomeSource;

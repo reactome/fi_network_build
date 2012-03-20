@@ -10,15 +10,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.reactome.fi.EnsemblAnalyzer;
-import org.reactome.fi.OrthoMCLV2Analyzer;
-import org.reactome.fi.ProteinIdFilters;
-import org.reactome.fi.ProteinSequenceHandler;
-import org.reactome.fi.UniProtAnalyzer;
+import org.reactome.data.EnsemblAnalyzer;
+import org.reactome.data.OrthoMCLV2Analyzer;
+import org.reactome.data.ProteinIdFilters;
+import org.reactome.data.ProteinSequenceHandler;
+import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
+import org.reactome.fi.util.FeatureChecker;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
-import org.reactome.weka.FeatureChecker;
 
 /**
  * This class is used to handle orthology mapping for PPIs from different taxons.

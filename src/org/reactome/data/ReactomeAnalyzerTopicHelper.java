@@ -2,7 +2,7 @@
  * Created on Jul 10, 2007
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.util.ArrayList;
 import java.util.Collection;

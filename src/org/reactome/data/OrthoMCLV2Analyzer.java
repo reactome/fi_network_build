@@ -2,7 +2,7 @@
  * Created on Mar 26, 2009
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.io.BufferedReader;
 import java.io.IOException;

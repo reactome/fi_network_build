@@ -14,7 +14,7 @@ import java.util.Set;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
-import org.reactome.fi.EntrezGeneAnalyzer;
+import org.reactome.data.EntrezGeneAnalyzer;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.funcInt.Interaction;
 import org.reactome.hibernate.HibernateFIReader;

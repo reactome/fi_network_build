@@ -279,30 +279,6 @@ public class HumanPsiMiInteractionAnalyzer extends PsiMiInteractionExtractor {
         fu.close();
     }
     
-    public Map<String, Set<String>> loadGI2UniMap() throws IOException {
-        Map<String, Set<String>> map = new HashMap<String, Set<String>>();
-        String fileName = "results/GI2UniProt.txt";
-        FileUtility fu = new FileUtility();
-        fu.setInput(fileName);
-        String line = null;
-        int index = 0;
-        String giId = null;
-        String uniId = null;
-        Set<String> uniIdSet = null;
-        while ((line = fu.readLine()) != null) {
-            index = line.indexOf("\t");
-            giId = line.substring(0, index);
-            uniId = line.substring(index + 1);
-            uniIdSet = map.get(giId);
-            if (uniIdSet == null) {
-                uniIdSet = new HashSet<String>();
-                map.put(giId, uniIdSet);
-            }
-            uniIdSet.add(uniId);
-        }
-        return map;
-    }
-    
     protected void outputInteractions(List<Interaction> interactions, 
             String y2hOutFileName,
             String nonY2HOutFileName) throws IOException {

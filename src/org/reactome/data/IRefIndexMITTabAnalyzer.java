@@ -2,7 +2,7 @@
  * Created on Feb 27, 2012
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.io.IOException;
 import java.util.HashSet;

@@ -4,9 +4,11 @@
  */
 package org.reactome.psi;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ import org.gk.persistence.PersistenceManager;
 import org.gk.persistence.XMLFileAdaptor;
 import org.gk.schema.GKSchemaClass;
 import org.reactome.convert.common.PostProcessHelper;
-import org.reactome.psi.data.HumanPsiMiInteractionAnalyzer;
+import org.reactome.fi.util.FileUtility;
 
 /**
  * BIND PSI_MI data have not UniProt mapping, use this class to do this mapping. 
@@ -36,12 +38,35 @@ public class BINDPsiMiToReactomePostProcessor extends PsiMiToReactomePostProcess
         setDataSourceName("BIND");
         setDataSourceUrl("http://www.bind.ca");
     }
+    
+    private Map<String, Set<String>> loadGI2UniMap() throws IOException {
+        Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+        String fileName = "results/GI2UniProt.txt";
+        FileUtility fu = new FileUtility();
+        fu.setInput(fileName);
+        String line = null;
+        int index = 0;
+        String giId = null;
+        String uniId = null;
+        Set<String> uniIdSet = null;
+        while ((line = fu.readLine()) != null) {
+            index = line.indexOf("\t");
+            giId = line.substring(0, index);
+            uniId = line.substring(index + 1);
+            uniIdSet = map.get(giId);
+            if (uniIdSet == null) {
+                uniIdSet = new HashSet<String>();
+                map.put(giId, uniIdSet);
+            }
+            uniIdSet.add(uniId);
+        }
+        return map;
+    }
 
     @Override
     protected void processEWAS(MySQLAdaptor dbAdaptor, 
                                XMLFileAdaptor fileAdaptor) throws Exception {
-        HumanPsiMiInteractionAnalyzer analyzer = new HumanPsiMiInteractionAnalyzer();
-        Map<String, Set<String>> gi2UniMap = analyzer.loadGI2UniMap();
+        Map<String, Set<String>> gi2UniMap = loadGI2UniMap();
         // Basically used to load ReferenceSequences from the database
         Collection collection = fileAdaptor.fetchInstancesByClass(ReactomeJavaConstants.ReferencePeptideSequence);
         GKInstance gkInstance = null;

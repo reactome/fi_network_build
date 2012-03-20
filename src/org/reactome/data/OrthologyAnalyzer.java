@@ -2,7 +2,7 @@
  * Created on Jun 21, 2006
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.io.IOException;
 import java.util.ArrayList;

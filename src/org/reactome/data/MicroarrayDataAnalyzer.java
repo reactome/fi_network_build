@@ -2,7 +2,7 @@
  * Created on May 2, 2006
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,9 +19,9 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
+import org.reactome.fi.util.FeatureChecker;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
-import org.reactome.weka.FeatureChecker;
 
 /**
  * This class is used to analyze microarray data. This is a subclass of TestCase so that all

@@ -2,7 +2,7 @@
  * Created on Apr 25, 2007
  *
  */
-package org.reactome.fi;
+package org.reactome.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.gk.model.GKInstance;
 import org.junit.Test;
+import org.reactome.fi.ProteinAndInteractionCount;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;

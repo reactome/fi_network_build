@@ -14,6 +14,10 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.reactome.data.GODataAnalyzer;
+import org.reactome.data.ProteinIdFilters;
+import org.reactome.data.ReactomeAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.Value;
