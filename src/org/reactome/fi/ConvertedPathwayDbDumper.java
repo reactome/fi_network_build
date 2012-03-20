@@ -2,7 +2,7 @@
  * Created on Mar 1, 2012
  *
  */
-package org.reactome.b2rPostProcessor;
+package org.reactome.fi;
 
 import java.io.File;
 

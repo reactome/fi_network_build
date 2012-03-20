@@ -2,7 +2,7 @@
  * Created on Apr 25, 2007
  *
  */
-package org.reactome.data;
+package org.reactome.fi;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +16,9 @@ import java.util.Set;
 
 import org.gk.model.GKInstance;
 import org.junit.Test;
-import org.reactome.fi.ProteinAndInteractionCount;
+import org.reactome.data.ProteinIdFilters;
+import org.reactome.data.ReactomeAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
@@ -487,7 +489,8 @@ public class FIFileAnalyzer {
      * @throws IOException
      */
     public Set<String> loadTFTargetInteractions() throws IOException {
-        return new TREDAnalyzer().loadTFTargetInteractions();
+        return fu.loadInteractions(FIConfiguration.getConfiguration().get("TRED_FI_FILE"));
+        //        return fu.loadInteractions(FIConfiguration.getConfiguration().get("RESULT_DIR + "TREDInteractionsInUniProt.txt");
     }
     
     /**
