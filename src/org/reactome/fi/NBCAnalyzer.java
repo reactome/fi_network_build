@@ -2,7 +2,7 @@
  * Created on Apr 8, 2009
  *
  */
-package org.reactome.weka;
+package org.reactome.fi;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -22,8 +22,6 @@ import org.reactome.data.GODataAnalyzerV2;
 import org.reactome.data.PfamAnalyzer;
 import org.reactome.data.ReactomeAnalyzer;
 import org.reactome.data.UniProtAnalyzer;
-import org.reactome.fi.FIFileAnalyzer;
-import org.reactome.fi.ProteinAndInteractionCount;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
@@ -31,6 +29,8 @@ import org.reactome.fi.util.MathUtilities;
 import org.reactome.fi.util.PositiveChecker;
 import org.reactome.fi.util.Value;
 import org.reactome.tred.TREDAnalyzer;
+import org.reactome.weka.FeatureHandlerForV3;
+import org.reactome.weka.NaiveBayesClassifier;
 
 /**
  * This class is used to analyze results from class NaiveBayesClassifier.
@@ -88,7 +88,7 @@ public class NBCAnalyzer {
             String id1 = fi.substring(0, index);
             String id2 = fi.substring(index + 1);
             if (!featureProteins.contains(id1) ||
-                !featureProteins.contains(id2))
+                    !featureProteins.contains(id2))
                 it.remove();
         }
         System.out.println("Total FIs after filtering: " + fis.size());
@@ -229,10 +229,10 @@ public class NBCAnalyzer {
                     if (v1 && v2)
                         shared ++;
                 }
-//                double pvalue = MathUtilities.calculateHypergeometricPValue(fis.size(), 
-//                                                                            c1,
-//                                                                            c1, 
-//                                                                            shared);
+                //                double pvalue = MathUtilities.calculateHypergeometricPValue(fis.size(), 
+                //                                                                            c1,
+                //                                                                            c1, 
+                //                                                                            shared);
                 long counts[][] = new long[][] {
                         {shared, c2 - shared},
                         {c1 - shared, fis.size() - c1 - c2 + shared}
@@ -292,7 +292,7 @@ public class NBCAnalyzer {
         // The following filter, which is used for the positive data set, should NOT be applied to the
         // negative data set. Otherwise, the odds ratio will be decreased a lot, which also make the trained NBC
         // not useful at all. This may need to be discussed. -- Guanming on April 8, 2009.
-//        filterPairWithOneFeatureLeast(randomPairs, featureToChecker);
+        //        filterPairWithOneFeatureLeast(randomPairs, featureToChecker);
         //System.out.println("After filtering: " + randomPairs.size());
         //calculateNegativeDataset(negativePairToValue.values());
         nbc.calNegDatasetInSeqWay(randomPairs, 
@@ -334,24 +334,24 @@ public class NBCAnalyzer {
             if (rocFU != null)
                 rocFU.printLine(cutoff + "\t" + fpr + "\t" + tpr);
             //System.out.println("False positive rate: " + (double) fp / testNegativePairs.size());
-//             The following should NOT be used. Using an independent test data should be reliable than
-//             10-fold cross-validation.
-//            int tp = nbc.calculatePositiveCount(positivePairToValue, cutoff);
-//            System.out.println("True positive rate: " + (double) tp / positivePairToValue.size());
-//            int fp = nbc.calPosCountInSeqWay(randomPairs, featureToChecker, cutoff);
-//            System.out.println("False positive rate: " + (double) fp / randomPairs.size());
+            //             The following should NOT be used. Using an independent test data should be reliable than
+            //             10-fold cross-validation.
+            //            int tp = nbc.calculatePositiveCount(positivePairToValue, cutoff);
+            //            System.out.println("True positive rate: " + (double) tp / positivePairToValue.size());
+            //            int fp = nbc.calPosCountInSeqWay(randomPairs, featureToChecker, cutoff);
+            //            System.out.println("False positive rate: " + (double) fp / randomPairs.size());
         }
         if (rocFU != null)
             rocFU.close();
-//        // Used as control to generate ARFF file.
-//        ARFFGenerator generator = new ARFFGenerator();
-//        generator.setIsForVersion3(true);
-//        Map<String, Value> pairToValue = new HashMap<String, Value>(positivePairToValue);
-//        pairToValue.putAll(negativePairToValue);
-//        generator.exportDataForWEKA(FIConfiguration.getConfiguration().get("RESULT_DIR + "Reactome040809.arff",
-//                                    pairToValue);
-//        generator.exportDataForWEKA(FIConfiguration.getConfiguration().get("RESULT_DIR + "Test040809.arff",
-//                                    testPairToValue);
+        //        // Used as control to generate ARFF file.
+        //        ARFFGenerator generator = new ARFFGenerator();
+        //        generator.setIsForVersion3(true);
+        //        Map<String, Value> pairToValue = new HashMap<String, Value>(positivePairToValue);
+        //        pairToValue.putAll(negativePairToValue);
+        //        generator.exportDataForWEKA(FIConfiguration.getConfiguration().get("RESULT_DIR + "Reactome040809.arff",
+        //                                    pairToValue);
+        //        generator.exportDataForWEKA(FIConfiguration.getConfiguration().get("RESULT_DIR + "Test040809.arff",
+        //                                    testPairToValue);
         if (needCheckNBC)
             nbc.checkNBC();
         if (needSave)
@@ -481,8 +481,8 @@ public class NBCAnalyzer {
                 int tp = nbc.calculatePositiveCount(positivePairToValue, cutoff);
                 System.out.println("True positive rate: " + (double) tp / positivePairToValue.size());
                 int fp = nbc.calPosCountInSeqWay(randomPairs, 
-                                             featureToChecker,
-                                             cutoff);
+                                                 featureToChecker,
+                                                 cutoff);
                 double fpRate = (double) fp / randomPairs.size();
                 stat.addValue(fpRate);
                 System.out.println("False positive rate: " + (double) fp / randomPairs.size());
@@ -548,8 +548,8 @@ public class NBCAnalyzer {
         System.out.println("Total pairs: " + allPairs.size());
         Map<String, PositiveChecker> featureToChecker = featureHandler.loadFeatureToChecker();
         Set<String> pathwayFIs = new FIFileAnalyzer().loadPathwayAndTFTargetFIs();
-//        double cutoffs[] = new double[]{0.25, 0.35, 0.45, 0.55};
-//        for (double cutoff : cutoffs) {
+        //        double cutoffs[] = new double[]{0.25, 0.35, 0.45, 0.55};
+        //        for (double cutoff : cutoffs) {
         for (int i = 1; i < 10; i++) {
             double cutoff = 0.1d * i;
             System.out.println("Cutoff: " + cutoff);
@@ -565,19 +565,19 @@ public class NBCAnalyzer {
                                            predicted);
         }
     }
-
+    
     private Set<String> loadFeaturePairs(FeatureHandlerForV3 featureHandler) throws IOException {
         Map<String, Set<String>> featureToPairs = featureHandler.loadFeatureToPairs();
         Set<String> allPairs = new HashSet<String>();
         for (String feature : featureToPairs.keySet()) {
-//            if (feature.equals("intactHumanPPI") ||
-//                feature.equals("hprdHumanPPI") ||
-//                feature.equals("biogridHumanPPI") ||
-//                feature.equals("pavlidisGeneExp") ||
-//                feature.equals("carlosGeneExp")) {
-                Set<String> featurePairs = featureToPairs.get(feature);
-                allPairs.addAll(featurePairs);
-//            }
+            //            if (feature.equals("intactHumanPPI") ||
+            //                feature.equals("hprdHumanPPI") ||
+            //                feature.equals("biogridHumanPPI") ||
+            //                feature.equals("pavlidisGeneExp") ||
+            //                feature.equals("carlosGeneExp")) {
+            Set<String> featurePairs = featureToPairs.get(feature);
+            allPairs.addAll(featurePairs);
+            //            }
         }
         // Add pairs from BP and Domain interactions. If a pair can be predicted from one of these
         // two data sets, it much be shared.
@@ -605,7 +605,7 @@ public class NBCAnalyzer {
             }
             featureToPredictedFIs.put(feature, set);
         }
-
+        
         String[] features = new String[] {
                 "humanInteraction",
                 "dmePPI",
@@ -620,7 +620,7 @@ public class NBCAnalyzer {
         System.out.println("Feature\tInteractions");
         Set<String> pathwayFIs = new FIFileAnalyzer().loadPathwayFIs();
         Set<String> tfTargetFIs = new TREDAnalyzer().loadTFTargetInteractions();
-
+        
         for (String feature : features) {
             Set<String> pairs = featureToPredictedFIs.get(feature);
             Set<String> originalPairs = featureToPairs.get(feature);
@@ -633,8 +633,8 @@ public class NBCAnalyzer {
             copy.removeAll(tfTargetFIs);
             System.out.println("After remove: " + copy.size());
             System.out.println(feature + "\t" + pairs.size() + "\t" + 
-                               copy.size() + "\t" + 
-                               (double)pairs.size() / copy.size());
+                    copy.size() + "\t" + 
+                    (double)pairs.size() / copy.size());
         }
         // Generate a matrix
         StringBuilder builder = new StringBuilder();
@@ -831,7 +831,7 @@ public class NBCAnalyzer {
                 String id2 = goIdList.get(k);
                 String pair = id1 + "\t" + id2;
                 if (goAnalyzer.isTermShared(pair, goToBPTerms) &&
-                    domainAnalyzer.checkIfInteracting(pair)) {
+                        domainAnalyzer.checkIfInteracting(pair)) {
                     shared.add(pair);
                 }
             }
@@ -844,23 +844,23 @@ public class NBCAnalyzer {
     
     private void countForDBPathwayFIsAndPredFIs(Set<String> pathwayFIs,
                                                 Set<String> predictedFIs) throws Exception {
-      Set<String> pathwayIds = InteractionUtilities.grepIDsFromInteractions(pathwayFIs);
-      System.out.printf("FIs from pathways: %d (%d)%n",
-                        pathwayFIs.size(),
-                        pathwayIds.size());
-      ProteinAndInteractionCount counter = new ProteinAndInteractionCount();
-      counter.countVsSwissProt(pathwayIds);
-      Set<String> predictedIDs = InteractionUtilities.grepIDsFromInteractions(predictedFIs);
-      System.out.printf("FIs from prediction: %d (%d)%n",
-                        predictedFIs.size(),
-                        predictedIDs.size());
-      counter.countVsSwissProt(predictedIDs);
-      // Merge them
-      pathwayIds.addAll(predictedIDs);
-      pathwayFIs.addAll(predictedFIs);
-      System.out.printf("FIs merged: %d (%d)%n",
-                        pathwayFIs.size(),
-                        pathwayIds.size());
-      counter.countVsSwissProt(pathwayIds);
-  }
+        Set<String> pathwayIds = InteractionUtilities.grepIDsFromInteractions(pathwayFIs);
+        System.out.printf("FIs from pathways: %d (%d)%n",
+                          pathwayFIs.size(),
+                          pathwayIds.size());
+        ProteinAndInteractionCount counter = new ProteinAndInteractionCount();
+        counter.countVsSwissProt(pathwayIds);
+        Set<String> predictedIDs = InteractionUtilities.grepIDsFromInteractions(predictedFIs);
+        System.out.printf("FIs from prediction: %d (%d)%n",
+                          predictedFIs.size(),
+                          predictedIDs.size());
+        counter.countVsSwissProt(predictedIDs);
+        // Merge them
+        pathwayIds.addAll(predictedIDs);
+        pathwayFIs.addAll(predictedFIs);
+        System.out.printf("FIs merged: %d (%d)%n",
+                          pathwayFIs.size(),
+                          pathwayIds.size());
+        counter.countVsSwissProt(pathwayIds);
+    }
 }

@@ -2,7 +2,7 @@
  * Created on Oct 14, 2008
  *
  */
-package org.reactome.hibernate;
+package org.reactome.fi;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -23,8 +23,6 @@ import org.hibernate.Transaction;
 import org.junit.Test;
 import org.reactome.data.ReactomeAnalyzer;
 import org.reactome.data.ReactomeFuncInteractionExtractor;
-import org.reactome.fi.FIFileAnalyzer;
-import org.reactome.fi.FunctionalInteractionAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.PositiveChecker;
 import org.reactome.fi.util.Value;
@@ -34,8 +32,8 @@ import org.reactome.funcInt.Interaction;
 import org.reactome.funcInt.Protein;
 import org.reactome.funcInt.ReactomeSource;
 import org.reactome.funcInt.ReactomeSourceType;
+import org.reactome.hibernate.HibernateFIPersistence;
 import org.reactome.weka.FeatureHandlerForV3;
-import org.reactome.weka.NBCAnalyzer;
 import org.reactome.weka.NaiveBayesClassifier;
 import org.reactome.weka.WEKADataAnalyzer;
 import org.reactome.weka.WEKAResultAnalyzer;
@@ -48,10 +46,10 @@ import weka.core.Instances;
  * @author wgm
  *
  */
-public class HibernateFIWriter extends HibernateFIPersistence {
+public class FIDBBuilder extends HibernateFIPersistence {
     private final double CUT_OFF_VALUE = new Double(FIConfiguration.getConfiguration().get("CUT_OFF_VALUE"));
     
-    public HibernateFIWriter() {   
+    public FIDBBuilder() {   
     }
     
     /**

@@ -2,7 +2,7 @@
  * Created on Apr 7, 2009
  *
  */
-package org.reactome.weka;
+package org.reactome.fi;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.reactome.fi.util.Value;
+import org.reactome.weka.NaiveBayesClassifier;
 
 /**
  * This GUI test is used to check the results from NaiveBayesClassifier.
