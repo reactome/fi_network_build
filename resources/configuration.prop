@@ -3,7 +3,7 @@
 REACTOME_SOURCE_DB_NAME=reactome_40_plus_i
 DB_USER=root
 DB_PWD=macmysql01
-RESULT_DIR=results/v4
+RESULT_DIR=results/2012
 # Two Gene expression data files
 LEE_GENE_EXP_FILE=${RESULT_DIR}/LeeGeneExp.txt
 PRIETO_GENE_EXP_FILE=${RESULT_DIR}/PrietoGeneExp.txt
@@ -17,11 +17,14 @@ TRED_FI_FILE=${RESULT_DIR}/FIs_TRED.txt
 PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_031512.txt
 INTERACTION_FILE_NAME=${RESULT_DIR}/FIs_043009.txt
 INTERACTION_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIs_042109_BigComp.txt
-GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_041709_BigComp.txt
+GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_032112_BigComp.txt
 GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_031612.txt
 GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_031612.txt
 GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_031612.txt
 CUT_OFF_VALUE=0.50d
+# File for mapping accession to names dumped from the FI network
+PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_032112.txt
+ProteinAccessionToName_070110.txt
 # the data sets directory
 DATA_SET_DIR=datasets
 # Used to control the UniProt version
@@ -56,6 +59,13 @@ NATURE_PID_BIOCARTA_CONVERTED=${NATURE_PID_DIR}/BioCarta.bp2.rtpj
 # This file is used to map Entrez id to UniProt accession number
 IPROCLASS_HUMAN_FILE = ${DATA_SET_DIR}/iproclass/011612/h_sapiens.tb
 ENTREZ_TO_UNIPROT_MAP_FILE_NAME=${DATA_SET_DIR}/iproclass/011612/EntrezToUniProt.txt
+
+# Gene sets based on pathways
+PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic032112.txt
+GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics032112.txt
+
+# We need a flattened list of pathways from Reactome for enrichment analysis
+REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways.txt
     
 # For IntAct data set
 INTACT_DIR=${DATA_SET_DIR}/IntAct/022412/
