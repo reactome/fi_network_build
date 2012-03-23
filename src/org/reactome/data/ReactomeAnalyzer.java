@@ -208,7 +208,7 @@ public class ReactomeAnalyzer {
         // As of April 19, 2007, a list of Reactome pathways is fetched from a semi-manually
         // create file, ReactomePathways.txt.
         List<GKInstance> topics = new ArrayList<GKInstance>();
-        String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ReactomePathways.txt";
+        String fileName = FIConfiguration.getConfiguration().get("REACTOME_PATHWAYS");
         FileUtility fu = new FileUtility();
         fu.setInput(fileName);
         String line = null;
@@ -916,6 +916,18 @@ public class ReactomeAnalyzer {
         }
     }
     
+    /**
+     * Generate a list of pathways from the Reactome pathway hierarchy tree so that they can be used
+     * in pathway enrichment analysis. The generation is done in two steps:
+     * 1). Check item in the FrontPageItem list. If a pathway item has less than 200 proteins, that pathway
+     * is listed in the pathway list.
+     * 2). Otherwise, a front page pathway's sub-pathways are listed in the list regardless of their sizes if 
+     * the size of subpathways are less than 300. If a sub-pathway has size > 300, its sub-pathways are listed.
+     * 3). Note: The cutoff values 200 and 300 is chosen rather arbitrary. The reason why 300 is chosen for the
+     * second level is based on assumption that the lower level pathways should be more like functional units
+     * than upper level pathways.
+     * @throws Exception
+     */
     @Test
     public void generateListOfPathways() throws Exception {
         Set<GKInstance> pathwaySet = new HashSet<GKInstance>();
@@ -932,37 +944,63 @@ public class ReactomeAnalyzer {
                 if (!species.getDBID().equals(48887L))
                     continue;
                 Set<String> ids = grepIDsFromTopic(topic);
-                if (ids.size() > 200)
+                if (ids.size() > 200) // This is arbitrary
                     bigTopics.add(topic);
                 else
                     pathwaySet.add(topic);
             }
         }
-        // Have to split the big topics
-        for (GKInstance topic : bigTopics) {
-            List comps = null;
-            if (topic.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasEvent))
-                comps = topic.getAttributeValuesList(ReactomeJavaConstants.hasEvent);
-            else if (topic.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasSpecialisedForm))
-                comps = topic.getAttributeValuesList(ReactomeJavaConstants.hasSpecialisedForm);
-            else if (topic.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasMember))
-                comps = topic.getAttributeValuesList(ReactomeJavaConstants.hasMember);
-            if (comps == null || comps.size() == 0)
-                pathwaySet.add(topic);
-            else {
-                for (Iterator it = comps.iterator(); it.hasNext();) {
+        Set<GKInstance> next = new HashSet<GKInstance>();
+        for (int i = 0; i < 2; i++) { // Run two levels only
+            // Have to split the big topics
+            for (GKInstance topic : bigTopics) {
+                List comps = null;
+                if (topic.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasEvent))
+                    comps = topic.getAttributeValuesList(ReactomeJavaConstants.hasEvent);
+                else if (topic.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasSpecialisedForm))
+                    comps = topic.getAttributeValuesList(ReactomeJavaConstants.hasSpecialisedForm);
+                else if (topic.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasMember))
+                    comps = topic.getAttributeValuesList(ReactomeJavaConstants.hasMember);
+                if (comps == null || comps.size() == 0) {
+                    pathwaySet.add(topic);
+                    continue;
+                }
+                // If there is any reaction in the pathway, it should not split any more
+                boolean isAdded = false;
+                for (Object obj : comps) {
+                    GKInstance subEvent = (GKInstance) obj;
+                    if (subEvent.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)) {
+                        pathwaySet.add(topic);
+                        isAdded = true;
+                        break;
+                    }
+                }
+                if (isAdded)
+                    continue;
+                for (Iterator<?> it = comps.iterator(); it.hasNext();) {
                     GKInstance sub = (GKInstance) it.next();
-                    //if (sub.getDBID().equals(163359L)) 
-                    //    continue; // Escape Glucagon signaling in metabolic regulation(163359)
-                    //              // This pathway has been included by Integration of pathways involved in energy metabolism(163685)
-                    pathwaySet.add(sub);
+                    if (i == 1)
+                        pathwaySet.add(sub);
+                    else {
+                        //if (sub.getDBID().equals(163359L)) 
+                        //    continue; // Escape Glucagon signaling in metabolic regulation(163359)
+                        //              // This pathway has been included by Integration of pathways involved in energy metabolism(163685)
+                        // Check sub-pathway size
+                        Set<String> ids = grepIDsFromTopic(sub);
+                        if (ids.size() > 300) 
+                            next.add(sub);
+                        else
+                            pathwaySet.add(sub);
+                    }
                 }
             }
+            bigTopics.clear();
+            bigTopics.addAll(next);
         }
         // Want to sort it before output
         List<GKInstance> list = new ArrayList<GKInstance>(pathwaySet);
         InstanceUtilities.sortInstances(list);
-        String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ReactomePathways.txt";
+        String fileName = FIConfiguration.getConfiguration().get("REACTOME_PATHWAYS");
         FileUtility fu = new FileUtility();
         fu.setOutput(fileName);
         for (GKInstance pathway : list)

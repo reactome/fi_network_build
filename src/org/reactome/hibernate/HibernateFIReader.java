@@ -698,7 +698,8 @@ public class HibernateFIReader extends HibernateFIPersistence {
     @Test
     public void generateAccessionToProteinNameMap() throws Exception {
         Map<String, String> idToName = generateAccessionToProteinNames();
-        String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ProteinAccessionToName_070110.txt";
+//        String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ProteinAccessionToName_070110.txt";
+        String fileName = FIConfiguration.getConfiguration().get("PROTEIN_ACCESSION_TO_NAME_FILE");
         new FileUtility().exportMap(idToName, fileName);
     }
     

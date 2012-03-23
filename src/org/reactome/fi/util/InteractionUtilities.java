@@ -301,8 +301,10 @@ public class InteractionUtilities {
             return "N";
         if (displayName.equals("BioCarta - Imported by PID"))
             return "B";
-        if (displayName.equals("KEGG"))
+        if (displayName.equalsIgnoreCase("KEGG"))
             return "K";
+        if (displayName.equals("TRED"))
+            return "T"; // There should be no pathways from TRED
         return "R"; // default
     }
     

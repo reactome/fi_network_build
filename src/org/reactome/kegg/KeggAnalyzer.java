@@ -199,8 +199,8 @@ public class KeggAnalyzer{
      * @throws IOException
      */
     public Map<String, Set<String>> loadPathwayToGeneNamesMapFromHsaList() throws IOException {
-        String dirName = FIConfiguration.getConfiguration().get("DATA_SET_DIR") + "KEGG/hsa_101210/";
-        String listFile = dirName + "hsa.list";
+        String dirName = FIConfiguration.getConfiguration().get("KEGG_DIR");
+        String listFile = dirName + File.separator + "hsa" + File.separator + "hsa.list";
         String titleFile = dirName + "map_title.tab";
         Map<String, Set<String>> pathwayToGenes = new HashMap<String, Set<String>>();
         FileUtility fu = new FileUtility();
@@ -229,15 +229,15 @@ public class KeggAnalyzer{
         return pathwayToGenes;
     }
     
-    @Test
-    public void augmentGeneNameToPathwayMap() throws IOException {
+    public void augmentGeneNameToPathwayMap(String srcFileName,
+                                            String targetFileName) throws IOException {
         Map<String, Set<String>> pathwayToNames = loadPathwayToGeneNamesMapFromHsaList();
         Map<String, Set<String>> nameToPathways = InteractionUtilities.switchKeyValues(pathwayToNames);
         FileUtility fu = new FileUtility();
-        String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ProteinNameToTopics101110.txt";
-        fu.setInput(fileName);
-        String outFileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ProteinNameToTopics_all_KEGG_101110.txt";
-        fu.setOutput(outFileName);
+        //String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ProteinNameToTopics101110.txt";
+        fu.setInput(srcFileName);
+        //String outFileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ProteinNameToTopics_all_KEGG_101110.txt";
+        fu.setOutput(targetFileName);
         String line = null;
         while ((line = fu.readLine()) != null) {
             if (line.endsWith("(K)"))

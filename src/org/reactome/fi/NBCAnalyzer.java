@@ -253,7 +253,7 @@ public class NBCAnalyzer {
     }
     
     @Test
-    public void calcualteROCPoints() throws Exception {
+    public void calculateROCPoints() throws Exception {
         String rocFileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ROC_100_031512.txt";
         _calculateNBCBasedOnReactome(false, 
                                      false,

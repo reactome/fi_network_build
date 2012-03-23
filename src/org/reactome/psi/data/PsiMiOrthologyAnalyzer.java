@@ -73,7 +73,7 @@ public class PsiMiOrthologyAnalyzer {
      * @throws Exception
      */
     @Test
-    public void testPPIsCoverage() throws Exception {
+    public void testPPIsFeatures() throws Exception {
         String[] intFileNames = new String[] {
 //                "humanPPIsFromCaeel.txt",       
 //                "humanPPIsFromWormInUniProt.txt",

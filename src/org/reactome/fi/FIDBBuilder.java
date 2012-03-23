@@ -4,6 +4,7 @@
  */
 package org.reactome.fi;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import org.reactome.data.ReactomeAnalyzer;
 import org.reactome.data.ReactomeFuncInteractionExtractor;
 import org.reactome.fi.util.FIConfiguration;
+import org.reactome.fi.util.HibernateUtil;
 import org.reactome.fi.util.PositiveChecker;
 import org.reactome.fi.util.Value;
 import org.reactome.funcInt.Evidence;
@@ -50,6 +52,22 @@ public class FIDBBuilder extends HibernateFIPersistence {
     private final double CUT_OFF_VALUE = new Double(FIConfiguration.getConfiguration().get("CUT_OFF_VALUE"));
     
     public FIDBBuilder() {   
+    }
+    
+    /**
+     * Use this method to create the database schema for the FI network.
+     * @throws Exception
+     */
+    @Test
+    public void generateSchema() throws Exception {
+        String configFileName = "resources/funcIntHibernate.cfg.xml";
+        File configFile = new File(configFileName);
+        sessionFactory = HibernateUtil.getSessionFactoryWithCreate(configFile);
+        Session session = sessionFactory.openSession();
+        Query query = session.createQuery("FROM " + Interaction.class.getName());
+        List<?> list = query.list();
+        System.out.println("Interaction should be empty: " + list.size());
+        session.close();
     }
     
     /**
