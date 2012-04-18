@@ -39,7 +39,7 @@ import org.reactome.weka.NaiveBayesClassifier;
  */
 public class NBCAnalyzer {
     // Saved NBC file name
-    private final String NBC_FILE_NAME = FIConfiguration.getConfiguration().get("RESULT_DIR") + "NaiveBayesClassifier_100_Random.ser";
+    private final String NBC_FILE_NAME = FIConfiguration.getConfiguration().get("RESULT_DIR") + "/NaiveBayesClassifier_100_Random.ser";
     private int NEGATIVE_TO_POSITIVE_RATIO = 100;
     private FileUtility fu = new FileUtility();
     
@@ -254,7 +254,7 @@ public class NBCAnalyzer {
     
     @Test
     public void calculateROCPoints() throws Exception {
-        String rocFileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "ROC_100_031512.txt";
+        String rocFileName = FIConfiguration.getConfiguration().get("ROC_CURVE_FILE");
         _calculateNBCBasedOnReactome(false, 
                                      false,
                                      100, 
@@ -581,7 +581,7 @@ public class NBCAnalyzer {
         }
         // Add pairs from BP and Domain interactions. If a pair can be predicted from one of these
         // two data sets, it much be shared.
-        Set<String> bpDomainPairs = fu.loadInteractions(FIConfiguration.getConfiguration().get("RESULT_DIR") + "BP_Domain_Shared_Pairs.txt");
+        Set<String> bpDomainPairs = fu.loadInteractions(FIConfiguration.getConfiguration().get("BP_DOMAIN_SHARED_PAIRS"));
         allPairs.addAll(bpDomainPairs);
         return allPairs;
     }
@@ -839,7 +839,7 @@ public class NBCAnalyzer {
         long time2 = System.currentTimeMillis();
         System.out.println("Time for looping: " + (time2 - time1));
         System.out.println("Total shared: " + shared.size());
-        fu.saveInteractions(shared, FIConfiguration.getConfiguration().get("RESULT_DIR") + "BP_Domain_Shared_Pairs.txt");
+        fu.saveInteractions(shared, FIConfiguration.getConfiguration().get("BP_DOMAIN_SHARED_PAIRS"));
     }
     
     private void countForDBPathwayFIsAndPredFIs(Set<String> pathwayFIs,
