@@ -13,6 +13,7 @@ import org.reactome.data.GODataAnalyzerV2;
 import org.reactome.data.IRefIndexMITTabAnalyzer;
 import org.reactome.data.MicroarrayDataAnalyzer;
 import org.reactome.data.PfamAnalyzer;
+import org.reactome.data.ReactomeAnalyzer;
 import org.reactome.data.UniProtAnalyzer;
 import org.reactome.hibernate.HibernateFIReader;
 import org.reactome.kegg.KeggToReactomeConverter;
@@ -55,9 +56,6 @@ public class FINetworkBuilder {
         uniProtAnalyzer.generateEntrezGeneToUniProt();
         logger.info("Running UniProtAnalyzer.generateUniToPfamMap()...");
         uniProtAnalyzer.generateUniToPfamMap();
-        EnsemblAnalyzer ensemblAnalyzer = new EnsemblAnalyzer();
-        logger.info("Running EnsemblAnalyzer.dumpProteinFamilies()...");
-        ensemblAnalyzer.dumpProteinFamilies();
     }
     
     /**
@@ -90,7 +88,7 @@ public class FINetworkBuilder {
     /**
      * Dump converted pathways from other databases into the extended Reactome database.
      * Before running method, try to take a look at the converted projects to make sure
-     * nothing werid there.
+     * nothing weird there.
      * @throws Exception
      */
     @Test
@@ -175,8 +173,9 @@ public class FINetworkBuilder {
         NBCAnalyzer nbcAnalyzer = new NBCAnalyzer();
         logger.info("Running NBCAnalyzer.calculateNBCBasedOnReactome()...");
         nbcAnalyzer.calculateNBCBasedOnReactome();
-        logger.info("Running NBCAnalyzer.calculateROCPoints()...");
-        nbcAnalyzer.calculateROCPoints();
+//        logger.info("Running NBCAnalyzer.calculateROCPoints()...");
+//        nbcAnalyzer.calculateROCPoints();
+        // Generate protein pairs having domain-domain interactions 
         logger.info("Running NBCAnalyzer.checkSharedBPPairAndDomainPairs()...");
         nbcAnalyzer.checkSharedBPPairAndDomainPair();
         logger.info("Running checkCutoffValueForPredictedFIs()...");
@@ -188,7 +187,7 @@ public class FINetworkBuilder {
     }
     
     /**
-     * After examing the results from method trainNBC(), choose an appropriate 
+     * After investigating the results from method trainNBC(), choose an appropriate 
      * cutoff value, and set in the configuration file: results/configuration.prop.
      * Usually 0.50 or above should be chosen unless you have a strong reason not so.
      * @throws Exception
@@ -236,10 +235,18 @@ public class FINetworkBuilder {
         logger.info("Running FIGraphAnalyzer.analyzeComponents()...");
         graphAnalyzer.analyzeComponents();
         // Mapping from protein accessions to names
+        // This file is not used here right now. But it is used in the plug-in.
         logger.info("Running HiberanteFIReader.generateAccessionToProteinNameMap()...");
         hibernateReader.generateAccessionToProteinNameMap();
         // Need to generate a flatenned list of pathways from the Reactome database
         // Generate name to pathway mapping to be used for pathway enrichment analysis
+        logger.info("Running ReactomeAnalyzer.generateListOfPathways()...");
+        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
+        reactomeAnalyzer.generateListOfPathways();
+        // Generate Pathways to Genes mappings for enrichment analysis
+        PathwayGeneSetGenerator genesetGenerator = new PathwayGeneSetGenerator();
+        logger.info("Running PathwayGeneSetGenerator.generateProteinNameToPathwayMap()...");
+        genesetGenerator.generateProteinNameToPathwayMap();
     }
     
 }
