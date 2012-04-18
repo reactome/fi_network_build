@@ -11,8 +11,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
@@ -20,17 +18,24 @@ import org.gk.persistence.MySQLAdaptor;
 import org.gk.persistence.XMLFileAdaptor;
 import org.gk.schema.SchemaAttribute;
 import org.gk.schema.SchemaClass;
+import org.junit.Test;
 import org.reactome.convert.common.Converter;
 import org.reactome.convert.common.ConverterHandler;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 
-public class PantherToReactomeConverterTest extends TestCase {
+public class PantherToReactomeConverterTest {
     //private final String PANTHER_DIR = "/Users/wgm/Documents/caBIG_R3/datasets/Panther/Version1.3/SBML_1.3/SBML/";
     //private final String PANTHER_DIR = "/Users/wgm/Documents/gkteam/Arabidopsis/";
     private PantherToReactomeConverter converter;
     
     public PantherToReactomeConverterTest() {
+        try {
+            setUp();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
     }
     
     protected void setUp() throws Exception {
@@ -46,7 +51,7 @@ public class PantherToReactomeConverterTest extends TestCase {
 //                                                  3306);
         MySQLAdaptor dbAdaptor = getDBA();
         converter.setDatabaseAdaptor(dbAdaptor);
-        super.setUp();
+//        super.setUp();
     }
     
     private MySQLAdaptor getDBA() throws Exception {
@@ -73,6 +78,7 @@ public class PantherToReactomeConverterTest extends TestCase {
      * versioning.
      * @throws Exception
      */
+    @Test
     public void testNewConverter() throws Exception {
         MySQLAdaptor dbAdaptor = getDBA();
         ConverterHandler handler = ConverterHandler.getInstance();
@@ -98,12 +104,16 @@ public class PantherToReactomeConverterTest extends TestCase {
      * same Reactome Curator Tool project file.
      * @throws Exception
      */
+    @Test
     public void testNewBatchConverter() throws Exception {
         MySQLAdaptor dbAdaptor = getDBA();
         XMLFileAdaptor fileAdaptor = new XMLFileAdaptor();
         SchemaClass refGeneProd = fileAdaptor.getSchema().getClassByName(ReactomeJavaConstants.ReferenceGeneProduct);
         System.out.println("ReferenceGeneProduct: " + refGeneProd.getName());
-        File[] sbmlFiles = new File(FIConfiguration.getConfiguration().get("PANTHER_FILES_DIR")).listFiles();
+        String dirName = FIConfiguration.getConfiguration().get("PANTHER_FILES_DIR");
+        System.out.println(dirName);
+        File[] sbmlFiles = new File(dirName).listFiles();
+        System.out.println("Total files: " + sbmlFiles.length);
         List<String> fileNames = new ArrayList<String>();
         // Load all model files
         for (File file : sbmlFiles) {
@@ -112,8 +122,8 @@ public class PantherToReactomeConverterTest extends TestCase {
                 fileNames.add(file.getAbsolutePath());
         }
         // for test
-        fileNames.clear();
-        fileNames.add(FIConfiguration.getConfiguration().get("PANTHER_FILES_DIR") + "Inflammation_mediated_by_chemokine_and_cytokine_signaling_pathway.xml");
+//        fileNames.clear();
+//        fileNames.add(FIConfiguration.getConfiguration().get("PANTHER_FILES_DIR") + "Inflammation_mediated_by_chemokine_and_cytokine_signaling_pathway.xml");
         ConverterHandler handler = ConverterHandler.getInstance();
         for (String fileName : fileNames) {
             System.out.println("Converting " + fileName + "...");
@@ -127,7 +137,7 @@ public class PantherToReactomeConverterTest extends TestCase {
         PantherPostProcessor postProcessor = new PantherPostProcessor();
         postProcessor.postProcess(dbAdaptor, fileAdaptor);
         postProcessor.otherProcesses(dbAdaptor, fileAdaptor);
-//        fileAdaptor.save(FIConfiguration.getConfiguration().get("PANTHER_CONVERTED_FILE);
+        fileAdaptor.save(FIConfiguration.getConfiguration().get("PANTHER_CONVERTED_FILE"));
     }
     
     public void attachSpecies() throws Exception {
@@ -138,9 +148,9 @@ public class PantherToReactomeConverterTest extends TestCase {
                                                   3306);
         // This is pantherdb data sources
         GKInstance pantherDS = dbAdaptor.fetchInstance(new Long(210683L));
-        assertNotNull(pantherDS);
+        assert pantherDS != null;
         GKInstance humanSpecies = dbAdaptor.fetchInstance(new Long(48887L));
-        assertNotNull(humanSpecies);
+        assert humanSpecies != null;
         String[] clses = new String[] {
                 ReactomeJavaConstants.Event,
                 ReactomeJavaConstants.Complex,
