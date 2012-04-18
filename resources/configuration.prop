@@ -1,32 +1,44 @@
-# This is a configuration file. Make sure all directories and files correct
+# This is a configuration file. Make sure all directories and files are correct
+RESULT_DIR=results/2012
+# the data sets directory
+DATA_SET_DIR=datasets
+
 # local database that is used as the data source
 REACTOME_SOURCE_DB_NAME=reactome_40_plus_i
 DB_USER=root
 DB_PWD=macmysql01
-RESULT_DIR=results/2012
+
 # Two Gene expression data files
+LEE_GENE_EXP_FILE_SOURCE=${DATA_SET_DIR}/microarray/Pavlidis/GeneExpWith3FromPavlidis.txt
 LEE_GENE_EXP_FILE=${RESULT_DIR}/LeeGeneExp.txt
 PRIETO_GENE_EXP_FILE=${RESULT_DIR}/PrietoGeneExp.txt
 # FIs extracted from Reactome and converted pathway DBs
 REACTOME_FI_FILE=${RESULT_DIR}/FIs_Reactome.txt
+KEGG_FI_FILE=${RESULT_DIR}/FIs_Kegg.txt
 NCI_PID_FI_FILE=${RESULT_DIR}/FIs_Pathway Interaction Database.txt
 NCI_PID_BIOCARTA_FI_FILE=${RESULT_DIR}/FIs_BioCarta - Imported by PID.txt
 PANTHER_FI_FILE=${RESULT_DIR}/FIs_pantherdb.txt
 TRED_FI_FILE=${RESULT_DIR}/FIs_TRED.txt
     
 PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_031512.txt
+
 INTERACTION_FILE_NAME=${RESULT_DIR}/FIs_043009.txt
 INTERACTION_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIs_042109_BigComp.txt
+
 GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_032112_BigComp.txt
 GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_031612.txt
 GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_031612.txt
 GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_031612.txt
-CUT_OFF_VALUE=0.50d
 # File for mapping accession to names dumped from the FI network
 PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_032112.txt
-ProteinAccessionToName_070110.txt
-# the data sets directory
-DATA_SET_DIR=datasets
+# We need a flattened list of pathways from Reactome for enrichment analysis
+REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways.txt
+# Gene sets based on pathways
+PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic032112.txt
+GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics032112.txt
+
+CUT_OFF_VALUE=0.50d
+
 # Used to control the UniProt version
 UNIPROT_DIR=${DATA_SET_DIR}/UniProt/release_2011_12/
     
@@ -44,7 +56,7 @@ KEGG_CONVERTED_FILE=${KEGG_DIR}/030112.rtpj
 KEGG_ID_TO_UNIPROT_MAP_FILE=${KEGG_DIR}/hsa_genes_uniprot.list
 # Used for the panther database files
 # Download on Jan 18, 2011
-PANTHER_DIR=${DATA_SET_DIR}/Panther/Version3.0.1/ 
+PANTHER_DIR=${DATA_SET_DIR}/Panther/Version3.0.1/
 PANTHER_FILES_DIR=${PANTHER_DIR}/SBML/
 PANTHER_MAPPING_FILE=${PANTHER_DIR}/SequenceAssociationPathway3.01.txt
 PANTHER_CONVERTED_FILE=${PANTHER_DIR}/Panther_3_0_1.rtpj
@@ -60,13 +72,6 @@ NATURE_PID_BIOCARTA_CONVERTED=${NATURE_PID_DIR}/BioCarta.bp2.rtpj
 IPROCLASS_HUMAN_FILE = ${DATA_SET_DIR}/iproclass/011612/h_sapiens.tb
 ENTREZ_TO_UNIPROT_MAP_FILE_NAME=${DATA_SET_DIR}/iproclass/011612/EntrezToUniProt.txt
 
-# Gene sets based on pathways
-PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic032112.txt
-GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics032112.txt
-
-# We need a flattened list of pathways from Reactome for enrichment analysis
-REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways.txt
-    
 # For IntAct data set
 INTACT_DIR=${DATA_SET_DIR}/IntAct/022412/
 INTACT_HUMAN_DIR=${INTACT_DIR}/human/
@@ -102,3 +107,7 @@ HUMAN_PPIS_FROM_YEAST_FILE=${RESULT_DIR}/HumanPPIsFromYeast030112.txt
 HUMAN_PPIS_FROM_WORM_FILE=${RESULT_DIR}/HumanPPIsFromWorm030112.txt
 HUMAN_PPIS_FROM_FLY_FILE=${RESULT_DIR}/HumanPPIsFromFly030112.txt
 HUMAN_PPIS_FROM_MOUSE_FILE=${RESULT_DIR}/HumanPPIsFromMouse031412.txt
+
+# The following propertied are used during NBC training
+ROC_CURVE_FILE=${RESULT_DIR}/ROC_100_041712.txt
+BP_DOMAIN_SHARED_PAIRS=${RESULT_DIR}/BP_Domain_Shared_Pairs.txt

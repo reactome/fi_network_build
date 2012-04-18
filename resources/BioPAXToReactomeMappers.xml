@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappers package = "org.reactome.b2rMapper">
+    <class biopax="bioSource">
+        <mapper name="BioSourceMapper" />
+    </class>
+    <class biopax="catalysis">
+        <mapper name="CatalysisMapper" />
+        <super name="InteractionMapper" />   
+    </class>
+    <class biopax="complex">
+        <mapper name="ComplexMapper" />
+        <super name="PhysicalEntityMapper" />
+    </class>
+    <class biopax="conversion">
+        <mapper name="ConversionMapper" />
+        <super name="InteractionMapper" />
+    </class>
+    <class biopax="entity">
+        <mapper name="EntityMapper" />
+    </class>
+    <class biopax="evidence">
+        <mapper name="EvidenceMapper" />
+    </class>
+    <class biopax="interaction">
+        <mapper name="InteractionMapper" />
+        <super name="EntityMapper" />
+    </class>
+    <!-- Basically, this mapper should be used for Modulcation. However, control can be instantialed
+    actually and control has the same set of properties as modulcation. So this mapper is used for 
+    control. -->
+    <class biopax="control">
+        <mapper name="ControlMapper" />
+        <super name="InteractionMapper" />
+    </class>
+    <class biopax="openControlledVocabulary">
+        <mapper name="OpenControlledVocabularyMapper" />
+    </class>
+    <class biopax="pathway">
+        <mapper name="PathwayMapper" />
+        <super name="EntityMapper" />
+    </class>
+    <class biopax="pathwayStep">
+        <mapper name="PathwayStepMapper" />
+    </class>
+    <class biopax="physicalEntity">
+        <mapper name="PhysicalEntityMapper" />
+        <super name="EntityMapper" />
+    </class>
+    <class biopax="physicalEntityParticipant">
+        <mapper name="PhysicalEntityParticipantMapper" />
+        <!-- This mapping used only for data from PID -->
+        <super name="PhysicalEntityMapper" />
+    </class>
+    <class biopax="physicalInteraction">
+        <mapper name="PhysicalInteractionMapper" />
+        <super name="InteractionMapper" />
+    </class>
+    <class biopax="publicationXref">
+        <mapper name="PublicationXrefMapper" />
+        <super name="XrefMapper" />
+    </class>
+    <class biopax="sequenceFeature">
+        <mapper name="SequenceFeatureMapper" />
+    </class>
+    <class biopax="sequenceParticipant">
+        <mapper name="SequenceParticipantMapper" />
+        <super name="PhysicalEntityParticipantMapper" />
+        <super name="PhysicalEntityMapper" />
+    </class>
+    <class biopax="xref">
+        <mapper name="XrefMapper" />
+    </class>
+    <!-- For RiceCyc -->
+<!--     <postProcessor class="org.reactome.biopax.RiceCycPostProcessor" /> -->
+    <!-- This PostProcessor is for NCI Pathways -->
+    <postProcessor class="org.reactome.b2rPostProcessor.NciPIDBToRPostProcessor" />
+    <!-- This PostProcessor is for HPRD only -->
+    <!-- postProcessor class="org.reactome.biopax.HPRDBToRPostProcessor" / -->
+    <!-- This PostProcess is for INHO only -->
+    <!-- postProcessor class="org.reactome.biopax.INOHPostProcessor" / -->
+</mappers>
