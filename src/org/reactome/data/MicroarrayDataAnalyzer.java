@@ -136,7 +136,8 @@ public class MicroarrayDataAnalyzer {
     public void normalizeLeeGeneExp() throws Exception {
         // This file contains UniProt pairs mapped from link-data.txt using refseq-hs-annots.txt
         // All pairs have been supported by at least 3 experiments.
-        String inFileName = FIConfiguration.getConfiguration().get("DATA_SET_DIR") + "microarray/Pavlidis/GeneExpWith3FromPavlidis.txt";
+        String inFileName = FIConfiguration.getConfiguration().get("LEE_GENE_EXP_FILE_SOURCE");
+//        System.out.println("inFileName: " + inFileName);
         fu.setInput(inFileName);
         String line = null;
         Set<String> pairs = new HashSet<String>();

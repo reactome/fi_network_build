@@ -210,6 +210,7 @@ public class UniProtAnalyzer {
      * to generate a map for several accession identifiers to the first AC id.
      * @throws IOException
      */
+    @Test
     public void generateUniProtIDsMap() throws IOException {
         // Run the following twice
         // Want to get both Swiss and Trembl files for all UniProt accession numbers
@@ -485,6 +486,7 @@ public class UniProtAnalyzer {
         }
     }
     
+    @Test
     public void generateEntrezGeneToUniProt() throws IOException {
         String inputFile = FIConfiguration.getConfiguration().get("IPROCLASS_HUMAN_FILE");
         String outputFile = FIConfiguration.getConfiguration().get("ENTREZ_TO_UNIPROT_MAP_FILE_NAME");

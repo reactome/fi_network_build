@@ -135,13 +135,13 @@ public class IRefIndexMITTabAnalyzer {
         shared = InteractionUtilities.getShared(totalIds, uniProtMap.keySet());
         System.out.println(" in UniProt: " + shared.size());
         totalIds.removeAll(shared);
-        int count = 0;
-        for (String id : totalIds) {
-            System.out.println(id);
-            count ++;
-            if (count == 100)
-                break;
-        }
+//        int count = 0;
+//        for (String id : totalIds) {
+//            System.out.println(id);
+//            count ++;
+//            if (count == 100)
+//                break;
+//        }
     }
     
     private String getUniProtId(String protein) {

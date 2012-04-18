@@ -143,9 +143,11 @@ public class EnsemblAnalyzer {
                 set.add(taxonId + ":" + uniProtId);
             }
             resultset.close();
+//            System.out.println("Finish taxon: " + taxonId);
         }
         stat.close();
         connection.close();
+        System.out.println("Size of familyToProteins(): " + familyToProteins.size());
         filterFamilies(familyToProteins);
         FileUtility fu = new FileUtility();
         fu.saveSetMapInSort(familyToProteins, 
@@ -211,7 +213,7 @@ public class EnsemblAnalyzer {
     
     /**
      * Filter protein families so that a family containing at least two species and one of them
-     * should be homo sapienes.
+     * should be homo sapiens.
      * @param familyToProteins
      */
     private void filterFamilies(Map<String, Set<String>> familyToProteins) {
