@@ -404,7 +404,7 @@ public class FIFileAnalyzer {
             else
                 sourceName = dataSource.getDisplayName();
             System.out.println("Done data source: " + sourceName);
-            String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "FIs_" + sourceName + ".txt";
+            String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "/FIs_" + sourceName + ".txt";
             fu.saveInteractions(normalized, fileName);
             System.out.println();
         }
