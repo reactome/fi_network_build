@@ -124,6 +124,11 @@ public class PantherToReactomeConverterTest {
         // for test
 //        fileNames.clear();
 //        fileNames.add(FIConfiguration.getConfiguration().get("PANTHER_FILES_DIR") + "Inflammation_mediated_by_chemokine_and_cytokine_signaling_pathway.xml");
+        // Add these statements so that this pathway can be handled first.
+        // Otherwise, some instances in this pathway may be messed up with others.
+        String tmp = FIConfiguration.getConfiguration().get("PANTHER_FILES_DIR") + "Inflammation_mediated_by_chemokine_and_cytokine_signaling_pathway.xml";
+        fileNames.remove(tmp);
+        fileNames.add(0, tmp);
         ConverterHandler handler = ConverterHandler.getInstance();
         for (String fileName : fileNames) {
             System.out.println("Converting " + fileName + "...");
