@@ -41,7 +41,8 @@ public class ReactomeAnalyzer {
         List<ReactomeAnalyzer> analyzers = new ArrayList<ReactomeAnalyzer>();
         analyzers.add(new ReactomeAnalyzer());
         PantherAnalyzer pantherAnalyzer = new PantherAnalyzer();
-        pantherAnalyzer.setDataSourceId(191282L);
+        Long pantherId = new Long(FIConfiguration.getConfiguration().get("PANTHER_DB_ID"));
+        pantherAnalyzer.setDataSourceId(pantherId);
         analyzers.add(pantherAnalyzer);
         // INOH is not used in version 3.
         //analyzers.add(new INOHAnalyzer());
@@ -57,9 +58,12 @@ public class ReactomeAnalyzer {
 //                486224L // KEGG
                 // The following ids are from version 4 (2012)
 //                504630L, // Cancer Cell Map // Not used any more
-                2185693L, // NCI-Nature curated Pathways (Pathway Interaction Database)
-                2241489L, // BioCarta - Imported by PID     
-                1385644L // KEGG
+                // NCI-Nature curated Pathways (Pathway Interaction Database)
+                new Long(FIConfiguration.getConfiguration().get("NCI_NATURE_CURATED_DB_ID")),
+                // BioCarta - Imported by PID     
+                new Long(FIConfiguration.getConfiguration().get("NCI_NATURE_BIOCARTA_DB_ID")),
+                // KEGG
+                new Long(FIConfiguration.getConfiguration().get("KEGG_DB_ID"))
         };
         for (Long dataSourceId : dataSourceIds) {
             ReactomeAnalyzer tmp = new CPathAnalyzer();
@@ -67,9 +71,10 @@ public class ReactomeAnalyzer {
             analyzers.add(tmp);
         }
         // Add targeted interactions (TF/Target from TRED)
-        TargetedInteractionAnalyzer tAnalyzer = new TargetedInteractionAnalyzer();
-        tAnalyzer.setDataSourceId(2279928L);
-        analyzers.add(tAnalyzer);
+        TargetedInteractionAnalyzer tredAnalyzer = new TargetedInteractionAnalyzer();
+        Long tredId = new Long(FIConfiguration.getConfiguration().get("TRED_DB_ID"));
+        tredAnalyzer.setDataSourceId(tredId);
+        analyzers.add(tredAnalyzer);
         return analyzers;
     }
     
