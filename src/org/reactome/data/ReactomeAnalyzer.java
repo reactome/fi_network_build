@@ -33,10 +33,16 @@ public class ReactomeAnalyzer {
         topicHelper = new ReactomeAnalyzerTopicHelper();
     }
     
+    /**
+     * Make sure dataSourceIds are correct for the version the database.
+     * @return
+     */
     public static List<ReactomeAnalyzer> getPathwayDBAnalyzers() {
         List<ReactomeAnalyzer> analyzers = new ArrayList<ReactomeAnalyzer>();
         analyzers.add(new ReactomeAnalyzer());
-        analyzers.add(new PantherAnalyzer());
+        PantherAnalyzer pantherAnalyzer = new PantherAnalyzer();
+        pantherAnalyzer.setDataSourceId(191282L);
+        analyzers.add(pantherAnalyzer);
         // INOH is not used in version 3.
         //analyzers.add(new INOHAnalyzer());
         Long[] dataSourceIds = new Long[] {
