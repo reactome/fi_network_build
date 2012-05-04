@@ -96,8 +96,18 @@ public class FINetworkBuilder {
         ConvertedPathwayDbDumper dumper = new ConvertedPathwayDbDumper();
         logger.info("Running ConvertedPathwayDbDumper.dumpPathwayDBs()...");
         dumper.dump();
-        FIFileAnalyzer fiFileAnalyzer = new FIFileAnalyzer();
+    }
+    
+    /**
+     * Extract Pathway FIs from Reactome and other imported pathway dbs, and dump
+     * them into a local file. Before running this method, make sure you have set
+     * dataSourceIds correctly in method ReactomeAnalyzer.getPathwayDBAnalyzers().
+     * @throws Exception
+     */
+    @Test
+    public void dumpPathwayFIs() throws Exception {
         logger.info("Running FIFileAnalyzer.dumpPathwayFIs()...");
+        FIFileAnalyzer fiFileAnalyzer = new FIFileAnalyzer();
         fiFileAnalyzer.dumpPathwayFIs();
     }
     
