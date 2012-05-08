@@ -790,9 +790,9 @@ public class ProteinSequenceHandler {
     }
     
     private String getAcFromFasta(String line) {
-        // >P31946-2|1433B_HUMAN Isoform Short of P31946 - Homo sapiens (Human)
-        int index = line.indexOf("|");
-        return line.substring(1, index);
+        // >sp|P31946-2|1433B_HUMAN Isoform Short of P31946 - Homo sapiens (Human)
+        int index = line.indexOf("|") + 1;
+        return line.substring(index, line.indexOf("|", index));
     }
     
     public Map<String, Sequence> loadSwissProtSequences() throws IOException {

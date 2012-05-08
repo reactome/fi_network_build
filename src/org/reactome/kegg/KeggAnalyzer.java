@@ -201,7 +201,7 @@ public class KeggAnalyzer{
     public Map<String, Set<String>> loadPathwayToGeneNamesMapFromHsaList() throws IOException {
         String dirName = FIConfiguration.getConfiguration().get("KEGG_DIR");
         String listFile = dirName + File.separator + "hsa" + File.separator + "hsa.list";
-        String titleFile = dirName + "map_title.tab";
+        String titleFile = dirName + File.separator + "map_title.tab";
         Map<String, Set<String>> pathwayToGenes = new HashMap<String, Set<String>>();
         FileUtility fu = new FileUtility();
         Map<String, String> pathwayIdToName = new HashMap<String, String>();

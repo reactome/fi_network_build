@@ -11,6 +11,7 @@ DB_PWD=macmysql01
 # Two Gene expression data files
 LEE_GENE_EXP_FILE_SOURCE=${DATA_SET_DIR}/microarray/Pavlidis/GeneExpWith3FromPavlidis.txt
 LEE_GENE_EXP_FILE=${RESULT_DIR}/LeeGeneExp.txt
+PRIETO_PAIRS_FILE=${DATA_SET_DIR}/datasets/microarray/PrietoCarlos/union60.txt
 PRIETO_GENE_EXP_FILE=${RESULT_DIR}/PrietoGeneExp.txt
 # FIs extracted from Reactome and converted pathway DBs
 REACTOME_FI_FILE=${RESULT_DIR}/FIs_Reactome.txt

@@ -181,7 +181,7 @@ public class MicroarrayDataAnalyzer {
      */
     @Test
     public void generatePrietoCarlosGeneExpFile() throws Exception {
-        String srcFileName = "datasets/microarray/PrietoCarlos/union60.txt";
+		String srcFileName = FIConfiguration.getConfiguration().get("PRIETO_PAIRS_FILE");
         Set<String> genePairs = fu.loadInteractions(srcFileName);
         System.out.println("Total gene pairs: " + genePairs.size());
         long time1 = System.currentTimeMillis();
