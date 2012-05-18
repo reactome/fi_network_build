@@ -39,7 +39,8 @@ public class ConvertedPathwayDbDumper {
                 FIConfiguration.getConfiguration().get("NATURE_PID_CURATED_CONVERTED"),
                 FIConfiguration.getConfiguration().get("NATURE_PID_BIOCARTA_CONVERTED"),
                 FIConfiguration.getConfiguration().get("PANTHER_CONVERTED_FILE"),
-                FIConfiguration.getConfiguration().get("TRED_CONVERTED_FILE")
+                FIConfiguration.getConfiguration().get("TRED_CONVERTED_FILE"),
+                FIConfiguration.getConfiguration().get("ENCODE_TFF_CONVERTED_FILE")
         };
         // Make sure all file existing
         for (String fileName : fileNames) {

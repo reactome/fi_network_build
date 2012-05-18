@@ -20,6 +20,7 @@ import org.reactome.kegg.KeggToReactomeConverter;
 import org.reactome.panther.PantherToReactomeConverterTest;
 import org.reactome.psi.data.PsiMiOrthologyAnalyzer;
 import org.reactome.tred.TREDToReactomeConverter;
+import org.reactome.data.TFTargetToReactomeConverter;
 
 /**
  * This class groups a list of methods that should be run for building a new version of FI network.
@@ -79,10 +80,15 @@ public class FINetworkBuilder {
         TREDToReactomeConverter tredConverter = new TREDToReactomeConverter();
         logger.info("Running TREDToReactomeConverter.doConvert()...");
         tredConverter.doConvert();
+
+        logger.info("Running TFTargetToReactomeConverter.convert()...");
+        new TFTargetToReactomeConverter().convert();
+
         // Check protein coverage
         ProteinAndInteractionCount count = new ProteinAndInteractionCount();
         logger.info("Count proteins...");
         count.checkUniProtNumbersInConvertedDBs();
+
     }
     
     /**

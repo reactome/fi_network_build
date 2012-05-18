@@ -47,23 +47,9 @@ public class ReactomeAnalyzer {
         // INOH is not used in version 3.
         //analyzers.add(new INOHAnalyzer());
         Long[] dataSourceIds = new Long[] {
-//                229095L, // Cancer Cell Map // Not used in 2012
-//                424025L, // NCI-Nature Curated Pathways
-//                435967L, // NCI-Nature imported BiCarta Pathways
-//                444163L // KEGG
-                // The following ids are from version 3 (release_28)
-//                504630L, // Cancer Cell Map
-//                475143L, // NCI-Nature curated Pathways
-//                520547L, // BioCarta - Imported by PID     
-//                486224L // KEGG
-                // The following ids are from version 4 (2012)
-//                504630L, // Cancer Cell Map // Not used any more
-                // NCI-Nature curated Pathways (Pathway Interaction Database)
                 new Long(FIConfiguration.getConfiguration().get("NCI_NATURE_CURATED_DB_ID")),
-                // BioCarta - Imported by PID     
                 new Long(FIConfiguration.getConfiguration().get("NCI_NATURE_BIOCARTA_DB_ID")),
-                // KEGG
-                new Long(FIConfiguration.getConfiguration().get("KEGG_DB_ID"))
+                new Long(FIConfiguration.getConfiguration().get("KEGG_DB_ID")),
         };
         for (Long dataSourceId : dataSourceIds) {
             ReactomeAnalyzer tmp = new CPathAnalyzer();
@@ -75,6 +61,10 @@ public class ReactomeAnalyzer {
         Long tredId = new Long(FIConfiguration.getConfiguration().get("TRED_DB_ID"));
         tredAnalyzer.setDataSourceId(tredId);
         analyzers.add(tredAnalyzer);
+
+        TargetedInteractionAnalyzer encodeAnalyzer = new TargetedInteractionAnalyzer();
+        encodeAnalyzer.setDataSourceId(new Long(FIConfiguration.getConfiguration().get("ENCODE_TFF_ID")));
+        analyzers.add(encodeAnalyzer);
         return analyzers;
     }
     

@@ -185,7 +185,7 @@ public class MicroarrayDataAnalyzer {
         Set<String> genePairs = fu.loadInteractions(srcFileName);
         System.out.println("Total gene pairs: " + genePairs.size());
         long time1 = System.currentTimeMillis();
-        Map<String, Set<String>> geneNameToUniAcces = new UniProtAnalyzer().generateGeneNameToUniAccesssMap(true);
+        Map<String, Set<String>> geneNameToUniAcces = new UniProtAnalyzer().generateGeneNameToUniAccessMap(true);
 //        Map<String, Set<String>> geneNameToUniAcces = new UniProtAnalyzer().loadGeneNameToUniProtAcces();
         long time2 = System.currentTimeMillis();
         System.out.println("Total time for loading: " + (time2 - time1));

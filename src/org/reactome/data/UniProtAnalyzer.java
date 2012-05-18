@@ -330,7 +330,7 @@ public class UniProtAnalyzer {
      * @return
      * @throws IOException
      */
-    public Map<String, Set<String>> generateGeneNameToUniAccesssMap(boolean needSwissProtOnly) throws IOException {
+    public Map<String, Set<String>> generateGeneNameToUniAccessMap(boolean needSwissProtOnly) throws IOException {
         String[] fileNames = new String[] {
                 UNI_SPROT_FILE_NAME,
                 UNI_TREMBL_FILE_NAME
