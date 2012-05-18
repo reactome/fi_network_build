@@ -23,7 +23,8 @@ import org.reactome.convert.common.PostProcessTemplate;
  *
  */
 public class TREDToReactomePostProcessor extends PostProcessTemplate {
-    
+    private static final long HOMO_SAPIENS_ID = 48887L;
+
     public TREDToReactomePostProcessor() {
     }
     
@@ -40,15 +41,16 @@ public class TREDToReactomePostProcessor extends PostProcessTemplate {
     protected void processEWAS(MySQLAdaptor dbAdaptor,
                                XMLFileAdaptor fileAdaptor) throws Exception {
         Set<String> unmapped = new HashSet<String>();
+
         // Fetch RefPepSeq from the database and link it to EWAS based on gene names.
-        Collection<?> ewases = fileAdaptor.fetchInstancesByClass(ReactomeJavaConstants.EntityWithAccessionedSequence);
-        for (Iterator<?> it = ewases.iterator(); it.hasNext();) {
-            GKInstance ewas = (GKInstance) it.next();
+        Collection<GKInstance> ewases = fileAdaptor.fetchInstancesByClass(ReactomeJavaConstants.EntityWithAccessionedSequence);
+        for (GKInstance ewas : ewases) {
             String geneName = ewas.getDisplayName();
-            Collection<?> refGeneProds = dbAdaptor.fetchInstanceByAttribute(ReactomeJavaConstants.ReferenceGeneProduct,
-                                                                            ReactomeJavaConstants.geneName, 
-                                                                            "=",
-                                                                            geneName);
+            Collection<GKInstance> refGeneProds = dbAdaptor.fetchInstanceByAttribute(ReactomeJavaConstants.ReferenceGeneProduct,
+                                                                                     ReactomeJavaConstants.geneName, 
+                                                                                     "=",
+                                                                                     geneName);
+
             if (refGeneProds == null || refGeneProds.size() == 0) {
                 unmapped.add(geneName);
                 logger.warn(geneName + " for EWAS " + ewas.getDBID() + " cannot be mapped to UniProt!");
@@ -56,13 +58,12 @@ public class TREDToReactomePostProcessor extends PostProcessTemplate {
             }
             GKInstance refGeneProd = null;
             // Have to make sure GKInstance should be from human only. There are many different species in the database now
-            for (Object obj : refGeneProds) {
-                GKInstance refGeneProd1 = (GKInstance) obj;
+            for (GKInstance refGeneProd1 : refGeneProds) {
                 GKInstance species = (GKInstance) refGeneProd1.getAttributeValue(ReactomeJavaConstants.species);
-                if (species == null || !species.getDBID().equals(48887L)) // 48887 is  homo sapiens id
-                    continue;
-                refGeneProd = refGeneProd1;
-                break;
+                if (species != null && species.getDBID().equals(HOMO_SAPIENS_ID)) {
+                    refGeneProd = refGeneProd1;
+                    break;
+                }
             }
             if (refGeneProd == null) {
                 unmapped.add(geneName);
