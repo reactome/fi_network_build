@@ -10,6 +10,7 @@ import org.gk.persistence.XMLFileAdaptor;
 import org.gk.persistence.MySQLAdaptor;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
+import org.junit.Test;
 
 /**
  * Converter that converts (TF -> Target files) to Reactome Curator Tool projects
@@ -44,8 +45,6 @@ public class TFTargetToReactomeConverter {
 										   FIConfiguration.getConfiguration().get("DB_PWD"),
 										   3306);
 
-		// Map<String, Set<String>> gnToAccessMap = new UniProtAnalyzer.generateGeneNameToUniAccessMap(true);
-
 		FileUtility fu = new FileUtility();
 		Map<String, Set<String>> tfToTargetsMap = fu.loadSetMap(tftargetFileName);
 
@@ -62,7 +61,15 @@ public class TFTargetToReactomeConverter {
             }
 
 			Set<String> targetNames = tfToTargetsMap.get(tfName);
-			for (String targetName : targetNames) {
+			for (String targetTypeName : targetNames) {
+                int tabIndex = targetTypeName.indexOf("\t");
+                if (tabIndex < 0) {
+                    continue;
+                }
+
+                String targetType = targetTypeName.substring(0, tabIndex);
+                String targetName = targetTypeName.substring(tabIndex+1);
+
 				GKInstance target = nameToEntityMap.get(targetName);
                 if (target == null) {
                     target = fileAdaptor.createNewInstance(ReactomeJavaConstants.EntityWithAccessionedSequence);
@@ -78,6 +85,8 @@ public class TFTargetToReactomeConverter {
 				interaction.setAttributeValue(ReactomeJavaConstants.target, target);
 				interaction.setAttributeValue(ReactomeJavaConstants.species, human);
 				interaction.setDisplayName(factor.getDisplayName() + "-" + target.getDisplayName());
+                interaction.setAttributeValue(ReactomeJavaConstants.definition,
+                                              "ENCODE " + targetType + " TF/target interaction");
 			}
 		}
 
