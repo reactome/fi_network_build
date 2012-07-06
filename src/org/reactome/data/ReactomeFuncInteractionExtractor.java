@@ -180,6 +180,8 @@ public class ReactomeFuncInteractionExtractor {
                 src.setSourceType(ReactomeSourceType.COMPLEX);
             else if (instance.getSchemClass().isa(ReactomeJavaConstants.Interaction))
                 src.setSourceType(ReactomeSourceType.INTERACTION);
+            else if (instance.getSchemClass().isa(ReactomeJavaConstants.TargettedInteraction))
+                src.setSourceType(ReactomeSourceType.TARGETED_INTERACTION);
             idToSourceMap.put(instance.getDBID(), src);
         }
         return src;
