@@ -39,18 +39,31 @@ public class ReactomeAnalyzer {
      */
     public static List<ReactomeAnalyzer> getPathwayDBAnalyzers() {
         List<ReactomeAnalyzer> analyzers = new ArrayList<ReactomeAnalyzer>();
-        analyzers.add(new ReactomeAnalyzer());
+        // Always include ReactomeAnalyzer
+        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
+        PersistenceAdaptor dba = null;
+        try {
+            dba = reactomeAnalyzer.getMySQLAdaptor();
+        }
+        catch(Exception e) {
+            System.err.println(e);
+        }
+        if (dba == null)
+            throw new IllegalStateException("Cannot connect to a database!");
+        analyzers.add(reactomeAnalyzer);
         PantherAnalyzer pantherAnalyzer = new PantherAnalyzer();
-        Long pantherId = new Long(FIConfiguration.getConfiguration().get("PANTHER_DB_ID"));
+        Long pantherId = fetchDatasourceId("pantherdb", dba);
         pantherAnalyzer.setDataSourceId(pantherId);
         analyzers.add(pantherAnalyzer);
         // INOH is not used in version 3.
         //analyzers.add(new INOHAnalyzer());
-        Long[] dataSourceIds = new Long[] {
-                new Long(FIConfiguration.getConfiguration().get("NCI_NATURE_CURATED_DB_ID")),
-                new Long(FIConfiguration.getConfiguration().get("NCI_NATURE_BIOCARTA_DB_ID")),
-                new Long(FIConfiguration.getConfiguration().get("KEGG_DB_ID")),
-        };
+        List<Long> dataSourceIds = new ArrayList<Long>();
+        Long sourceId = fetchDatasourceId("Pathway Interaction Database", dba);
+        dataSourceIds.add(sourceId);
+        sourceId = fetchDatasourceId("BioCarta - Imported by PID", dba);
+        dataSourceIds.add(sourceId);
+        sourceId = fetchDatasourceId("KEGG", dba);
+        dataSourceIds.add(sourceId);
         for (Long dataSourceId : dataSourceIds) {
             ReactomeAnalyzer tmp = new CPathAnalyzer();
             tmp.setDataSourceId(dataSourceId);
@@ -58,14 +71,35 @@ public class ReactomeAnalyzer {
         }
         // Add targeted interactions (TF/Target from TRED)
         TargetedInteractionAnalyzer tredAnalyzer = new TargetedInteractionAnalyzer();
-        Long tredId = new Long(FIConfiguration.getConfiguration().get("TRED_DB_ID"));
+        Long tredId = fetchDatasourceId("TRED", dba);
         tredAnalyzer.setDataSourceId(tredId);
         analyzers.add(tredAnalyzer);
 
         TargetedInteractionAnalyzer encodeAnalyzer = new TargetedInteractionAnalyzer();
-        encodeAnalyzer.setDataSourceId(new Long(FIConfiguration.getConfiguration().get("ENCODE_TFF_ID")));
+        Long encodeId = fetchDatasourceId("ENCODE", dba);
+        encodeAnalyzer.setDataSourceId(encodeId);
         analyzers.add(encodeAnalyzer);
         return analyzers;
+    }
+    
+    private static Long fetchDatasourceId(String dbName,
+                                          PersistenceAdaptor dba) {
+        Long dbId = null;
+        try {
+            Collection<GKInstance> instances = dba.fetchInstanceByAttribute(ReactomeJavaConstants.ReferenceDatabase,
+                                                                            ReactomeJavaConstants._displayName,
+                                                                            "=",
+                                                                            dbName);
+            if (instances != null && instances.size() == 1) {
+                dbId = instances.iterator().next().getDBID();
+            }
+        }
+        catch(Exception e) {
+            System.err.println(e);
+        }
+        if (dbId == null)
+            throw new IllegalStateException("Cannot find a ReferenceDatabase for \"" + dbName + "\"!");
+        return dbId;
     }
     
     public static String getSourceLetter(ReactomeAnalyzer analyzer) throws Exception {
