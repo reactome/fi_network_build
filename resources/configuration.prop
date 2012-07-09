@@ -11,7 +11,6 @@ DB_PWD=macmysql01
 # Two Gene expression data files
 LEE_GENE_EXP_FILE_SOURCE=${DATA_SET_DIR}/microarray/Pavlidis/GeneExpWith3FromPavlidis.txt
 LEE_GENE_EXP_FILE=${RESULT_DIR}/LeeGeneExp.txt
-PRIETO_PAIRS_FILE=${DATA_SET_DIR}/datasets/microarray/PrietoCarlos/union60.txt
 PRIETO_GENE_EXP_FILE=${RESULT_DIR}/PrietoGeneExp.txt
 # FIs extracted from Reactome and converted pathway DBs
 REACTOME_FI_FILE=${RESULT_DIR}/FIs_Reactome.txt
@@ -116,13 +115,3 @@ HUMAN_PPIS_FROM_MOUSE_FILE=${RESULT_DIR}/HumanPPIsFromMouse031412.txt
 # The following propertied are used during NBC training
 ROC_CURVE_FILE=${RESULT_DIR}/ROC_100_041712.txt
 BP_DOMAIN_SHARED_PAIRS=${RESULT_DIR}/BP_Domain_Shared_Pairs.txt
-
-# The following values are DB_IDs for imported non-Reactome pathway databases. 
-# These values vary in each build, and should be set by checking
-# database for ReferenceDatabase instances after running method dumpPathwaysDBs()
-PANTHER_DB_ID=191282
-NCI_NATURE_CURATED_DB_ID=2185693
-NCI_NATURE_BIOCARTA_DB_ID=2241489
-KEGG_DB_ID=1385644
-TRED_DB_ID=2279928
-ENCODE_TFF_ID=2348623
