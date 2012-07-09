@@ -4,7 +4,7 @@ import org.gk.persistence.MySQLAdaptor;
 import org.gk.persistence.XMLFileAdaptor;
 import org.reactome.tred.TREDToReactomePostProcessor;
 
-public class TFTargetToReactomePostProcessor extends TREDToReactomePostProcessor {
+public class EncodeTFTargetToReactomePostProcessor extends TREDToReactomePostProcessor {
     @Override
     protected void attachDataSource(MySQLAdaptor dbAdaptor,
                                     XMLFileAdaptor fileAdaptor) throws Exception {

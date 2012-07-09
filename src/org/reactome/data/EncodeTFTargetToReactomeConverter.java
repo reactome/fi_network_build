@@ -13,17 +13,19 @@ import org.reactome.fi.util.FileUtility;
 import org.junit.Test;
 
 /**
- * Converter that converts (TF -> Target files) to Reactome Curator Tool projects
+ * Converter that converts (TF -> Target files) downloaded from the ENCODE project from
+ * Mark Geistein's group (http://archive.gersteinlab.org/proj/encodenets/) to Reactome 
+ * Curator Tool projects.
  *
  * @author Adrian Duong
  */
-public class TFTargetToReactomeConverter {
+public class EncodeTFTargetToReactomeConverter {
 	private XMLFileAdaptor fileAdaptor;
 	private Map<String, GKInstance> nameToEntityMap;
 	// private Map<String, GKInstance> interactionMap;
 	private final GKInstance human;
 
-	public TFTargetToReactomeConverter() throws Exception { // should this throw an exception?
+	public EncodeTFTargetToReactomeConverter() throws Exception { // should this throw an exception?
 		fileAdaptor = new XMLFileAdaptor();
 		nameToEntityMap = new HashMap<String, GKInstance>();
 		// interactionMap = new HashMap<String, GKInstance>();
@@ -90,14 +92,9 @@ public class TFTargetToReactomeConverter {
 			}
 		}
 
-        TFTargetToReactomePostProcessor postProcessor = new TFTargetToReactomePostProcessor();
-        postProcessor.postProcess(new MySQLAdaptor("localhost",
-                                                   FIConfiguration.getConfiguration().get("REACTOME_SOURCE_DB_NAME"),
-                                                   FIConfiguration.getConfiguration().get("DB_USER"),
-                                                   FIConfiguration.getConfiguration().get("DB_PWD"),
-                                                   3306),
+        EncodeTFTargetToReactomePostProcessor postProcessor = new EncodeTFTargetToReactomePostProcessor();
+        postProcessor.postProcess(db,
                                   fileAdaptor);
-        
 
 		fileAdaptor.save(destFileName);
 	}
