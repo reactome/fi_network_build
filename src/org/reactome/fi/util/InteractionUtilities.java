@@ -305,6 +305,8 @@ public class InteractionUtilities {
             return "K";
         if (displayName.equals("TRED"))
             return "T"; // There should be no pathways from TRED
+        if (displayName.equals("ENCODE"))
+            return "E"; // No pathway should be generated
         return "R"; // default
     }
     
