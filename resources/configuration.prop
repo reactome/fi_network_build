@@ -4,13 +4,15 @@ RESULT_DIR=results/2012
 DATA_SET_DIR=datasets
 
 # local database that is used as the data source
-REACTOME_SOURCE_DB_NAME=reactome_40_plus_i
+REACTOME_SOURCE_DB_NAME=reactome_41_plus_i
 DB_USER=root
 DB_PWD=macmysql01
 
 # Two Gene expression data files
 LEE_GENE_EXP_FILE_SOURCE=${DATA_SET_DIR}/microarray/Pavlidis/GeneExpWith3FromPavlidis.txt
 LEE_GENE_EXP_FILE=${RESULT_DIR}/LeeGeneExp.txt
+
+PRIETO_PAIRS_FILE=${DATA_SET_DIR}/microarray/PrietoCarlos/union60.txt
 PRIETO_GENE_EXP_FILE=${RESULT_DIR}/PrietoGeneExp.txt
 # FIs extracted from Reactome and converted pathway DBs
 REACTOME_FI_FILE=${RESULT_DIR}/FIs_Reactome.txt
@@ -19,41 +21,42 @@ NCI_PID_FI_FILE=${RESULT_DIR}/FIs_Pathway Interaction Database.txt
 NCI_PID_BIOCARTA_FI_FILE=${RESULT_DIR}/FIs_BioCarta - Imported by PID.txt
 PANTHER_FI_FILE=${RESULT_DIR}/FIs_pantherdb.txt
 TRED_FI_FILE=${RESULT_DIR}/FIs_TRED.txt
-    
-PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_031512.txt
 
 INTERACTION_FILE_NAME=${RESULT_DIR}/FIs_043009.txt
 INTERACTION_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIs_042109_BigComp.txt
 
-GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_032112_BigComp.txt
-GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_031612.txt
-GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_031612.txt
-GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_031612.txt
+GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_071012_BigComp.txt
+GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_071012.txt
+GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_071012.txt
+GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_071012.txt
 # File for mapping accession to names dumped from the FI network
-PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_032112.txt
+PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_071012.txt
 # We need a flattened list of pathways from Reactome for enrichment analysis
-REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways.txt
+REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways071012.txt
 # Gene sets based on pathways
-PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic032112.txt
-GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics032112.txt
+PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic0710112.txt
+GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics071012.txt
 
 CUT_OFF_VALUE=0.50d
+PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_071012.txt
 
 # Used to control the UniProt version
-UNIPROT_DIR=${DATA_SET_DIR}/UniProt/release_2011_12/
+UNIPROT_DIR=${DATA_SET_DIR}/UniProt/release_2012_06/
     
 # Directory for pFam
-PFAM_DIR_NAME=${DATA_SET_DIR}/Pfam/26.0/
+PFAM_DIR_NAME=${DATA_SET_DIR}/Pfam/071012/
 # Directory for RH file
 RH_DIR_NAME=${DATA_SET_DIR}/GenomeResearch_RH_Map/fully_combined_RH_network/
+
 # These parameters are related to KEGG pathways
-KEGG_DIR=${DATA_SET_DIR}/KEGG/011112/
+KEGG_DIR=${DATA_SET_DIR}/KEGG/070912/
 # Unzipped human KGML files should be in this directory
-KEGG_HSA_KGML_DIR=${KEGG_DIR}/KGML/hsa/
+KEGG_HSA_KGML_DIR=${KEGG_DIR}/hsa/
 # The converted KEGG pathways is saved in this project file
-KEGG_CONVERTED_FILE=${KEGG_DIR}/030112.rtpj
+KEGG_CONVERTED_FILE=${KEGG_DIR}/KEGG.rtpj
 # This file is used to map KEGG gene ids to UniProt ids
 KEGG_ID_TO_UNIPROT_MAP_FILE=${KEGG_DIR}/hsa_genes_uniprot.list
+
 # Used for the panther database files
 # Download on Jan 18, 2011
 PANTHER_DIR=${DATA_SET_DIR}/Panther/Version3.0.1/
@@ -69,8 +72,8 @@ NATURE_PID_BIOCARTA=${NATURE_PID_DIR}/BioCarta.bp2.owl
 NATURE_PID_BIOCARTA_CONVERTED=${NATURE_PID_DIR}/BioCarta.bp2.rtpj
     
 # This file is used to map Entrez id to UniProt accession number
-IPROCLASS_HUMAN_FILE = ${DATA_SET_DIR}/iproclass/011612/h_sapiens.tb
-ENTREZ_TO_UNIPROT_MAP_FILE_NAME=${DATA_SET_DIR}/iproclass/011612/EntrezToUniProt.txt
+IPROCLASS_HUMAN_FILE = ${DATA_SET_DIR}/iproclass/070912/h_sapiens.tb
+ENTREZ_TO_UNIPROT_MAP_FILE_NAME=${DATA_SET_DIR}/iproclass/070912/EntrezToUniProt.txt
 
 # For IntAct data set
 INTACT_DIR=${DATA_SET_DIR}/IntAct/022412/
@@ -82,14 +85,14 @@ ENSEMBL_DIR=${DATA_SET_DIR}/Ensembl/release_62/
 ENSEMBL_COMPARA_DATABASE=ensembl_compara_62
 ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies.txt
 # For GO related files
-GO_DIR=${DATA_SET_DIR}/GO/030712/
+GO_DIR=${DATA_SET_DIR}/GO/071012/
 # ENCODE data
 ENCODE_DIR=${DATA_SET_DIR}/encode
 ENCODE_TFF_FILE=${ENCODE_DIR}/tf-targets.txt
 ENCODE_TFF_CONVERTED_FILE=${ENCODE_DIR}/tf-targets.rtpj
 # For TRED files
 TRED_DIR=${DATA_SET_DIR}/TRED/
-TRED_CONVERTED_FILE=${TRED_DIR}/TRED_030112.rtpj
+TRED_CONVERTED_FILE=${TRED_DIR}/TRED_071012.rtpj
 # Constants for iRefIndex data files
 IREFINDEX_DIR=${DATA_SET_DIR}/iRefIndex/9.0/
 IREFINDEX_HUMAN_FILE=${IREFINDEX_DIR}/9606.mitab.10182011.txt
@@ -113,5 +116,5 @@ HUMAN_PPIS_FROM_FLY_FILE=${RESULT_DIR}/HumanPPIsFromFly030112.txt
 HUMAN_PPIS_FROM_MOUSE_FILE=${RESULT_DIR}/HumanPPIsFromMouse031412.txt
 
 # The following propertied are used during NBC training
-ROC_CURVE_FILE=${RESULT_DIR}/ROC_100_041712.txt
+ROC_CURVE_FILE=${RESULT_DIR}/ROC_100_071012.txt
 BP_DOMAIN_SHARED_PAIRS=${RESULT_DIR}/BP_Domain_Shared_Pairs.txt
