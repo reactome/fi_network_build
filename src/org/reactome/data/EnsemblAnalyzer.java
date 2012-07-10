@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.ensembl.compara.driver.ComparaDriver;
-import org.ensembl.compara.driver.ComparaDriverFactory;
 import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
@@ -30,14 +30,15 @@ import org.reactome.fi.util.FileUtility;
  *
  */
 public class EnsemblAnalyzer {
+    private static final Logger logger = Logger.getLogger(EnsemblAnalyzer.class);
     private ComparaDriver driver;
     
     protected void setUp() throws Exception {
-        driver = ComparaDriverFactory.createComparaDriver("ensembldb.ensembl.org", 
-                                                          3306, 
-                                                          "ensembl_compara_41", 
-                                                          "anonymous", 
-                                                           "");
+//        driver = ComparaDriverFactory.createComparaDriver("ensembldb.ensembl.org", 
+//                                                          3306, 
+//                                                          "ensembl_compara_41", 
+//                                                          "anonymous", 
+//                                                           "");
     }
     
     public void simpleTest() throws Exception {
@@ -130,6 +131,7 @@ public class EnsemblAnalyzer {
         List<Integer> neededTaxonIds = getNeededTaxonIds();
         Map<String, Set<String>> familyToProteins = new HashMap<String, Set<String>>();
         for (Integer taxonId : neededTaxonIds) {
+            logger.info("Dump " + taxonId + "...");
             stat.setInt(1, taxonId);
             ResultSet resultset = stat.executeQuery();
             while (resultset.next()) {
@@ -143,11 +145,12 @@ public class EnsemblAnalyzer {
                 set.add(taxonId + ":" + uniProtId);
             }
             resultset.close();
+            logger.info("Finish taxon: " + taxonId);
 //            System.out.println("Finish taxon: " + taxonId);
         }
         stat.close();
         connection.close();
-        System.out.println("Size of familyToProteins(): " + familyToProteins.size());
+        logger.info("Size of familyToProteins(): " + familyToProteins.size());
         filterFamilies(familyToProteins);
         FileUtility fu = new FileUtility();
         fu.saveSetMapInSort(familyToProteins, 
