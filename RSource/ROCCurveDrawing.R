@@ -16,7 +16,7 @@ calculate.AUC <- function(rocData) {
 }
 
 #fileName <- "/Users/wgm/v3/ROC_100_072809.txt";
-fileName <- "/Users/gwu/Documents/EclipseWorkspace/caBigR3/results/v4/ROC_100_031512.txt";
+fileName <- "/Users/gwu/Documents/EclipseWorkspace/FINetworkBuild/results/2012/ROC_100_071012.txt";
 rocData <- read.table(fileName, sep="\t", header=TRUE);
 ## Draw x-y plot
 #plot(rocData$False_Positive_Rate, rocData$True_Positive_Rate, type="l", main="NBC ROC Curve", xlab="False Positive Rate", ylab="True Positive Rate", xlim=c(0.00185, 0.05), ylim=c(0.035, 0.965));

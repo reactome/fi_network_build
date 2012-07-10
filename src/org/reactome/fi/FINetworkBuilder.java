@@ -20,7 +20,7 @@ import org.reactome.kegg.KeggToReactomeConverter;
 import org.reactome.panther.PantherToReactomeConverterTest;
 import org.reactome.psi.data.PsiMiOrthologyAnalyzer;
 import org.reactome.tred.TREDToReactomeConverter;
-import org.reactome.data.TFTargetToReactomeConverter;
+import org.reactome.data.EncodeTFTargetToReactomeConverter;
 
 /**
  * This class groups a list of methods that should be run for building a new version of FI network.
@@ -81,8 +81,8 @@ public class FINetworkBuilder {
         logger.info("Running TREDToReactomeConverter.doConvert()...");
         tredConverter.doConvert();
 
-        logger.info("Running TFTargetToReactomeConverter.convert()...");
-        new TFTargetToReactomeConverter().convert();
+        logger.info("Running EncodeTFTargetToReactomeConverter.convert()...");
+        new EncodeTFTargetToReactomeConverter().convert();
 
         // Check protein coverage
         ProteinAndInteractionCount count = new ProteinAndInteractionCount();
@@ -189,8 +189,8 @@ public class FINetworkBuilder {
         NBCAnalyzer nbcAnalyzer = new NBCAnalyzer();
         logger.info("Running NBCAnalyzer.calculateNBCBasedOnReactome()...");
         nbcAnalyzer.calculateNBCBasedOnReactome();
-//        logger.info("Running NBCAnalyzer.calculateROCPoints()...");
-//        nbcAnalyzer.calculateROCPoints();
+        logger.info("Running NBCAnalyzer.calculateROCPoints()...");
+        nbcAnalyzer.calculateROCPoints();
         // Generate protein pairs having domain-domain interactions 
         logger.info("Running NBCAnalyzer.checkSharedBPPairAndDomainPairs()...");
         nbcAnalyzer.checkSharedBPPairAndDomainPair();
