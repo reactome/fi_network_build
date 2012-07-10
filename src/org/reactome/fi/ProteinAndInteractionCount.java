@@ -645,6 +645,12 @@ public class ProteinAndInteractionCount {
                         "TRED",
                         reactomeIds,
                         swissProtIds);      
+        String encodeFileName = FIConfiguration.getConfiguration().get("ENCODE_TFF_CONVERTED_FILE");
+        countUniProtIds(encodeFileName,
+                        "ENCODE",
+                        reactomeIds,
+                        swissProtIds);
+                
         // Ids from Panther
         //        String pantherFileName = FIConfiguration.getConfiguration().get("PANTHER_DIR + "Panther_2_5.rtpj";
         String pantherFileName = FIConfiguration.getConfiguration().get("PANTHER_CONVERTED_FILE");
