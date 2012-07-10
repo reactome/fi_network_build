@@ -67,6 +67,8 @@ public class FIDBBuilder extends HibernateFIPersistence {
         Query query = session.createQuery("FROM " + Interaction.class.getName());
         List<?> list = query.list();
         System.out.println("Interaction should be empty: " + list.size());
+        if (list.size() > 0)
+            throw new IllegalStateException("FI Database is not empty!");
         session.close();
     }
     
