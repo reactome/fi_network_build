@@ -6,7 +6,6 @@ package org.reactome.data;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -107,13 +105,8 @@ public class EnsemblAnalyzer {
     }
     
     private Connection getConnection() throws Exception {
-        Class.forName("com.mysql.jdbc.Driver");
-        String url = "jdbc:mysql://localhost:3306/" + FIConfiguration.getConfiguration().get("ENSEMBL_COMPARA_DATABASE");
-        Properties info = new Properties();
-        info.setProperty("user", FIConfiguration.getConfiguration().get("DB_USER"));
-        info.setProperty("password", FIConfiguration.getConfiguration().get("DB_PWD"));
-        Connection connection = DriverManager.getConnection(url, info);
-        return connection;
+        String dbName = FIConfiguration.getConfiguration().get("ENSEMBL_COMPARA_DATABASE");
+        return FIConfiguration.getConnection(dbName);
     }
     
     /**
