@@ -6,6 +6,8 @@ package org.reactome.fi.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +24,16 @@ public class FIConfiguration {
     
     private FIConfiguration() {
         init();
+    }
+    
+    public static Connection getConnection(String dbName) throws Exception {
+        Class.forName("com.mysql.jdbc.Driver");
+        String url = "jdbc:mysql://localhost:3306/" + dbName;
+        Properties info = new Properties();
+        info.setProperty("user", getConfiguration().get("DB_USER"));
+        info.setProperty("password", getConfiguration().get("DB_PWD"));
+        Connection connection = DriverManager.getConnection(url, info);
+        return connection;
     }
     
     public static FIConfiguration getConfiguration() {
