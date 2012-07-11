@@ -8,6 +8,12 @@ REACTOME_SOURCE_DB_NAME=reactome_41_plus_i
 DB_USER=root
 DB_PWD=macmysql01
 
+# This database name should be the same as the name used in funcIntHibernate.cfg.xml
+FI_DB_NAME=FI_2012
+
+# Used to dump databases
+MYSQLDUMP=/usr/local/mysql/bin/mysqldump
+
 # Two Gene expression data files
 LEE_GENE_EXP_FILE_SOURCE=${DATA_SET_DIR}/microarray/Pavlidis/GeneExpWith3FromPavlidis.txt
 LEE_GENE_EXP_FILE=${RESULT_DIR}/LeeGeneExp.txt
