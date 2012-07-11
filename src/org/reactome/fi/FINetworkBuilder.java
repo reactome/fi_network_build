@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Test;
 import org.reactome.b2rPostProcessor.NciPIDConverterRunner;
+import org.reactome.data.EncodeTFTargetToReactomeConverter;
 import org.reactome.data.EnsemblAnalyzer;
 import org.reactome.data.GODataAnalyzerV2;
 import org.reactome.data.IRefIndexMITTabAnalyzer;
@@ -20,7 +21,6 @@ import org.reactome.kegg.KeggToReactomeConverter;
 import org.reactome.panther.PantherToReactomeConverterTest;
 import org.reactome.psi.data.PsiMiOrthologyAnalyzer;
 import org.reactome.tred.TREDToReactomeConverter;
-import org.reactome.data.EncodeTFTargetToReactomeConverter;
 
 /**
  * This class groups a list of methods that should be run for building a new version of FI network.
@@ -263,6 +263,10 @@ public class FINetworkBuilder {
         PathwayGeneSetGenerator genesetGenerator = new PathwayGeneSetGenerator();
         logger.info("Running PathwayGeneSetGenerator.generateProteinNameToPathwayMap()...");
         genesetGenerator.generateProteinNameToPathwayMap();
+        // Dump MySQL databases to MyISAM types so that they can be loaded into the deployment machine
+        // or be backed up
+        MySQLDatabaseHandler dbHandler = new MySQLDatabaseHandler();
+        dbHandler.dumpDatabases();
     }
     
 }
