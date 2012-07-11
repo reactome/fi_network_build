@@ -51,9 +51,6 @@ import weka.core.Instances;
 public class FIDBBuilder extends HibernateFIPersistence {
     private final double CUT_OFF_VALUE = new Double(FIConfiguration.getConfiguration().get("CUT_OFF_VALUE"));
     
-    /**
-     * Default constructor
-     */
     public FIDBBuilder() {   
     }
     
