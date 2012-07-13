@@ -4,6 +4,8 @@
  */
 package org.reactome.fi;
 
+import java.io.File;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Test;
@@ -16,6 +18,8 @@ import org.reactome.data.MicroarrayDataAnalyzer;
 import org.reactome.data.PfamAnalyzer;
 import org.reactome.data.ReactomeAnalyzer;
 import org.reactome.data.UniProtAnalyzer;
+import org.reactome.fi.util.FIConfiguration;
+import org.reactome.fi.util.FileUtility;
 import org.reactome.hibernate.HibernateFIReader;
 import org.reactome.kegg.KeggToReactomeConverter;
 import org.reactome.panther.PantherToReactomeConverterTest;
@@ -267,6 +271,29 @@ public class FINetworkBuilder {
         // or be backed up
         MySQLDatabaseHandler dbHandler = new MySQLDatabaseHandler();
         dbHandler.dumpDatabases();
+        // Copy files needed by the plug-in web application
+        FIConfiguration config = FIConfiguration.getConfiguration();
+        String[] srcFileNames = new String[] {
+                config.get("GO_DIR") + "gene_association.goa_human",
+                config.get("GO_DIR") + "GO.terms_and_ids.txt",
+                config.get("KEGG_DIR") + "map_title.tab",
+                config.get("KEGG_HSA_KGML_DIR") + "hsa.list"
+        };
+        String[] targetNames = new String[] {
+                "gene_association.goa_human",
+                "GO.terms_and_ids.txt",
+                "kegg_map_title.tab",
+                "kegg_hsa.list"
+        };
+        FileUtility fu = new FileUtility();
+        logger.info("Copying files to the results directory ...");
+        for (int i = 0; i < srcFileNames.length; i++) {
+            String src = srcFileNames[i];
+            String dest = config.get("RESULT_DIR") + File.separator + targetNames[i];
+            logger.info("Copying " + src);
+            fu.copy(new File(src), 
+                    new File(dest));
+        }
     }
     
 }
