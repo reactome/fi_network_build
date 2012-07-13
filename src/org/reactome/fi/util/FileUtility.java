@@ -5,6 +5,7 @@
 package org.reactome.fi.util;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.util.*;
 
 /**
@@ -431,5 +432,23 @@ public class FileUtility {
         close();
         return set;
     }
-
+    
+    /**
+     * Copy a file.
+     * @param src
+     * @param dest
+     * @throws IOException
+     */
+    public void copy(File src, File dest) throws IOException {
+        if (!src.exists())
+            throw new IllegalArgumentException(src.getAbsolutePath() + " doesn't exist for copy!");
+        if (!dest.exists())
+            dest.createNewFile();
+        FileChannel sourceChannel = new FileInputStream(src).getChannel();
+        FileChannel destChannel = new FileOutputStream(dest).getChannel();
+        destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+        sourceChannel.close();
+        destChannel.close();
+    }
+    
 }
