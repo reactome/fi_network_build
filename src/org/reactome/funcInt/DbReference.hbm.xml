@@ -3,7 +3,8 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.reactome.funcInt">
-    <class name="DbReference" table="DbReference" batch-size="100">
+    <!-- Use all lower case table names to avoid case-senstive problem in Linux -->
+    <class name="DbReference" table="dbreference" batch-size="100">
         <id name="dbId" column="dbId">
             <generator class="native" />
         </id>

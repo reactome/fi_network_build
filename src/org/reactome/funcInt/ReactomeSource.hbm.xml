@@ -3,7 +3,7 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.reactome.funcInt">
-    <class name="ReactomeSource" table="ReactomeSource" batch-size="100">
+    <class name="ReactomeSource" table="reactomesource" batch-size="100">
         <id name="dbId" column="dbId">
             <generator class="native" />
         </id>

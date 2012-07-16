@@ -4,13 +4,13 @@
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.reactome.funcInt">
     <!-- For some unknown reason, Hibernate generates tables in lower cases under MacOS X -->
-    <class name="Interaction" table="Interaction" batch-size="100">
+    <class name="Interaction" table="interaction" batch-size="100">
         <id name="dbId" column="dbId">
             <generator class="native" />
         </id>
         <many-to-one name="firstProtein" column="firstProtein" cascade="persist"/>
         <many-to-one name="secondProtein" column="secondProtein" cascade="persist"/>
-        <set name="reactomeSources" table="InteractionReactomeSources" cascade="persist">
+        <set name="reactomeSources" table="interactionreactomesources" cascade="persist">
             <key column="interactionDbId" />
             <many-to-many column="reactomeSourceId" class="ReactomeSource" />
         </set>
