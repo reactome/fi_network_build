@@ -113,6 +113,9 @@ public class ReactomeFuncInteractionExtractor {
                 eventInteraction = (GKInstance) it.next();
                 interactors.clear();
                 if (eventInteraction.getSchemClass().isa(ReactomeJavaConstants.Interaction)) {
+                    String interactionType = (String) eventInteraction.getAttributeValue(ReactomeJavaConstants.interactionType);
+                    if (interactionType != null && interactionType.contains("missing interaction"))
+                        continue;
                     List interactorList = eventInteraction.getAttributeValuesList(ReactomeJavaConstants.interactor);
                     if (interactorList != null && interactorList.size() > 0) {
                         for (Iterator it1 = interactorList.iterator(); it1.hasNext();) {

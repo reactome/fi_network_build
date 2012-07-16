@@ -82,6 +82,10 @@ public class CPathAnalyzer extends PantherAnalyzer {
         Set<GKInstance> interactorSet = new HashSet<GKInstance>();
         for (Iterator it = eventInteractions.iterator(); it.hasNext();) {
             eventInteraction = (GKInstance) it.next();
+            // Avoid loading missing interactions
+            String interactionType = (String) eventInteraction.getAttributeValue(ReactomeJavaConstants.interactionType);
+            if (interactionType != null && interactionType.contains("missing interaction"))
+                continue;
             interactors = eventInteraction.getAttributeValuesList(ReactomeJavaConstants.interactor);
             if (interactors == null || interactors.size() == 0)
                 continue;
@@ -110,6 +114,8 @@ public class CPathAnalyzer extends PantherAnalyzer {
             // Load precedingEvent values
             SchemaClass cls = dba.getSchema().getClassByName(ReactomeJavaConstants.Interaction);
             SchemaAttribute att = cls.getAttribute(ReactomeJavaConstants.interactor);
+            dba.loadInstanceAttributeValues(reactions, att);
+            att = cls.getAttribute(ReactomeJavaConstants.interactionType);
             dba.loadInstanceAttributeValues(reactions, att);
             return reactions;
         }
