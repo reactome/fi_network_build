@@ -145,4 +145,84 @@
     <type name="colocalization" reverse="colocalization"
         direction="-" />
     <type name="Invitro" reverse="Invitro" direction="-" />
+        <!-- New types for the 2012 version -->
+    <type name="PPrel: indirect effect, phosphorylation" reverse="PPrel: indirect effect, phosphorylation"
+    direction="-" />
+    <type name="PPrel: activation, binding/association" reverse="PPrel: activated binding/association"
+        direction="->" />
+    <type name="PPrel: activation, indirect effect" reverse="PPrel: activated, indirect effect"
+        direction="->" />
+    <type name="ECrel: compound, activation, indirect effect"
+        reverse="ECrel: compound, activated, indirect effect"
+        direction="->" />
+    <type name="PPrel: activation, ubiquination" reverse="PPrel: activated, ubiquination"
+        direction="->" />
+    <type name="PPrel: missing interaction" reverse="PPrel: missing interaction"
+        direction="-" />
+    <type name="PCrel: activation, indirect effect" reverse="PCrel: activated, indirect effect"
+        direction="->" />
+    <type name="ECrel: activation" reverse="ECrel: activated"
+        direction="->" />
+    <type name="ECrel: compound, activation" reverse="ECrel: compound, activated"
+        direction="->" />
+    <type name="PCrel: inhibition, indirect effect" reverse="PCrel: inhibited, indirect effect"
+        direction="-|" />
+    <type name="GErel: expression, indirect effect" reverse="GErel: expression, indirect effect"
+        direction="->" />
+    <type name="PPrel: compound, inhibition" reverse="PPrel: compound, inhibited"
+        direction="-|" />
+    <type name="PPrel: compound, activation, indirect effect"
+        reverse="PPrel: compound, activated, indirect effect"
+        direction="->" />
+    <type name="PPrel: state change" reverse="PPrel: state change"
+        direction="-" />
+    <type name="PPrel: indirect effect" reverse="PPrel: indirect effect"
+        direction="-" />
+    <type name="GErel: repression, indirect effect" reverse="GErel: repressed, indirect effect"
+        direction="-|" />
+    <type name="PCrel: activation, binding/association" reverse="PCrel: activated, binding/association"
+        direction="->" />
+    <type name="PCrel: state change" reverse="PCrel: state change"
+        direction="-" />
+    <type name="PCrel: methylation" reverse="PCrel: methylation"
+        direction="-" />
+    <type name="PPrel: dissociation, missing interaction" reverse="PPrel: dissociation, missing interaction"
+        direction="-" />
+    <type name="PPrel: activation, phosphorylation, indirect effect"
+        reverse="PPrel: activated, phosphorylation, indirect effect"
+        direction="->" />
+    <type name="PPrel: activation, inhibition" reverse="PPrel: activation, inhibition"
+        direction="-" />
+    <type name="PPrel: inhibition, binding/association" reverse="PPrel: inhibited, binding/association"
+        direction="-|" />
+    <type name="PPrel: phosphorylation, indirect effect" reverse="PPrel: phosphorylation, indirect effect"
+        direction="-" />
+    <!-- missing interaction should not be listed in the FI network -->
+    <type name="PPrel: binding/association, missing interaction"
+        reverse="PPrel: binding/association, missing interaction"
+        direction="-" />
+    <type name="PCrel: missing interaction" reverse="PCrel: missing interaction"
+        direction="-" />
+    <type name="GErel: missing interaction" reverse="GErel: missing interaction"
+        direction="-" />
+    <type name="ECrel" reverse="ECrel" direction="-" />
+    <type name="PPrel: compound, activation, phosphorylation"
+        reverse="PPrel: compound, activated, phosphorylation"
+        direction="->" />
+    <type name="PCrel: indirect effect" reverse="PCrel: indirect effect"
+        direction="-" />
+    <type name="PPrel: compound, expression" reverse="PPrel: compound, expression"
+        direction="-" />
+    <type name="PCrel: binding/association, indirect effect"
+        reverse="PCrel: binding/association, indirect effect" direction="-" />
+    <type name="PCrel: dissociation" reverse="PCrel: dissociation"
+        direction="-" />
+    <type name="PPrel: compound, activation" reverse="PPrel: compound, activated"
+        direction="->" />
+    <type name="PPrel: inhibition, indirect effect" reverse="PPrel: inhibited, indirect effect"
+        direction="-|" />
+    <type name="PCrel: inhibition, dephosphorylation" reverse="PCrel: inhibited, dephosphorylation"
+        direction="-|" />
+    <type name="PPrel: binding/association, indirect effect"
+        reverse="PPrel: binding/association, indirect effect" direction="-" />
 </InteractionTypeMapper>

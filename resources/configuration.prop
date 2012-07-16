@@ -1,5 +1,6 @@
 # This is a configuration file. Make sure all directories and files are correct
-RESULT_DIR=results/2012
+YEAR=2012
+RESULT_DIR=results/${YEAR}
 # the data sets directory
 DATA_SET_DIR=datasets
 
@@ -9,7 +10,7 @@ DB_USER=root
 DB_PWD=macmysql01
 
 # This database name should be the same as the name used in funcIntHibernate.cfg.xml
-FI_DB_NAME=FI_2012
+FI_DB_NAME=FI_${YEAR}
 
 # Used to dump databases
 MYSQLDUMP=/usr/local/mysql/bin/mysqldump
@@ -124,3 +125,6 @@ HUMAN_PPIS_FROM_MOUSE_FILE=${RESULT_DIR}/HumanPPIsFromMouse031412.txt
 # The following propertied are used during NBC training
 ROC_CURVE_FILE=${RESULT_DIR}/ROC_100_071012.txt
 BP_DOMAIN_SHARED_PAIRS=${RESULT_DIR}/BP_Domain_Shared_Pairs.txt
+
+# Used for Reactome servlet configuration. Usually don't need to change
+SERVLET_CONFIG_FILE=${RESULT_DIR}/reactomedev.config.prop
