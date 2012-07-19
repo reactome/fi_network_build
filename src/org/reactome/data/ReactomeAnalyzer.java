@@ -75,7 +75,9 @@ public class ReactomeAnalyzer {
         tredAnalyzer.setDataSourceId(tredId);
         analyzers.add(tredAnalyzer);
 
-        TargetedInteractionAnalyzer encodeAnalyzer = new TargetedInteractionAnalyzer();
+        // Used a customized TargetedInteractionAnalyzer so that interactions in 
+        // from ENCODE can be filtered.
+        TargetedInteractionAnalyzer encodeAnalyzer = new EncodeInteractionAnalyzer();
         Long encodeId = fetchDatasourceId("ENCODE", dba);
         encodeAnalyzer.setDataSourceId(encodeId);
         analyzers.add(encodeAnalyzer);

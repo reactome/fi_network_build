@@ -124,6 +124,9 @@ public class ReactomeFuncInteractionExtractor {
                     }
                 }
                 else if (eventInteraction.getSchemClass().isa(ReactomeJavaConstants.TargettedInteraction)) {
+                    TargetedInteractionAnalyzer tiAnalyzer = (TargetedInteractionAnalyzer) analyzer;
+                    if (!tiAnalyzer.isNeededInteraction(eventInteraction))
+                        continue;
                     GKInstance factor = (GKInstance) eventInteraction.getAttributeValue(ReactomeJavaConstants.factor);
                     GKInstance target = (GKInstance) eventInteraction.getAttributeValue(ReactomeJavaConstants.target);
                     if (factor != null)

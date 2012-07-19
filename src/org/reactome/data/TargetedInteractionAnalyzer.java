@@ -49,6 +49,8 @@ public class TargetedInteractionAnalyzer extends CPathAnalyzer {
         Set<GKInstance> interactorSet = new HashSet<GKInstance>();
         for (Iterator it = eventInteractions.iterator(); it.hasNext();) {
             eventInteraction = (GKInstance) it.next();
+            if (!isNeededInteraction(eventInteraction))
+                continue;
             factor = (GKInstance) eventInteraction.getAttributeValue(ReactomeJavaConstants.factor);
             target = (GKInstance) eventInteraction.getAttributeValue(ReactomeJavaConstants.target);
             if (factor == null || target == null)
@@ -59,6 +61,16 @@ public class TargetedInteractionAnalyzer extends CPathAnalyzer {
             generateInteractions(interactorSet, interactions, eventInteraction);
         }
         return interactions;
+    }
+    
+    /**
+     * Check if a TargettedInteraction should be exported as a functional interaction. Default implementation
+     * always return true.
+     * @return
+     * @throws Exception
+     */
+    protected boolean isNeededInteraction(GKInstance interaction) throws Exception {
+        return true;
     }
     
     @Override
