@@ -11,19 +11,22 @@
         <property name="connection.url">jdbc:mysql://localhost:3306/FI_2012</property>
         <property name="connection.username">root</property>
         <property name="connection.password">macmysql01</property>
+        <property name="connection.autoReconnect">true</property>
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
         <!-- JDBC connection pool (use the built-in) -->
         <!-- property name="connection.pool_size">1</property -->
         <!-- Set up C3P0 connection pool -->
-        <property name="hibernate.c3p0.min_size">5</property>
-        <property name="hiberante.c3p0.max_size">20</property>
-        <property name="hibernate.c3p0.timeout">1800</property>
-        <property name="hibernate.c3p0.max_statements">50</property>
+        <property name="c3p0.min_size">2</property>
+        <property name="c3p0.max_size">4</property>
+        <property name="c3p0.timeout">1800</property>
+        <!--  property name="hibernate.c3p0.validate">true</property -->
+        <property name="c3p0.max_statements">50</property>
+        <property name="c3p0.acquire_increment">1</property> 
+        <property name="c3p0.idle_test_period">1800</property> <!-- seconds --> 
         <!-- handle the batch site -->
         <property name="hibernate.jdbc.batch_size">20</property>
         <!-- SQL dialect -->
         <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>
-        
         <!-- Set the lazy batch size -->
         <property name="hibernate.default_batch_fetch_size">500</property>
         <!-- Enable Hibernate's automatic session context management -->
@@ -34,20 +37,15 @@
 
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">false</property>
-        <property name="use_sql_comments">false</property>
+
         <!-- Drop and re-create the database schema on startup -->
-<!--         <property name="hbm2ddl.auto">create</property> -->
+        <!-- property name="hbm2ddl.auto">create</property -->
         
-        <mapping resource="org/reactome/funcInt/DbReference.hbm.xml" />        
         <mapping resource="org/reactome/funcInt/Protein.hbm.xml" />
         <mapping resource="org/reactome/funcInt/Evidence.hbm.xml" />
         <mapping resource="org/reactome/funcInt/ReactomeSource.hbm.xml" />
         <mapping resource="org/reactome/funcInt/Interaction.hbm.xml" />
-        
-        <!-- mapping resource="org/reactome/funcInt/MicroRNA.hbm.xml" />
-        <mapping resource="org/reactome/funcInt/MessengerRNA.hbm.xml" />
-        <mapping resource="org/reactome/funcInt/MiRNATargetScore.hbm.xml"/>
-        <mapping resource="org/reactome/funcInt/MiRNATargetInteraction.hbm.xml"/ -->
+        <mapping resource="org/reactome/funcInt/DbReference.hbm.xml" />
     </session-factory>
 
 </hibernate-configuration>
