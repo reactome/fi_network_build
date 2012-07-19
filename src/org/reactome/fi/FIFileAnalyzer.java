@@ -140,42 +140,77 @@ public class FIFileAnalyzer {
      * @throws IOException
      */
     @Test
-    public void checkSwissProtCoverage() throws IOException {
+    public void checkSwissProtCoverage() throws Exception {
         UniProtAnalyzer uniProtAnalyzer = new UniProtAnalyzer();
         // Need to use this map in case some UniProt accession numbers
         // used in pathways are not the first one!
         Map<String, String> map = uniProtAnalyzer.loadSwissProtIDsMap();
         Set<String> mapIds = new HashSet<String>(map.values());
         // There are three files that need to be check
-        String[] fileNames = new String[] {
-//                "FIInteractions73_021108_Pathway.txt",
-//                "FIInteractions73_021108_PPI.txt",
-//                "FIInteractions73_021108.txt"
-                "FI73_041408.txt"
-        };
-        for (String name : fileNames) {
-            System.out.println("File: " + name);
-            Set<String> interactions = fu.loadInteractions(FIConfiguration.getConfiguration().get("RESULT_DIR") + name);
-            System.out.println("Total interactions: " + interactions.size());
-            Set<String> totalIds = InteractionUtilities.grepIDsFromInteractions(interactions);
-            System.out.println("Total IDs: " + totalIds.size());
-            totalIds = removeSpliceIsoform(totalIds);
-            System.out.println("Remove isoforms: " + totalIds.size());
-            // 25205 is the total identifiers in HPRD and used as the total
-            // gene numbers
-            System.out.println("Total coverage: " + totalIds.size() / 25205.0);
-            // Check in other way
-            Set<String> tmpIds = new HashSet<String>();
-            for (String id : totalIds) {
-                String tmp = map.get(id);
-                if (tmp != null)
-                    tmpIds.add(tmp);
-            }
-            System.out.println("Swiss Prot Ids in FIs: " + tmpIds.size());
-            System.out.println("Swiss Coverage: " + tmpIds.size() + "/" + 
-                               mapIds.size() + "=" + (double)tmpIds.size() / mapIds.size());
-            System.out.println();
+        FIConfiguration config = FIConfiguration.getConfiguration();
+//        String[] fileNames = new String[] {
+////                "FIInteractions73_021108_Pathway.txt",
+////                "FIInteractions73_021108_PPI.txt",
+////                "FIInteractions73_021108.txt"
+////                "FI73_041408.txt"
+//                config.get("")
+//        };
+//        for (String name : fileNames) {
+//            checkSwissProtCoverage(map, 
+//                                   mapIds, 
+//                                   name);
+//        }
+        List<ReactomeAnalyzer> analyzers = ReactomeAnalyzer.getPathwayDBAnalyzers();
+        Set<String> totalFIs = new HashSet<String>();
+        for (ReactomeAnalyzer analyzer : analyzers) {
+            String sourceName = getDataSourceName(analyzer);
+            String fileName = config.get("RESULT_DIR") + "/FIs_" + sourceName + ".txt";
+            checkSwissProtCoverage(map, mapIds, fileName);
+//            if (sourceName.contains("ENCODE"))
+//                continue;
+            totalFIs.addAll(fu.loadInteractions(fileName));
         }
+        System.out.println("Total Pathway FIs: ");
+        checkSwissProtCoverage(map, mapIds, totalFIs);
+        String fileName = config.get("PREDICTED_FI_FILE");
+        Set<String> predictedFIs = fu.loadInteractions(fileName);
+        System.out.println("\nTotal predicted FIs:");
+        checkSwissProtCoverage(map, mapIds, predictedFIs);
+        System.out.println("\nTotal FIs:");
+        totalFIs.addAll(predictedFIs);
+        checkSwissProtCoverage(map, mapIds, totalFIs);
+    }
+
+    private void checkSwissProtCoverage(Map<String, String> map,
+                                        Set<String> mapIds, 
+                                        String fileName) throws IOException {
+        System.out.println("File: " + fileName);
+        Set<String> interactions = fu.loadInteractions(fileName);
+        checkSwissProtCoverage(map, mapIds, interactions);
+    }
+
+    private void checkSwissProtCoverage(Map<String, String> map,
+                                        Set<String> mapIds,
+                                        Set<String> interactions) {
+        System.out.println("Total interactions: " + interactions.size());
+        Set<String> totalIds = InteractionUtilities.grepIDsFromInteractions(interactions);
+        System.out.println("Total IDs: " + totalIds.size());
+        totalIds = removeSpliceIsoform(totalIds);
+        System.out.println("Remove isoforms: " + totalIds.size());
+        // 25205 is the total identifiers in HPRD and used as the total
+        // gene numbers
+        System.out.println("Total coverage: " + totalIds.size() / 25205.0);
+        // Check in other way
+        Set<String> tmpIds = new HashSet<String>();
+        for (String id : totalIds) {
+            String tmp = map.get(id);
+            if (tmp != null)
+                tmpIds.add(tmp);
+        }
+        System.out.println("Swiss Prot Ids in FIs: " + tmpIds.size());
+        System.out.println("Swiss Coverage: " + tmpIds.size() + "/" + 
+                           mapIds.size() + "=" + (double)tmpIds.size() / mapIds.size());
+        System.out.println();
     }
     
     private Set<String> removeSpliceIsoform(Set<String> ids) {
@@ -397,18 +432,26 @@ public class FIFileAnalyzer {
         for (ReactomeAnalyzer analyzer : analyzers) {
             Set<String> fis = analyzer.extractInteractionSet();
             Set<String> normalized = filters.normalizeProteinPairs(fis);
-            GKInstance dataSource = analyzer.getDataSource();
-            String sourceName = null;
-            if (dataSource == null)
-                sourceName = "Reactome";
-            else
-                sourceName = dataSource.getDisplayName();
+            String sourceName = getDataSourceName(analyzer);
             System.out.println("Done data source: " + sourceName);
             String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "/FIs_" + sourceName + ".txt";
             fu.saveInteractions(normalized, fileName);
             System.out.println();
         }
     }
+
+    private String getDataSourceName(ReactomeAnalyzer analyzer)
+            throws Exception {
+        GKInstance dataSource = analyzer.getDataSource();
+        String sourceName = null;
+        if (dataSource == null)
+            sourceName = "Reactome";
+        else
+            sourceName = dataSource.getDisplayName();
+        return sourceName;
+    }
+    
+    
     
     /**
      * Merge all pre-dumped pathway FI files into one: PathwayFIs????.txt.
@@ -419,12 +462,7 @@ public class FIFileAnalyzer {
         List<ReactomeAnalyzer> analyzers = ReactomeAnalyzer.getPathwayDBAnalyzers();
         Set<String> pathwayFIs = new HashSet<String>();
         for (ReactomeAnalyzer analyzer : analyzers) {
-            GKInstance dataSource = analyzer.getDataSource();
-            String sourceName = null;
-            if (dataSource == null)
-                sourceName = "Reactome";
-            else
-                sourceName = dataSource.getDisplayName();
+            String sourceName = getDataSourceName(analyzer);
             String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + "FIs_" + sourceName + ".txt";
             Set<String> fis = fu.loadInteractions(fileName);
             pathwayFIs.addAll(fis);
