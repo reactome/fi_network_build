@@ -17,6 +17,7 @@ import org.gk.model.InstanceUtilities;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.junit.Test;
+import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
 
@@ -333,6 +334,21 @@ public class ReactomeAnalyzerTopicHelper {
                          ratio);
         }
         fu.close();
+    }
+    
+    @Test
+    public void checkGenesInPathways() throws Exception {
+        String fileName = FIConfiguration.getConfiguration().get("GENE_TO_TOPIC");
+        FileUtility fu = new FileUtility();
+        Map<String, Set<String>> geneToPathways = fu.loadSetMap(fileName);
+        Map<String, Set<String>> pathwayToGenes = InteractionUtilities.switchKeyValues(geneToPathways);
+//        System.out.println("Total pathways: " + pathwayToGenes.size());
+        for (String pathway : pathwayToGenes.keySet()) {
+            if (!pathway.endsWith("(N)"))
+                continue;
+            Set<String> genes = pathwayToGenes.get(pathway);
+            System.out.println(pathway + "\t" + genes.size());
+        }
     }
     
 }

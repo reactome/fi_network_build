@@ -59,7 +59,10 @@ public class ReactomeAnalyzer {
         //analyzers.add(new INOHAnalyzer());
         List<Long> dataSourceIds = new ArrayList<Long>();
         Long sourceId = fetchDatasourceId("Pathway Interaction Database", dba);
-        dataSourceIds.add(sourceId);
+        ReactomeAnalyzer analyzer = new AnnotatedNCIPICAnalyzer();
+        analyzer.setDataSourceId(sourceId);
+        analyzers.add(analyzer);
+//        dataSourceIds.add(sourceId);
         sourceId = fetchDatasourceId("BioCarta - Imported by PID", dba);
         dataSourceIds.add(sourceId);
         sourceId = fetchDatasourceId("KEGG", dba);
