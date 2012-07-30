@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,6 +24,7 @@ import org.reactome.fi.ProteinAndInteractionCount;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
+import org.reactome.funcInt.DbReference;
 import org.reactome.funcInt.Evidence;
 import org.reactome.funcInt.Interaction;
 import org.reactome.funcInt.Protein;
@@ -35,6 +37,8 @@ import org.reactome.funcInt.ReactomeSource;
  *
  */
 public class HibernateFIReader extends HibernateFIPersistence {
+    private static final Logger logger = Logger.getLogger(HibernateFIReader.class);
+    
     private final Double CUT_OFF_VALUE = new Double(FIConfiguration.getConfiguration().get("CUT_OFF_VALUE"));
 
     public HibernateFIReader() {     
@@ -310,8 +314,12 @@ public class HibernateFIReader extends HibernateFIPersistence {
         // As of April 17, 2009, use geneName only
         String name1 = protein1.getShortName();
         String name2 = protein2.getShortName();
-        if (name1 == null || name2 == null)
+        if (name1 == null || name2 == null) {
+            logger.warn("Interaction " + interaction.getDbId()  + " cannot be converted to FI in Gene: " + 
+                         protein1.getPrimaryAccession() + " - " + protein2.getPrimaryAccession());
+            // Do some check
             return null;
+        }
         // Note: Make sure all names are in upper case!!!
         name1 = name1.toUpperCase();
         name2 = name2.toUpperCase();
