@@ -20,8 +20,10 @@ import org.reactome.data.ProteinIdFilters;
 import org.reactome.data.ReactomeAnalyzer;
 import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
+import org.reactome.fi.util.FeatureChecker;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
+import org.reactome.fi.util.PositiveChecker;
 import org.reactome.tred.TREDAnalyzer;
 
 /**
@@ -107,14 +109,14 @@ public class FIFileAnalyzer {
      * @return
      * @throws IOException
      */
-    public Set<String> loadFIs() throws IOException {
-        Set<String> fis = new HashSet<String>();
-        fis.addAll(loadPathwayFIs());
-        fis.addAll(loadTFTargetInteractions());
-        fis.addAll(loadPredictedFIs());
-        return fis;
-        //return fu.loadInteractions(FIConfiguration.getConfiguration().get("INTERACTION_FILE_NAME);
-    }
+//    public Set<String> loadFIs() throws IOException {
+//        Set<String> fis = new HashSet<String>();
+//        fis.addAll(loadPathwayFIs());
+//        fis.addAll(loadTFTargetInteractions());
+//        fis.addAll(loadPredictedFIs());
+//        return fis;
+//        //return fu.loadInteractions(FIConfiguration.getConfiguration().get("INTERACTION_FILE_NAME);
+//    }
     
     private Set<String> loadArtificalFIs() throws IOException {
         Set<String> fis = new HashSet<String>();
@@ -226,59 +228,59 @@ public class FIFileAnalyzer {
         return rtn;
     }
     
-    public Set<String> loadInteractionIds() throws IOException {
-        Set<String> fis = loadFIs();
-        return InteractionUtilities.grepIDsFromInteractions(fis);
-    }
+//    public Set<String> loadInteractionIds() throws IOException {
+//        Set<String> fis = loadFIs();
+//        return InteractionUtilities.grepIDsFromInteractions(fis);
+//    }
     
-    @Test
-    public void checkHumanIDsInFIs() throws IOException {
-        UniProtAnalyzer uniAnalyzer = new UniProtAnalyzer();
-        Map<String, String> uniProtIds = uniAnalyzer.loadUniProtIDsMap();
-        Set<String> uniSet = uniProtIds.keySet();
-        Set<String> fis = loadFIs();
-        int index = 0;
-        int totalFIs = 0;
-        int removeFIs = 0;
-        Set<String> idsFromHPRDOrNCBI = new HashSet<String>();
-        Set<String> removedIds = new HashSet<String>();
-        // Need to get alternative form out
-        for (String pair : fis) {
-            totalFIs ++;
-            index = pair.indexOf(" ");
-            String id1 = pair.substring(0, index);
-            String id2 = pair.substring(index + 1);
-            if (id1.matches("^[0-9]+")) {
-                idsFromHPRDOrNCBI.add(id1);
-            }
-            if (id2.matches("^[0-9]+"))
-                idsFromHPRDOrNCBI.add(id2);
-            index = id1.indexOf("-");
-            if (index > 0)
-                id1 = id1.substring(0, index);
-            index = id2.indexOf("-");
-            if (index > 0)
-                id2 = id2.substring(0, index);
-            // Check if id1 or id2 are numbers only: for NCBI or HPRD
-            if (!id1.matches("^[0-9]+") && !uniSet.contains(id1)) {
-                removedIds.add(id1);
-                removeFIs ++;
-                continue;
-            }
-            if (!id2.matches("^[0-9]+") && !uniSet.contains(id2)) {
-                removedIds.add(id2);
-                removeFIs ++;
-                continue;
-            }
-            // Otherwise, have to make sure they are from human UniProt IDs
-        }
-        System.out.println("Total FIs: " + totalFIs);
-        System.out.println("Remove FIs: " + removeFIs);
-        System.out.println("Total IDs from NCBI or HPRD: " + idsFromHPRDOrNCBI.size() + ": " + idsFromHPRDOrNCBI);
-        System.out.println("Removed Ids: " + removedIds.size());
-        for (String id : removedIds)
-            System.out.println(id);
-    }
+//    @Test
+//    public void checkHumanIDsInFIs() throws IOException {
+//        UniProtAnalyzer uniAnalyzer = new UniProtAnalyzer();
+//        Map<String, String> uniProtIds = uniAnalyzer.loadUniProtIDsMap();
+//        Set<String> uniSet = uniProtIds.keySet();
+//        Set<String> fis = loadFIs();
+//        int index = 0;
+//        int totalFIs = 0;
+//        int removeFIs = 0;
+//        Set<String> idsFromHPRDOrNCBI = new HashSet<String>();
+//        Set<String> removedIds = new HashSet<String>();
+//        // Need to get alternative form out
+//        for (String pair : fis) {
+//            totalFIs ++;
+//            index = pair.indexOf(" ");
+//            String id1 = pair.substring(0, index);
+//            String id2 = pair.substring(index + 1);
+//            if (id1.matches("^[0-9]+")) {
+//                idsFromHPRDOrNCBI.add(id1);
+//            }
+//            if (id2.matches("^[0-9]+"))
+//                idsFromHPRDOrNCBI.add(id2);
+//            index = id1.indexOf("-");
+//            if (index > 0)
+//                id1 = id1.substring(0, index);
+//            index = id2.indexOf("-");
+//            if (index > 0)
+//                id2 = id2.substring(0, index);
+//            // Check if id1 or id2 are numbers only: for NCBI or HPRD
+//            if (!id1.matches("^[0-9]+") && !uniSet.contains(id1)) {
+//                removedIds.add(id1);
+//                removeFIs ++;
+//                continue;
+//            }
+//            if (!id2.matches("^[0-9]+") && !uniSet.contains(id2)) {
+//                removedIds.add(id2);
+//                removeFIs ++;
+//                continue;
+//            }
+//            // Otherwise, have to make sure they are from human UniProt IDs
+//        }
+//        System.out.println("Total FIs: " + totalFIs);
+//        System.out.println("Remove FIs: " + removeFIs);
+//        System.out.println("Total IDs from NCBI or HPRD: " + idsFromHPRDOrNCBI.size() + ": " + idsFromHPRDOrNCBI);
+//        System.out.println("Removed Ids: " + removedIds.size());
+//        for (String id : removedIds)
+//            System.out.println(id);
+//    }
     
 //    public Map<String, Set<String>> loadIdToPartners() throws IOException {
 //        Map<String, Set<String>> map = new HashMap<String, Set<String>>();
@@ -488,23 +490,23 @@ public class FIFileAnalyzer {
      * @throws IOException
      */
     @Deprecated
-    public Set<String> loadPathwayFIs() throws IOException {
+    public Set<String> loadPathwayFIs() throws Exception {
         return loadPathwayFIsFromFiles();
 //        return fu.loadInteractions(pathwayFIFile);
     }
     
-    @Test
-    public void generateFIFiles() throws IOException {
-        Set<String> fis = loadPathwayAndTFTargetFIs();
-        // This file contains both pathways and TF/Target FIs.
-        fu.saveInteractions(fis, FIConfiguration.getConfiguration().get("RESULT_DIR") + "FIs_Pathway_043009.txt");
-        Set<String> predictedFIs = loadPredictedFIs();
-        fu.saveInteractions(predictedFIs, FIConfiguration.getConfiguration().get("RESULT_DIR") + "FIs_Predicted_043009.txt");
-        fis.addAll(predictedFIs);
-        fu.saveInteractions(fis, FIConfiguration.getConfiguration().get("RESULT_DIR") + "FIs_043009.txt");
-    }
+//    @Test
+//    public void generateFIFiles() throws Exception {
+//        Set<String> fis = loadPathwayAndTFTargetFIs();
+//        // This file contains both pathways and TF/Target FIs.
+//        fu.saveInteractions(fis, FIConfiguration.getConfiguration().get("RESULT_DIR") + "FIs_Pathway_043009.txt");
+//        Set<String> predictedFIs = loadPredictedFIs();
+//        fu.saveInteractions(predictedFIs, FIConfiguration.getConfiguration().get("RESULT_DIR") + "FIs_Predicted_043009.txt");
+//        fis.addAll(predictedFIs);
+//        fu.saveInteractions(fis, FIConfiguration.getConfiguration().get("RESULT_DIR") + "FIs_043009.txt");
+//    }
 
-    public Set<String> loadPathwayAndTFTargetFIs() throws IOException {
+    public Set<String> loadPathwayAndTFTargetFIs() throws Exception {
         // Pathway FIs
         Set<String> fis = loadPathwayFIsFromFiles();
         Set<String> tredFIs = loadTFTargetInteractions();
@@ -571,22 +573,188 @@ public class FIFileAnalyzer {
 
     /**
      * Load a set of pre-generated normalized pathway FIs from files.
+     * As of September, 2012, TF/Target interactions have been included
+     * in pathway FIs.
      * @return
      * @throws IOException
      */
-    public Set<String> loadPathwayFIsFromFiles() throws IOException {
-        String[] fileNames = new String[] {
-                FIConfiguration.getConfiguration().get("REACTOME_FI_FILE"),
-                FIConfiguration.getConfiguration().get("KEGG_FI_FILE"),
-                FIConfiguration.getConfiguration().get("NCI_PID_FI_FILE"),
-                FIConfiguration.getConfiguration().get("NCI_PID_BIOCARTA_FI_FILE"),
-                FIConfiguration.getConfiguration().get("PANTHER_FI_FILE")
-        };
+    public Set<String> loadPathwayFIsFromFiles() throws Exception {
+        List<ReactomeAnalyzer> analyzers = ReactomeAnalyzer.getPathwayDBAnalyzers();
+        FIConfiguration config = FIConfiguration.getConfiguration();
         Set<String> allFIs = new HashSet<String>();
-        for (String fileName : fileNames) {
+        for (ReactomeAnalyzer analyzer : analyzers) {
+            String sourceName = getDataSourceName(analyzer);
+            String fileName = config.get("RESULT_DIR") + "/FIs_" + sourceName + ".txt";
             Set<String> fis = fu.loadInteractions(fileName);
             allFIs.addAll(fis);
         }
         return allFIs;
+    }
+    
+    @Test
+    public void testLoadPathwayFIsFromFiles() throws Exception {
+        Set<String> pathwayFIs = loadPathwayFIsFromFiles();
+        System.out.println("Total pathway FIs: " + pathwayFIs.size());
+    }
+    
+    /**
+     * This method is used to compare two versions of FIs to see if predicted FIs have
+     * been confirmed by annotated FIs.
+     * @throws Exception
+     */
+    @Test
+    public void compareTwoVersionsOfFIs() throws Exception {
+        // Load current version of FIs
+        final Set<String> currentPathwayFIs = loadPathwayFIsFromFiles();
+        System.out.println("Current pathway FIs: " + currentPathwayFIs.size());
+        Set<String> currentPredictedFIs = loadPredictedFIs();
+        System.out.println("Current predicted FIs: " + currentPredictedFIs.size());
+        Set<String> currentFIs = new HashSet<String>(currentPathwayFIs);
+        currentFIs.addAll(currentPredictedFIs);
+        System.out.println("Total: " + currentFIs.size());
+        // Load previous version of FIs
+        String dirName = "/Users/gwu/Documents/EclipseWorkspace/caBigR3/results/v3/";
+        Set<String> previousPathwayFIs = fu.loadInteractions(dirName + "FIs_Pathway_043009.txt");
+        previousPathwayFIs = replaceSpaceWithTab(previousPathwayFIs);
+        System.out.println("\nPrevious pathway FIs: " + previousPathwayFIs.size());
+        Set<String> previousPredictedFIs = fu.loadInteractions(dirName + "FIs_Predicted_043009.txt");
+        previousPredictedFIs = replaceSpaceWithTab(previousPredictedFIs);
+        System.out.println("Previous predicted FIs: " + previousPredictedFIs.size());
+        Set<String> previousFIs = new HashSet<String>(previousPathwayFIs);
+        previousFIs.addAll(previousPredictedFIs);
+        System.out.println("Total: " + previousFIs.size());
+        // Check if previous pathway FIs have been contained by current FIs
+        Set<String> sharedFIs = InteractionUtilities.getShared(currentPathwayFIs, previousPathwayFIs);
+        double percent = (double) sharedFIs.size() / Math.min(currentPathwayFIs.size(), previousPathwayFIs.size());
+        System.out.println("\nShared pathway FIs: " + sharedFIs.size() + " (" + percent + ")");
+        sharedFIs = InteractionUtilities.getShared(currentPredictedFIs, previousPredictedFIs);
+        percent = (double) sharedFIs.size() / Math.min(currentPredictedFIs.size(), previousPredictedFIs.size());
+        System.out.println("Shared predicted FIs: " + sharedFIs.size() + " (" + percent + ")");
+        sharedFIs = InteractionUtilities.getShared(currentFIs, previousFIs);
+        percent = (double) sharedFIs.size() / Math.min(currentFIs.size(), previousFIs.size());
+        System.out.println("Shared total FIs: " + sharedFIs.size() + " (" + percent + ")");
+        
+        // Check sharing for predictedFIs
+        checkFeaturesInPathwayFIs(currentPathwayFIs,
+                                  previousPathwayFIs,
+                                  previousPredictedFIs,
+                                  "Previous predicted FIs");
+        
+        Set<String> carlosGeneExp = fu.loadInteractions(dirName + "CarlosCoExp_Norm.txt");
+        carlosGeneExp = replaceSpaceWithTab(carlosGeneExp);
+        checkFeaturesInPathwayFIs(currentPathwayFIs, 
+                                  previousPathwayFIs,
+                                  carlosGeneExp, 
+                                  "Carlos Gene Expression");
+        
+        Set<String> pavlidisGeneExp = fu.loadInteractions(dirName + "PavlidisCoExp_Norm.txt");
+        pavlidisGeneExp = replaceSpaceWithTab(pavlidisGeneExp);
+        checkFeaturesInPathwayFIs(currentPathwayFIs, 
+                                  previousPathwayFIs, 
+                                  pavlidisGeneExp, 
+                                  "Pavlidis Gene Expression");
+        
+        // Check for old version of human PPIs
+        Set<String> humanPPIs = new HashSet<String>();
+        String fileName = dirName + "HumanPPIs_Less4_intact.txt";
+        humanPPIs.addAll(fu.loadInteractions(fileName));
+        fileName = dirName + "HumanPPIs_BioGrid.txt";
+        humanPPIs.addAll(fu.loadInteractions(fileName));
+        fileName = dirName + "HumanPPIs_HPRD.txt";
+        humanPPIs.addAll(fu.loadInteractions(fileName));
+        humanPPIs = replaceSpaceWithTab(humanPPIs);
+        checkFeaturesInPathwayFIs(currentPathwayFIs, 
+                                  previousPathwayFIs,
+                                  humanPPIs,
+                                  "Previous Human PPIs");
+        
+        Set<String> sharedHumanPPIsAndPrePredictedFIs = InteractionUtilities.getShared(humanPPIs, previousFIs);
+        checkFeaturesInPathwayFIs(currentPathwayFIs, 
+                                  previousPathwayFIs, 
+                                  sharedHumanPPIsAndPrePredictedFIs, 
+                                  "Shared Human PPIs and Previous Predicted FIs");
+        
+        Set<String> flyPPIs = fu.loadInteractions(dirName + "humanPPIsFromFlyInUniProt_Norm.txt");
+        flyPPIs = replaceSpaceWithTab(flyPPIs);
+        checkFeaturesInPathwayFIs(currentPathwayFIs,
+                                  previousPathwayFIs,
+                                  flyPPIs,
+                                  "Previous Fly PPIs");
+
+        Set<String> wormPPIs = fu.loadInteractions(dirName + "humanPPIsFromWormInUniProt_Norm.txt");
+        wormPPIs = replaceSpaceWithTab(wormPPIs);
+        checkFeaturesInPathwayFIs(currentPathwayFIs,
+                                  previousPathwayFIs,
+                                  wormPPIs,
+                                  "Previous Worm PPIs");
+        
+        Set<String> yeastPPIs = fu.loadInteractions(dirName + "humanPPIsFromYeastInUniProt_Norm.txt");
+        yeastPPIs = replaceSpaceWithTab(yeastPPIs);
+        checkFeaturesInPathwayFIs(currentPathwayFIs,
+                                  previousPathwayFIs,
+                                  yeastPPIs,
+                                  "Previous Yeast PPIs");
+        
+        // Check for PPIs using the current version: actually it will be better to use the old version
+        humanPPIs = fu.loadInteractions(FIConfiguration.getConfiguration().get("IREFINDEX_HUMAN_PPI_FILE"));
+        checkFeaturesInPathwayFIs(currentPathwayFIs, 
+                                  previousPathwayFIs,
+                                  humanPPIs, 
+                                  "Current human PPIs");
+        
+//        previousPredictedFIs.removeAll(sharedFIs);
+//        System.out.println("\nNot shared predicted FIs in previous:");
+//        Iterator<String> it = previousPredictedFIs.iterator(); 
+//        
+//        // Check with current NBC
+//        NBCAnalyzer nbcAnalyzer = new NBCAnalyzer();
+//        NaiveBayesClassifier classifier = nbcAnalyzer.loadSavedNBC();
+//        // Get pairs from all features
+//        Set<String> allPairs = nbcAnalyzer.loadPairForPrediction();
+//        FeatureHandlerForV3 featureHandler = new FeatureHandlerForV3();
+//        Map<String, PositiveChecker> featureToChecker = featureHandler.loadFeatureToChecker();
+//        for (int i = 0; i < 100; i++) {
+//            String fi = it.next();
+//            System.out.println(fi);
+//            Double score = classifier.calculateScore(fi, featureToChecker);
+//            System.out.println("Score: " + score);
+//        }
+    }
+
+    public void checkFeaturesInPathwayFIs(final Set<String> currentPathwayFIs,
+                                          Set<String> previousPathwayFIs,
+                                          Set<String> humanPPIs,
+                                          String featureName) {
+        Set<String> sharedFIs;
+        double percent;
+        System.out.println("\nChecking " + featureName);
+        System.out.println("Total pairs: " + humanPPIs.size());
+        humanPPIs.removeAll(previousPathwayFIs);
+        System.out.println("After removing old pathwayFIs: " + humanPPIs.size());
+        sharedFIs = InteractionUtilities.getShared(humanPPIs, currentPathwayFIs);
+        percent = (double) sharedFIs.size() / humanPPIs.size();
+        System.out.println("Pairs in current pathway FIs: " + sharedFIs.size() + " (" + percent + ")");
+        
+        FeatureChecker featureChecker = new FeatureChecker();
+        PositiveChecker positiveChecker = new PositiveChecker() {
+            
+            @Override
+            public boolean isPositive(String pair) {
+                return currentPathwayFIs.contains(pair);
+            }
+        };
+        featureChecker.checkFeatureOddsRatio(humanPPIs, positiveChecker);
+    }
+    
+    private Set<String> replaceSpaceWithTab(Set<String> fis) {
+        Set<String> rtn = new HashSet<String>();
+        for (String fi : fis) {
+            int index = fi.indexOf(" ");
+            if (index > 0)
+                rtn.add(fi.substring(0, index) + "\t" + fi.substring(index + 1));
+            else
+                rtn.add(fi);
+        }
+        return rtn;
     }
 }
