@@ -971,29 +971,29 @@ public class HibernateFIReader extends HibernateFIPersistence {
         session.close();
     }
     
-    @Test
-    public void checkProteins() throws Exception {
-        initSession();
-        Session session = sessionFactory.openSession();
-        Query query = session.createQuery("FROM Protein");
-        List list = query.list();
-        Set<String> dbAccs = new HashSet<String>();
-        for (Iterator it = list.iterator(); it.hasNext();) {
-            Protein protein = (Protein) it.next();
-            dbAccs.add(protein.getPrimaryAccession());
-        }
-        session.close();
-        System.out.println("Total db accessions: " + dbAccs.size());
-        // Get proteins from the local files
-        Set<String> localFIs = new FIFileAnalyzer().loadFIs();
-        Set<String> localAccs = InteractionUtilities.grepIDsFromInteractions(localFIs);
-        System.out.println("Total local accessions: " + localAccs.size());
-        Set<String> localCopy = new HashSet<String>(localAccs);
-        localCopy.removeAll(dbAccs);
-        System.out.println("Accession in local but not in db: " + localCopy);
-        dbAccs.removeAll(localAccs);
-        System.out.println("Accession in db but not in local: " + dbAccs);
-    }
+//    @Test
+//    public void checkProteins() throws Exception {
+//        initSession();
+//        Session session = sessionFactory.openSession();
+//        Query query = session.createQuery("FROM Protein");
+//        List list = query.list();
+//        Set<String> dbAccs = new HashSet<String>();
+//        for (Iterator it = list.iterator(); it.hasNext();) {
+//            Protein protein = (Protein) it.next();
+//            dbAccs.add(protein.getPrimaryAccession());
+//        }
+//        session.close();
+//        System.out.println("Total db accessions: " + dbAccs.size());
+//        // Get proteins from the local files
+//        Set<String> localFIs = new FIFileAnalyzer().loadFIs();
+//        Set<String> localAccs = InteractionUtilities.grepIDsFromInteractions(localFIs);
+//        System.out.println("Total local accessions: " + localAccs.size());
+//        Set<String> localCopy = new HashSet<String>(localAccs);
+//        localCopy.removeAll(dbAccs);
+//        System.out.println("Accession in local but not in db: " + localCopy);
+//        dbAccs.removeAll(localAccs);
+//        System.out.println("Accession in db but not in local: " + dbAccs);
+//    }
     
     @Test
     public void checkEvidences() throws Exception {

@@ -129,8 +129,8 @@ public class FeatureChecker {
      * @param interactionSet
      * @param ppis
      */
-    private void checkFeatureOddsRatio(Set<String> interactionSet,
-                                       PositiveChecker posChecker) {
+    public void checkFeatureOddsRatio(Set<String> interactionSet,
+                                      PositiveChecker posChecker) {
         int tp = 0;
         for (String fi : interactionSet) {
             // No need to check isoforms!!!

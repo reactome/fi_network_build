@@ -117,6 +117,7 @@ public class NaiveBayesClassifier implements Serializable {
             // Get this feature value from value
             PositiveChecker checker = featureToChecker.get(feature);
             Boolean featureValue = checker.isPositive(pair);
+//            System.out.println(feature + " -> " + featureValue);
             if (featureValue != null && featureValue.booleanValue()) {
                 posKey = feature + "_true|true";
                 negKey = feature + "_true|false";
