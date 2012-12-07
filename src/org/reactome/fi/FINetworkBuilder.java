@@ -81,6 +81,17 @@ public class FINetworkBuilder {
         logger.info("Running TREDToReactomeConverter.doConvert()...");
         tredConverter.doConvert();
 
+        // Gene expressions have been used as support evidences for TF/Target interactions
+        // from ENCODE. So have to call these methods first in order to get co-expression
+        // values
+        // These two methods will be called again in method prepareNBCFeatures(). The results
+        // should be the same!
+        MicroarrayDataAnalyzer microarrayAnalyzer = new MicroarrayDataAnalyzer();
+        logger.info("Running MicroarrayDataAnalyzer.normalizeLeeGeneExp()...");
+        microarrayAnalyzer.normalizeLeeGeneExp();
+        logger.info("Running MicroarrayDataAnalyzer.generatePrietoCarlosGeneExpFile()...");
+        microarrayAnalyzer.generatePrietoCarlosGeneExpFile();
+        
         logger.info("Running EncodeTFTargetToReactomeConverter.convert()...");
         new EncodeTFTargetToReactomeConverter().convert();
 
