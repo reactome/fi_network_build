@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
@@ -49,6 +50,7 @@ import weka.core.Instances;
  *
  */
 public class FIDBBuilder extends HibernateFIPersistence {
+    private static final Logger logger = Logger.getLogger(FIDBBuilder.class);
     private final double CUT_OFF_VALUE = new Double(FIConfiguration.getConfiguration().get("CUT_OFF_VALUE"));
     
     public FIDBBuilder() {   
@@ -82,13 +84,14 @@ public class FIDBBuilder extends HibernateFIPersistence {
         ReactomeFuncInteractionExtractor extractor = new ReactomeFuncInteractionExtractor();
         List<ReactomeAnalyzer> analyzerList = ReactomeAnalyzer.getPathwayDBAnalyzers();
         for (ReactomeAnalyzer a : analyzerList) {
+            logger.info("Extract interactions from " + a.getDataSource().getDisplayName() + "...");
             extractor.setReactomeAnalyzer(a);
             extractor.extractFuncInteractions();
         }
         List<Interaction> interactions = extractor.getExtractedInteractions();
-        System.out.println("total interactions: " + interactions.size());
+        logger.info("total interactions: " + interactions.size());
         long time2 = System.currentTimeMillis();
-        System.out.println("Total time to extract: " + (time2 - time1));
+        logger.info("Total time to extract: " + (time2 - time1));
         initSession();
         Session session = sessionFactory.getCurrentSession();
         Transaction tx = null;
@@ -109,7 +112,7 @@ public class FIDBBuilder extends HibernateFIPersistence {
             throw e; // rethrow the exception to be caught by the caller.
         }
         long time3 = System.currentTimeMillis();
-        System.out.println("Total time for saving: " + (time3 - time2));
+        logger.info("Total time for saving: " + (time3 - time2));
     }
     
     /**
