@@ -5,6 +5,9 @@
 package org.reactome.fi;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,7 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
+import org.gk.model.ReactomeJavaConstants;
+import org.gk.persistence.MySQLAdaptor;
+import org.gk.persistence.MySQLAdaptor.QueryRequest;
 import org.junit.Test;
 import org.reactome.data.ProteinIdFilters;
 import org.reactome.data.ReactomeAnalyzer;
@@ -28,6 +35,7 @@ import org.reactome.kegg.KeggAnalyzer;
  *
  */
 public class PathwayGeneSetGenerator {
+    private static Logger logger = Logger.getLogger(PathwayGeneSetGenerator.class);
     private FileUtility fu = new FileUtility();
     
     public PathwayGeneSetGenerator() {
@@ -49,38 +57,50 @@ public class PathwayGeneSetGenerator {
         ProteinIdFilters filters = new ProteinIdFilters();
         for (ReactomeAnalyzer analyzer : analyzers) {
             String source = ReactomeAnalyzer.getSourceLetter(analyzer);
-            System.out.println("Source: " + source);
+            logger.info("Source: " + source);
             Map<GKInstance, Set<String>> topic2Ids = analyzer.grepIDsFromTopics();
-            for (Iterator<GKInstance> it = topic2Ids.keySet().iterator(); 
-                 it.hasNext();) {
-                GKInstance topic = it.next();
-                Set<String> ids = topic2Ids.get(topic);
-                System.out.println(topic + "(" + source + ")");
-                System.out.println("Before filtering: " + ids.size());
-                ids = filters.filter(ids);
-                System.out.println("After filtering: " + ids.size());
-                if (ids.size() < 10) {
-                    // Remove these small pathways
-                    System.out.println("Size is too small: " + ids.size());
-                    continue; 
-                }
-                for (String id : ids) {
-                    Set<String> topicNames = id2Topics.get(id);
-                    if (topicNames == null) {
-                        topicNames = new HashSet<String>();
-                        id2Topics.put(id, topicNames);
-                    }
-                    topicNames.add(topic.getDisplayName() + "(" + source + ")");
-                }
-            }
+            generateIdToTopicMap(id2Topics, 
+                                 filters,
+                                 topic2Ids,
+                                 source);
         }
         // Output this map
-        FileUtility fu = new FileUtility();
         fu.saveSetMap(id2Topics,
                       FIConfiguration.getConfiguration().get("PROTEIN_ID_TO_TOPIC"));
 //        fu.saveSetMapInSort(id2Topics, "Test.txt");
 //        id2Topics = fu.loadSetMap(R3Constants.PROTEIN_ID_TO_TOPIC);
 //        fu.saveSetMapInSort(id2Topics, "Test1.txt");
+    }
+
+    private void generateIdToTopicMap(Map<String, Set<String>> id2Topics,
+                                      ProteinIdFilters filters,
+                                      Map<GKInstance, Set<String>> topic2Ids,
+                                      String source) throws Exception {
+        for (Iterator<GKInstance> it = topic2Ids.keySet().iterator(); 
+             it.hasNext();) {
+            GKInstance topic = it.next();
+            Set<String> ids = topic2Ids.get(topic);
+            logger.info(topic + "(" + source + ")");
+            logger.info("Before filtering: " + ids.size());
+            ids = filters.filter(ids);
+            logger.info("After filtering: " + ids.size());
+            if (ids.size() < 10) {
+                // Remove these small pathways
+                logger.info("Size is too small: " + ids.size());
+                continue; 
+            }
+            for (String id : ids) {
+                Set<String> topicNames = id2Topics.get(id);
+                if (topicNames == null) {
+                    topicNames = new HashSet<String>();
+                    id2Topics.put(id, topicNames);
+                }
+                if (source == null)
+                    topicNames.add(topic.getDisplayName());
+                else
+                    topicNames.add(topic.getDisplayName() + "(" + source + ")");
+            }
+        }
     }
     
     /**
@@ -91,6 +111,13 @@ public class PathwayGeneSetGenerator {
     @Test
     public void generateNameToTopicMap() throws Exception {
         Map<String, Set<String>> idToTopics = fu.loadSetMap(FIConfiguration.getConfiguration().get("PROTEIN_ID_TO_TOPIC"));
+        String fileName = FIConfiguration.getConfiguration().get("GENE_TO_TOPIC");
+        
+        generateNameToTopicMap(idToTopics, fileName);
+    }
+
+    private void generateNameToTopicMap(Map<String, Set<String>> idToTopics,
+                                        String fileName) throws Exception, IOException {
         HibernateFIReader hibernateAnalyzer = new HibernateFIReader();
         Map<String, String> idToNames = hibernateAnalyzer.generateAccessionToProteinNames();
         Map<String, Set<String>> nameToTopics = new HashMap<String, Set<String>>();
@@ -111,7 +138,7 @@ public class PathwayGeneSetGenerator {
 //        fu.saveSetMap(nameToTopics, 
 //                      R3Constants.RESULT_DIR + "ProteinNameToTopics080410.txt");
         fu.saveSetMap(nameToTopics,
-                      FIConfiguration.getConfiguration().get("GENE_TO_TOPIC"));
+                      fileName);
     }
     
     /**
@@ -133,4 +160,45 @@ public class PathwayGeneSetGenerator {
         tempFile.delete();
     }
     
+    /**
+     * This method is used to generate gene name to pathway map for all pathways in the Reactome
+     * database.
+     */
+    @Test
+    public void generateReactomeGeneToPathwayMap() throws Exception {
+        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
+        MySQLAdaptor dba = (MySQLAdaptor) reactomeAnalyzer.getMySQLAdaptor();
+        // Got all human pathways
+        // This is humna DB_ID
+        Long humanDbId = 48887L;
+        GKInstance human = dba.fetchInstance(humanDbId);
+        List<QueryRequest> query = new ArrayList<MySQLAdaptor.QueryRequest>();
+        query.add(dba.createAttributeQueryRequest(ReactomeJavaConstants.Pathway,
+                                                  ReactomeJavaConstants.species, 
+                                                  "=",
+                                                  human));
+        query.add(dba.createAttributeQueryRequest(ReactomeJavaConstants.Pathway, 
+                                                  ReactomeJavaConstants.dataSource, 
+                                                  "IS NULL", 
+                                                  null));
+        @SuppressWarnings("unchecked")
+        Collection<GKInstance> pathways = dba.fetchInstance(query);
+        logger.info("Total human pathways: " + pathways.size());
+        // Get a map from protein ids to topics (pathways)
+        Map<String, Set<String>> id2Topics = new HashMap<String, Set<String>>();
+        ProteinIdFilters filters = new ProteinIdFilters();
+        Map<GKInstance, Set<String>> topic2Ids = reactomeAnalyzer.grepIDsFromTopics(pathways);
+        generateIdToTopicMap(id2Topics, 
+                             filters,
+                             topic2Ids,
+                             null);
+        // Output this map
+        String fileName = "tmp/ReactomeProteinIdToPathway_111413.txt";
+        fu.saveSetMap(id2Topics,
+                      fileName);
+        
+        // Convert UniProt ids to gene names
+        fileName = "tmp/ReactomeGeneToPathway_111413.txt";
+        generateNameToTopicMap(id2Topics, fileName);
+    }
 }

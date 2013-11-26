@@ -120,7 +120,7 @@ public class ReactomeAnalyzer {
         this.dba = dba;
     }
     
-    protected PersistenceAdaptor getMySQLAdaptor() throws Exception {
+    public PersistenceAdaptor getMySQLAdaptor() throws Exception {
         if (dba == null) {
 //            dba = new MySQLAdaptor("localhost",
 //                                   "gk_central_101606",//"panther_from_david", 
@@ -176,7 +176,6 @@ public class ReactomeAnalyzer {
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     public Map<GKInstance, Set<String>> grepInteractionsForTopics() throws Exception {
         Map<GKInstance, Set<String>> topicToInteraction = new HashMap<GKInstance, Set<String>>();
         List<GKInstance> topics = getTopics();
@@ -274,9 +273,13 @@ public class ReactomeAnalyzer {
     }
     
     public Map<GKInstance, Set<String>> grepIDsFromTopics() throws Exception {
-        long time1 = System.currentTimeMillis();
         List<GKInstance> topics = getTopics();
+        return grepIDsFromTopics(topics);
+    }
+
+    public Map<GKInstance, Set<String>> grepIDsFromTopics(Collection<GKInstance> topics) throws Exception {
         // Try to get ids for each topics
+        long time1 = System.currentTimeMillis();
         Map<GKInstance, Set<String>> topics2Ids = new HashMap<GKInstance, Set<String>>();
         for (GKInstance topic : topics) {
             System.out.println("Topic: " + topic);
@@ -338,8 +341,8 @@ public class ReactomeAnalyzer {
         return reactions;
     }
     
-    @SuppressWarnings("unchecked")
-    protected void extractInteractorsFromReaction(GKInstance rxn, 
+    @SuppressWarnings("rawtypes")
+    public void extractInteractorsFromReaction(GKInstance rxn, 
                                                   Set<GKInstance> interactors) throws Exception {
         List input = rxn.getAttributeValuesList(ReactomeJavaConstants.input);
         if (input != null)
@@ -589,7 +592,8 @@ public class ReactomeAnalyzer {
         return interactions;
     }
     
-    protected void grepComplexComponents(GKInstance complex, Set<GKInstance> interactors) throws Exception {
+    @SuppressWarnings("rawtypes")
+    public void grepComplexComponents(GKInstance complex, Set<GKInstance> interactors) throws Exception {
         Set<GKInstance> current = new HashSet<GKInstance>();
         current.add(complex);
         Set<GKInstance> next = new HashSet<GKInstance>();
@@ -629,9 +633,16 @@ public class ReactomeAnalyzer {
         }
     }
     
-    protected void generateInteractionsWithDBNames(Set<GKInstance> interactors,
-                                                   Set<String> interactions,
-                                                   GKInstance source) throws Exception {
+    /**
+     * Generate interactions from the passed interactions into interactions as strings.
+     * @param interactors
+     * @param interactions
+     * @param source
+     * @throws Exception
+     */
+    public void generateInteractionsWithDBNames(Set<GKInstance> interactors,
+                                                Set<String> interactions,
+                                                GKInstance source) throws Exception {
         List<GKInstance> list = new ArrayList<GKInstance>(interactors);
         int size = list.size();
         for (int i = 0; i < size - 1; i++) {
