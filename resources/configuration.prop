@@ -42,7 +42,7 @@ PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_071012.txt
 REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways071012.txt
 # Gene sets based on pathways
 PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic0710112.txt
-GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics071012.txt
+GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics072512.txt
 
 CUT_OFF_VALUE=0.50d
 PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_071012.txt
