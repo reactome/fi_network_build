@@ -5,8 +5,10 @@
 package org.reactome.tred;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.gk.model.GKInstance;
@@ -38,33 +40,32 @@ public class TREDToReactomePostProcessor extends PostProcessTemplate {
     }
     
     @Override
+    @SuppressWarnings("unchecked")
     protected void processEWAS(MySQLAdaptor dbAdaptor,
                                XMLFileAdaptor fileAdaptor) throws Exception {
         Set<String> unmapped = new HashSet<String>();
-
+        // Preload these instances to avoid slow SQL queries for quick performance
+        GKInstance human = dbAdaptor.fetchInstance(HOMO_SAPIENS_ID);
+        Collection<GKInstance> refGeneProducts = dbAdaptor.fetchInstanceByAttribute(ReactomeJavaConstants.ReferenceGeneProduct, 
+                                                                                    ReactomeJavaConstants.species,
+                                                                                    "=",
+                                                                                    human);
+        dbAdaptor.loadInstanceAttributeValues(refGeneProducts, new String[]{ReactomeJavaConstants.geneName,
+                                                                            ReactomeJavaConstants.identifier});
+        // Create a map for quick mapping
+        Map<String, GKInstance> geneNameToRefGeneProd = new HashMap<String, GKInstance>();
+        for (GKInstance refGeneProd : refGeneProducts) {
+            List<String> geneNames = refGeneProd.getAttributeValuesList(ReactomeJavaConstants.geneName);
+            for (String geneName : geneNames) {
+                geneNameToRefGeneProd.put(geneName, refGeneProd);
+            }
+        }
         // Fetch RefPepSeq from the database and link it to EWAS based on gene names.
         Collection<GKInstance> ewases = fileAdaptor.fetchInstancesByClass(ReactomeJavaConstants.EntityWithAccessionedSequence);
         for (GKInstance ewas : ewases) {
             String geneName = ewas.getDisplayName();
-            Collection<GKInstance> refGeneProds = dbAdaptor.fetchInstanceByAttribute(ReactomeJavaConstants.ReferenceGeneProduct,
-                                                                                     ReactomeJavaConstants.geneName, 
-                                                                                     "=",
-                                                                                     geneName);
-
-            if (refGeneProds == null || refGeneProds.size() == 0) {
-                unmapped.add(geneName);
-                logger.warn(geneName + " for EWAS " + ewas.getDBID() + " cannot be mapped to UniProt!");
-                continue;
-            }
-            GKInstance refGeneProd = null;
-            // Have to make sure GKInstance should be from human only. There are many different species in the database now
-            for (GKInstance refGeneProd1 : refGeneProds) {
-                GKInstance species = (GKInstance) refGeneProd1.getAttributeValue(ReactomeJavaConstants.species);
-                if (species != null && species.getDBID().equals(HOMO_SAPIENS_ID)) {
-                    refGeneProd = refGeneProd1;
-                    break;
-                }
-            }
+            // Just do a simple search
+            GKInstance refGeneProd = geneNameToRefGeneProd.get(geneName);
             if (refGeneProd == null) {
                 unmapped.add(geneName);
                 logger.warn(geneName + " for EWAS " + ewas.getDBID() + " cannot be mapped to UniProt!");
@@ -80,7 +81,7 @@ public class TREDToReactomePostProcessor extends PostProcessTemplate {
             ewas.setAttributeValue(ReactomeJavaConstants.referenceEntity, 
                                    refPepSeq);
         }
-        System.out.println("Total unmapped names: " + unmapped.size());
+        logger.info("Total unmapped names: " + unmapped.size());
     }
     
     @Override
