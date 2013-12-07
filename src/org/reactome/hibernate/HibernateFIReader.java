@@ -24,7 +24,6 @@ import org.reactome.fi.ProteinAndInteractionCount;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
-import org.reactome.funcInt.DbReference;
 import org.reactome.funcInt.Evidence;
 import org.reactome.funcInt.Interaction;
 import org.reactome.funcInt.Protein;
@@ -1010,7 +1009,7 @@ public class HibernateFIReader extends HibernateFIPersistence {
     }
     
     @Test
-    public void checkInterction() throws Exception {
+    public void checkInteraction() throws Exception {
         initSession();
         Session session = sessionFactory.openSession();
         Interaction interaction = (Interaction) session.load(Interaction.class, new Long(169934));
@@ -1030,6 +1029,29 @@ public class HibernateFIReader extends HibernateFIPersistence {
         System.out.println("PFam Domain Int: " + evidence.getPfamDomainInt());
         System.out.println("Score: " + evidence.getProbability());
         session.close();
+    }
+    
+    @Test
+    public void checkPantherInteractions() throws Exception {
+        initSession();
+        Session session = sessionFactory.openSession();
+        // Check how many unique FIs extracted from Panther
+        Query query = session.createQuery("FROM Interaction");
+        @SuppressWarnings("unchecked")
+        List<Interaction> interactions = query.list();
+        int total = 0;
+        for (Interaction interaction : interactions) {
+            Set<ReactomeSource> sources = interaction.getReactomeSources();
+            if (sources == null || sources.size() == 0)
+                continue;
+            if (sources.size() == 1) {
+                ReactomeSource source = sources.iterator().next();
+                if (source.getDataSource().equals("pantherdb"))
+                    total ++;
+            }
+        }
+        session.close();
+        System.out.println("Interactions extracted only from Panther: " + total);
     }
     
     @Test
