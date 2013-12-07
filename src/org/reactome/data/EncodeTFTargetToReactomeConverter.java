@@ -68,7 +68,7 @@ public class EncodeTFTargetToReactomeConverter {
     }
     
     /**
-     * Use this method to attach supporting evidneces to ENCODE TargettedInteractions that
+     * Use this method to attach supporting evidences to ENCODE TargettedInteractions that
      * have been loaded into the database.
      * @throws Exception
      */
