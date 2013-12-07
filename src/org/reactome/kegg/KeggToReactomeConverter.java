@@ -129,6 +129,14 @@ public class KeggToReactomeConverter {
             GKInstance interactor2 = idToInstance.get(id2);
             if (interactor2 == null)
                 throw new IllegalStateException("convertRelations(): " + id2 + " is not mapped");
+            // As of December 6, 2013, relations between pathways have been encoded in KGML.
+            // For example, see http://www.genome.jp/kegg-bin/show_pathway?hsa05161.
+            // Currently we don't support such kind of relations
+            if (interactor1.getSchemClass().isa(ReactomeJavaConstants.Event) ||
+                interactor2.getSchemClass().isa(ReactomeJavaConstants.Event)) {
+                logger.warn("Relation is related to event: " + interactor1 + " and " + interactor2);
+                continue;
+            }
             // extract type
             type = extractType(relationElm);
             // Use lower case: some bugs in the pathways
