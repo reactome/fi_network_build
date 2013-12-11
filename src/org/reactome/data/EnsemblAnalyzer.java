@@ -120,6 +120,7 @@ public class EnsemblAnalyzer {
         		" member m where f.member_id = m.member_id and m.taxon_id = ? " +
         		"and m.source_name like 'UniProt%'";
         Connection connection = getConnection();
+        connection.setReadOnly(true);
         PreparedStatement stat = connection.prepareStatement(queryString);
         List<Integer> neededTaxonIds = getNeededTaxonIds();
         Map<String, Set<String>> familyToProteins = new HashMap<String, Set<String>>();
@@ -127,6 +128,7 @@ public class EnsemblAnalyzer {
             logger.info("Dump " + taxonId + "...");
             stat.setInt(1, taxonId);
             ResultSet resultset = stat.executeQuery();
+//            int count = 0;
             while (resultset.next()) {
                 String family = resultset.getString(1);
                 String uniProtId = resultset.getString(2);
@@ -136,6 +138,7 @@ public class EnsemblAnalyzer {
                     familyToProteins.put(family, set);
                 }
                 set.add(taxonId + ":" + uniProtId);
+//                System.out.println("count: " + count++);
             }
             resultset.close();
             logger.info("Finish taxon: " + taxonId);
@@ -151,7 +154,8 @@ public class EnsemblAnalyzer {
     }
     
     public Map<String, Set<String>> loadYeastToHumanMapInUniProt() throws IOException {
-        return loadToHumanMapInUniProt("4932");
+        return loadToHumanMapInUniProt("559292"); // need to use this yeast type!!!
+//        return loadToHumanMapInUniProt("4932");
     }
     
     public Map<String, Set<String>> loadWormToHumanMapInUniProt() throws IOException {
@@ -286,7 +290,8 @@ public class EnsemblAnalyzer {
     private List<Integer> getNeededTaxonIds() {
         List<Integer> rtns = new ArrayList<Integer>();
         rtns.add(9606); // homo sapiens
-        rtns.add(4932); // S. cerevisiae
+//        rtns.add(4932); // S. cerevisiae
+        rtns.add(559292); // S.cerevisae S288C: Have to use this yeast. Don't use 4932!!! Otherwise, the hit is very low
         rtns.add(6239); // C. elegans
         rtns.add(7227); // D. melanogaster
         rtns.add(10090); // Mus musculus

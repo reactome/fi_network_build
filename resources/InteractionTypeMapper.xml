@@ -225,4 +225,17 @@
         direction="-|" />
     <type name="PPrel: binding/association, indirect effect"
         reverse="PPrel: binding/association, indirect effect" direction="-" />
+    <!-- The following types were added on December 10, 2013 -->
+    <type name="GErel: inhibition, expression" reverse="GErel: inhibited, expression"
+        direction="-|" />
+    <type name="PPrel: dephosphorylation, indirect effect" reverse="PPrel: dephosphorylated, indirect effect"
+        direction="-" />
+    <type name="PPrel: ubiquitination" reverse="PPrel: ubiquitinated"
+        direction="-" />
+    <type name="PPrel: ubiquitination, inhibition" reverse="PPrel: ubiquitinated, inhibition"
+        direction="-|" />
+    <type name="PPrel: activation, ubiquitination" reverse="PPrel: activated, ubiquitination"
+        direction="->" />
+    <type name="PPrel: inhibition, ubiquitination" reverse="PPrel: inhibited, ubiquitination"
+        direction="-|" />
 </InteractionTypeMapper>

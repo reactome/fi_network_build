@@ -42,7 +42,7 @@ public class NciPIDConverterRunner {
     
     @Test
     public void runConvertOfBioCarta() throws Exception {
-        // A GO term to id file should be created for this covnerting
+        // A GO term to id file should be created for this conversion
         FileUtility fu = new FileUtility();
         String srcName = FIConfiguration.getConfiguration().get("GO_DIR") + "GO.terms_and_ids.txt";
         File file = new File(srcName);

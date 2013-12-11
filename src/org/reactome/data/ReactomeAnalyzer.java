@@ -52,20 +52,20 @@ public class ReactomeAnalyzer {
             throw new IllegalStateException("Cannot connect to a database!");
         analyzers.add(reactomeAnalyzer);
         PantherAnalyzer pantherAnalyzer = new PantherAnalyzer();
-        Long pantherId = fetchDatasourceId("pantherdb", dba);
+        Long pantherId = fetchDatasourceId("pantherdb", null, dba);
         pantherAnalyzer.setDataSourceId(pantherId);
         analyzers.add(pantherAnalyzer);
         // INOH is not used in version 3.
         //analyzers.add(new INOHAnalyzer());
         List<Long> dataSourceIds = new ArrayList<Long>();
-        Long sourceId = fetchDatasourceId("Pathway Interaction Database", dba);
+        Long sourceId = fetchDatasourceId("Pathway Interaction Database", null, dba);
         ReactomeAnalyzer analyzer = new AnnotatedNCIPICAnalyzer();
         analyzer.setDataSourceId(sourceId);
         analyzers.add(analyzer);
 //        dataSourceIds.add(sourceId);
-        sourceId = fetchDatasourceId("BioCarta - Imported by PID", dba);
+        sourceId = fetchDatasourceId("BioCarta - Imported by PID", null, dba);
         dataSourceIds.add(sourceId);
-        sourceId = fetchDatasourceId("KEGG", dba);
+        sourceId = fetchDatasourceId("KEGG", "http://www.genome.jp/kegg/", dba);
         dataSourceIds.add(sourceId);
         for (Long dataSourceId : dataSourceIds) {
             ReactomeAnalyzer tmp = new CPathAnalyzer();
@@ -74,20 +74,21 @@ public class ReactomeAnalyzer {
         }
         // Add targeted interactions (TF/Target from TRED)
         TargetedInteractionAnalyzer tredAnalyzer = new TargetedInteractionAnalyzer();
-        Long tredId = fetchDatasourceId("TRED", dba);
+        Long tredId = fetchDatasourceId("TRED", null, dba);
         tredAnalyzer.setDataSourceId(tredId);
         analyzers.add(tredAnalyzer);
 
         // Used a customized TargetedInteractionAnalyzer so that interactions in 
         // from ENCODE can be filtered.
         TargetedInteractionAnalyzer encodeAnalyzer = new EncodeInteractionAnalyzer();
-        Long encodeId = fetchDatasourceId("ENCODE", dba);
+        Long encodeId = fetchDatasourceId("ENCODE", null, dba);
         encodeAnalyzer.setDataSourceId(encodeId);
         analyzers.add(encodeAnalyzer);
         return analyzers;
     }
     
     private static Long fetchDatasourceId(String dbName,
+                                          String url,
                                           PersistenceAdaptor dba) {
         Long dbId = null;
         try {
@@ -95,8 +96,22 @@ public class ReactomeAnalyzer {
                                                                             ReactomeJavaConstants._displayName,
                                                                             "=",
                                                                             dbName);
-            if (instances != null && instances.size() == 1) {
-                dbId = instances.iterator().next().getDBID();
+            if (instances != null) {
+                if (url == null && instances.size() == 1) {
+                    dbId = instances.iterator().next().getDBID();
+                }
+                else if (url != null) {
+                    // In case more than one RerenceDatabases imported from different sources,
+                    // since they are not normalized.
+                    for (GKInstance inst : instances) {
+                        String url1 = (String) inst.getAttributeValue(ReactomeJavaConstants.url);
+                        if (url.equals(url1)) {
+                            dbId = inst.getDBID();
+                            break;
+                        }
+                            
+                    }
+                }
             }
         }
         catch(Exception e) {
@@ -282,7 +297,7 @@ public class ReactomeAnalyzer {
         long time1 = System.currentTimeMillis();
         Map<GKInstance, Set<String>> topics2Ids = new HashMap<GKInstance, Set<String>>();
         for (GKInstance topic : topics) {
-            System.out.println("Topic: " + topic);
+//            System.out.println("Topic: " + topic);
             Set<String> ids = grepIDsFromTopic(topic);
             topics2Ids.put(topic, ids);
         }

@@ -51,7 +51,8 @@ public class CytoscapePlugInFileHandler {
      * will be thrown during FI annotating.
      * @throws Exception
      */
-    private void validateInteractionTypes() throws Exception {
+    @Test
+    public void validateInteractionTypes() throws Exception {
         // Query interaction types used in the database
         MySQLAdaptor dba = new MySQLAdaptor("localhost",
                                             FIConfiguration.getConfiguration().get("REACTOME_SOURCE_DB_NAME"),
@@ -173,8 +174,8 @@ public class CytoscapePlugInFileHandler {
     }
     
     private String assignValue(String line, String value) {
-        int lastIndex = line.lastIndexOf("/");
-        return line.substring(0, lastIndex + 1) + value;
+        int index = line.indexOf("=");
+        return line.substring(0, index + 1) + value; // Add 1 to include "="
     }
     
     private void copyFiles() throws IOException {

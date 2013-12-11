@@ -69,14 +69,14 @@ public class FINetworkBuilder {
         KeggToReactomeConverter keggConverter = new KeggToReactomeConverter();
         logger.info("Running KeggToReactomeConverter.runBatchConver()...");
         keggConverter.runBatchConvert();
+        
         NciPIDConverterRunner nciPidConverter = new NciPIDConverterRunner();
         logger.info("Running NciPIDConverrerRunner.runConvertOfCurated()...");
         nciPidConverter.runConvertOfCurated();
+        
         logger.info("Running NciPIDConverterRunner.runConvertOfBiocarta()...");
         nciPidConverter.runConvertOfBioCarta();
-        PantherToReactomeConverterTest pantherConverter = new PantherToReactomeConverterTest();
-        logger.info("Running PantherToReactomeConverterTest.testNewBatchConverter()...");
-        pantherConverter.testNewBatchConverter();
+        
         TREDToReactomeConverter tredConverter = new TREDToReactomeConverter();
         logger.info("Running TREDToReactomeConverter.doConvert()...");
         tredConverter.doConvert();
@@ -94,6 +94,10 @@ public class FINetworkBuilder {
         
         logger.info("Running EncodeTFTargetToReactomeConverter.convert()...");
         new EncodeTFTargetToReactomeConverter().convert();
+
+        PantherToReactomeConverterTest pantherConverter = new PantherToReactomeConverterTest();
+        logger.info("Running PantherToReactomeConverterTest.testNewBatchConverter()...");
+        pantherConverter.testNewBatchConverter();
 
         // Check protein coverage
         ProteinAndInteractionCount count = new ProteinAndInteractionCount();
@@ -265,15 +269,17 @@ public class FINetworkBuilder {
         // This file is not used here right now. But it is used in the plug-in.
         logger.info("Running HiberanteFIReader.generateAccessionToProteinNameMap()...");
         hibernateReader.generateAccessionToProteinNameMap();
-        // Need to generate a flatenned list of pathways from the Reactome database
-        // Generate name to pathway mapping to be used for pathway enrichment analysis
-        logger.info("Running ReactomeAnalyzer.generateListOfPathways()...");
-        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
-        reactomeAnalyzer.generateListOfPathways();
-        // Generate Pathways to Genes mappings for enrichment analysis
         PathwayGeneSetGenerator genesetGenerator = new PathwayGeneSetGenerator();
+        logger.info("Running PathwayGeneSetGenerator.generateReactomePathwayListBasedOnDiagrams()...");
+        // Generate a flattened list of pathways from the Reactome database. Each Reactome pathway should have
+        // an associated pathway diagram fully laid-out.
+        genesetGenerator.generateReactomePathwayListBasedOnDiagrams();
+        // Generate Pathways to Genes mappings for enrichment analysis
         logger.info("Running PathwayGeneSetGenerator.generateProteinNameToPathwayMap()...");
         genesetGenerator.generateProteinNameToPathwayMap();
+        // Generate a list of all pathways in the Reactome database. This list of pathways is used for 
+        // an pathway enrichment analysis in a hierarchical way (aka not based on flatenned list)
+        genesetGenerator.generateReactomeGeneToPathwayMap();
         // Dump MySQL databases to MyISAM types so that they can be loaded into the deployment machine
         // or be backed up
         MySQLDatabaseHandler dbHandler = new MySQLDatabaseHandler();

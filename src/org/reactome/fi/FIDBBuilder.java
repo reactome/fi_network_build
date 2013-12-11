@@ -84,7 +84,10 @@ public class FIDBBuilder extends HibernateFIPersistence {
         ReactomeFuncInteractionExtractor extractor = new ReactomeFuncInteractionExtractor();
         List<ReactomeAnalyzer> analyzerList = ReactomeAnalyzer.getPathwayDBAnalyzers();
         for (ReactomeAnalyzer a : analyzerList) {
-            logger.info("Extract interactions from " + a.getDataSource().getDisplayName() + "...");
+            if (a.getDataSource() == null)
+                logger.info("Extract interactions from Reactome...");
+            else
+                logger.info("Extract interactions from " + a.getDataSource().getDisplayName() + "...");
             extractor.setReactomeAnalyzer(a);
             extractor.extractFuncInteractions();
         }

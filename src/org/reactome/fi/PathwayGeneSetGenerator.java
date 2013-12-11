@@ -15,11 +15,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.security.auth.login.Configuration;
+
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
+import org.gk.model.InstanceUtilities;
 import org.gk.model.ReactomeJavaConstants;
+import org.gk.persistence.DiagramGKBReader;
 import org.gk.persistence.MySQLAdaptor;
 import org.gk.persistence.MySQLAdaptor.QueryRequest;
+import org.gk.render.Renderable;
+import org.gk.render.RenderablePathway;
 import org.junit.Test;
 import org.reactome.data.ProteinIdFilters;
 import org.reactome.data.ReactomeAnalyzer;
@@ -37,6 +43,7 @@ import org.reactome.kegg.KeggAnalyzer;
 public class PathwayGeneSetGenerator {
     private static Logger logger = Logger.getLogger(PathwayGeneSetGenerator.class);
     private FileUtility fu = new FileUtility();
+    private final int MINIMUM_PATHWAY_SIZE = new Integer(FIConfiguration.getConfiguration().get("MINIMUM_PAHTWAY_SIZE"));
     
     public PathwayGeneSetGenerator() {
     }
@@ -81,10 +88,10 @@ public class PathwayGeneSetGenerator {
             GKInstance topic = it.next();
             Set<String> ids = topic2Ids.get(topic);
             logger.info(topic + "(" + source + ")");
-            logger.info("Before filtering: " + ids.size());
+//            logger.info("Before filtering: " + ids.size());
             ids = filters.filter(ids);
-            logger.info("After filtering: " + ids.size());
-            if (ids.size() < 10) {
+//            logger.info("After filtering: " + ids.size());
+            if (ids.size() < MINIMUM_PATHWAY_SIZE) { 
                 // Remove these small pathways
                 logger.info("Size is too small: " + ids.size());
                 continue; 
@@ -161,6 +168,83 @@ public class PathwayGeneSetGenerator {
     }
     
     /**
+     * Using this method to generate a list of pathways from Reactome. Each pathway should
+     * have a corresponding pathway diagrams with entities fully laid-out.
+     * @throws Exception
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void generateReactomePathwayListBasedOnDiagrams() throws Exception {
+        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
+        MySQLAdaptor dba = (MySQLAdaptor) reactomeAnalyzer.getMySQLAdaptor();
+        // Start from the top level pathways so that we can exclude pathways under the disease topics
+        Collection<GKInstance> frontPages = dba.fetchInstancesByClass(ReactomeJavaConstants.FrontPage);
+        if (frontPages == null || frontPages.size() != 1) {
+            logger.error("No FrontPage or more than one FrontPage instance!");
+            throw new IllegalStateException("No FrontPage or more than one FrontPage instance!");
+        }
+        GKInstance frontPage = (GKInstance) frontPages.iterator().next(); // There should be at least one FrontPageItem
+        List<GKInstance> frontPageItems = frontPage.getAttributeValuesList(ReactomeJavaConstants.frontPageItem);
+        Set<GKInstance> pathways = new HashSet<GKInstance>();
+        for (GKInstance item : frontPageItems) {
+            // Escape the disease topic since they should be covered by associated normal pathways
+            if (item.getDisplayName().equalsIgnoreCase("Disease"))
+                continue;
+            grepPathwaysWithDiagrams(item, pathways, dba);
+        }
+        // Want to sort it before output
+        List<GKInstance> list = new ArrayList<GKInstance>(pathways);
+        InstanceUtilities.sortInstances(list);
+        String fileName = FIConfiguration.getConfiguration().get("REACTOME_PATHWAYS");
+        FileUtility fu = new FileUtility();
+        fu.setOutput(fileName);
+        for (GKInstance pathway : list)
+            fu.printLine(pathway.getDBID() + "\t" + pathway.getDisplayName());
+        fu.close();
+        logger.info("Total Pathways from Reactome: " + list.size());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void grepPathwaysWithDiagrams(GKInstance pathway, 
+                                          Set<GKInstance> pathways,
+                                          MySQLAdaptor dba) throws Exception {
+        if (pathways.contains(pathway))
+            return; // Just in case this has been checked before since a pathway can be contained in several different places.
+        // Just in case something is not right
+        if (!pathway.getSchemClass().isa(ReactomeJavaConstants.Pathway)) {
+            logger.error(pathway + " is not a pathway!");
+            throw new IllegalArgumentException(pathway + " is not a pathway!");
+        }
+        Collection<GKInstance> diagrams = dba.fetchInstanceByAttribute(ReactomeJavaConstants.PathwayDiagram,
+                                                                       ReactomeJavaConstants.representedPathway, 
+                                                                       "=",
+                                                                       pathway);
+        if (diagrams == null || diagrams.size() != 1) {
+            String message = pathway + " doesn't have diagram or has more than one diagram: " + diagrams;
+            logger.error(message);
+            throw new IllegalStateException(message);
+        }
+        GKInstance diagram = diagrams.iterator().next();
+        DiagramGKBReader reader = new DiagramGKBReader();
+        RenderablePathway renderableDiagram = reader.openDiagram(diagram);
+        for (Object obj : renderableDiagram.getComponents()) {
+            Renderable r = (Renderable) obj;
+            if (r.getReactomeId() == null)
+                continue;
+            GKInstance inst = dba.fetchInstance(r.getReactomeId());
+            if (inst.getSchemClass().isa(ReactomeJavaConstants.PhysicalEntity)) {
+                pathways.add(pathway);
+            }
+        }
+        if (pathways.contains(pathway))
+            return; 
+        // Need to check its subpathways
+        List<GKInstance> hasEvent = pathway.getAttributeValuesList(ReactomeJavaConstants.hasEvent);
+        for (GKInstance comp : hasEvent)
+            grepPathwaysWithDiagrams(comp, pathways, dba);
+    }
+    
+    /**
      * This method is used to generate gene name to pathway map for all pathways in the Reactome
      * database.
      */
@@ -183,7 +267,7 @@ public class PathwayGeneSetGenerator {
                                                   null));
         @SuppressWarnings("unchecked")
         Collection<GKInstance> pathways = dba.fetchInstance(query);
-        logger.info("Total human pathways: " + pathways.size());
+        logger.info("Total human pathways in Reactome: " + pathways.size());
         // Get a map from protein ids to topics (pathways)
         Map<String, Set<String>> id2Topics = new HashMap<String, Set<String>>();
         ProteinIdFilters filters = new ProteinIdFilters();
@@ -193,12 +277,12 @@ public class PathwayGeneSetGenerator {
                              topic2Ids,
                              null);
         // Output this map
-        String fileName = "tmp/ReactomeProteinIdToPathway_111413.txt";
+        String fileName = FIConfiguration.getConfiguration().get("PROTEIN_ID_TO_REACTOME_PATHWAYS");
         fu.saveSetMap(id2Topics,
                       fileName);
         
         // Convert UniProt ids to gene names
-        fileName = "tmp/ReactomeGeneToPathway_111413.txt";
+        fileName = FIConfiguration.getConfiguration().get("GENE_TO_REACTOME_PATHWAYS");
         generateNameToTopicMap(id2Topics, fileName);
     }
 }

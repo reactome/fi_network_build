@@ -314,8 +314,9 @@ public class HibernateFIReader extends HibernateFIPersistence {
         String name1 = protein1.getShortName();
         String name2 = protein2.getShortName();
         if (name1 == null || name2 == null) {
-            logger.warn("Interaction " + interaction.getDbId()  + " cannot be converted to FI in Gene: " + 
-                         protein1.getPrimaryAccession() + " - " + protein2.getPrimaryAccession());
+            // There are too many cases like this. Just don't export them!
+//            logger.warn("Interaction " + interaction.getDbId()  + " cannot be converted to FI in Gene: " + 
+//                         protein1.getPrimaryAccession() + " - " + protein2.getPrimaryAccession());
             // Do some check
             return null;
         }

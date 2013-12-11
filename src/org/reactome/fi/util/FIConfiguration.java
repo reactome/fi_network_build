@@ -86,7 +86,7 @@ public class FIConfiguration {
                     // Don't replace right now
                     if (matcher.find())
                         continue;
-                    value = value.replaceAll(regExp, variableValue);
+                    value = value.replace("${" + variable + "}", variableValue);
                     properties.setProperty(name.toString(), value);
                 }
             }
@@ -95,10 +95,9 @@ public class FIConfiguration {
     
 //    @Test
 //    public void testLoading() {
-//        FIConfigruation configuration = FIConfigruation.getConfigruation();
-//        Properties prop = configuration.getProperties();
-//        for (Object key : prop.keySet()) {
-//            Object value = prop.get(key);
+//        FIConfiguration configuration = new FIConfiguration();
+//        for (Object key : properties.keySet()) {
+//            Object value = properties.get(key);
 //            System.out.println(key + "=" + value);
 //        }
 //    }

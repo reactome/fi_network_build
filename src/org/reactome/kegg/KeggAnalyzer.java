@@ -218,7 +218,7 @@ public class KeggAnalyzer{
         int index;
         while ((line = fu.readLine()) != null) {
             String[] tokens = line.split("\t");
-            if (tokens.length < 3)
+            if (tokens.length < 3 || tokens[2].trim().length() == 0) // For some bug from KEGG that generates an empty string token
                 continue; // Small molecules and other types
             String pathwayName = pathwayIdToName.get(tokens[0]);
             index = tokens[2].indexOf(" ");
