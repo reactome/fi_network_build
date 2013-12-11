@@ -170,6 +170,7 @@ public class CytoscapePlugInFileHandler {
         map.put("fi.predicted.gene.file", "GENE_FI_PREDICTED_FILE_NAME");
         map.put("name.to.pathways", "GENE_TO_TOPIC");
         map.put("protein.acc.to.name", "PROTEIN_ACCESSION_TO_NAME_FILE");
+        map.put("name.to.reactome.pathways", "GENE_TO_REACTOME_PATHWAYS");
         return map;
     }
     
