@@ -14,7 +14,6 @@ import org.reactome.data.GODataAnalyzerV2;
 import org.reactome.data.IRefIndexMITTabAnalyzer;
 import org.reactome.data.MicroarrayDataAnalyzer;
 import org.reactome.data.PfamAnalyzer;
-import org.reactome.data.ReactomeAnalyzer;
 import org.reactome.data.UniProtAnalyzer;
 import org.reactome.hibernate.HibernateFIReader;
 import org.reactome.kegg.KeggToReactomeConverter;
@@ -287,6 +286,11 @@ public class FINetworkBuilder {
         // Copy files needed by the plug-in web application
         CytoscapePlugInFileHandler fileHandler = new CytoscapePlugInFileHandler();
         fileHandler.generatePlugInFiles();
+        // The following statements are used to generate the matrix file for the biggest FI network component.
+        // The generated matrix should be moved to the OICR to calculate the heat kernel for the HotNet implementation
+        // using R. The generated matrix text file should NOT be copied into the WEB-INF folder.
+        HotNetMatrixCalculator hotnetMatrixCalculator = new HotNetMatrixCalculator();
+        hotnetMatrixCalculator.testCalculateHeatKernel();
     }
     
 }
