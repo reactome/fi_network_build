@@ -65,18 +65,22 @@ public class FIAnnotation {
         FIAnnotation rtn = new FIAnnotation();
         rtn.annotation = reverseAnnotation;
         rtn.reverseAnnotation = annotation;
-        if ("->".equals(direction))
-            rtn.direction = "<-";
-        else if ("<-".equals(direction))
-            rtn.direction = "->";
-        else if ("-|".equals(direction))
-            rtn.direction = "|-";
-        else if ("|-".equals(direction))
-            rtn.direction = "-|";
-        else
-            rtn.direction = direction; 
+        rtn.direction = generateReverseDirection();
         rtn.score = score; // They should be the same
         return rtn;
+    }
+
+    private String generateReverseDirection() {
+        if ("->".equals(direction))
+            return "<-";
+        else if ("<-".equals(direction))
+            return "->";
+        else if ("-|".equals(direction))
+            return "|-";
+        else if ("|-".equals(direction))
+            return "-|";
+        else
+            return direction;
     }
     
     public FIAnnotation cloneType() {
