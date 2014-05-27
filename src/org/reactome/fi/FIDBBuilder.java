@@ -23,6 +23,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Test;
+import org.reactome.data.EncodeInteractionAnalyzer;
 import org.reactome.data.ReactomeAnalyzer;
 import org.reactome.data.ReactomeFuncInteractionExtractor;
 import org.reactome.fi.util.FIConfiguration;
@@ -72,6 +73,22 @@ public class FIDBBuilder extends HibernateFIPersistence {
         if (list.size() > 0)
             throw new IllegalStateException("FI Database is not empty!");
         session.close();
+    }
+    
+    @Test
+    public void testDump() throws Exception {
+        long time1 = System.currentTimeMillis();
+        ReactomeFuncInteractionExtractor extractor = new ReactomeFuncInteractionExtractor();
+        List<ReactomeAnalyzer> analyzerList = ReactomeAnalyzer.getPathwayDBAnalyzers();
+        for (ReactomeAnalyzer a : analyzerList) {
+            // Just want to check encode
+            if (!(a instanceof EncodeInteractionAnalyzer))
+                continue;
+            extractor.setReactomeAnalyzer(a);
+            extractor.extractFuncInteractions();
+        }
+        List<Interaction> interactions = extractor.getExtractedInteractions();
+        logger.info("total interactions: " + interactions.size());
     }
     
     /**

@@ -291,6 +291,8 @@ public class FINetworkBuilder {
         // using R. The generated matrix text file should NOT be copied into the WEB-INF folder.
         HotNetMatrixCalculator hotnetMatrixCalculator = new HotNetMatrixCalculator();
         hotnetMatrixCalculator.testCalculateHeatKernel();
+        // The following method should be called after the kernel file was generated from using R
+        hotnetMatrixCalculator.generateSerializedMatrixFile();
     }
     
 }
