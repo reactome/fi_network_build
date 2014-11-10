@@ -232,6 +232,7 @@ public class UniProtAnalyzer {
         fu.exportMap(idMaps, mapFileName);
     }
     
+    @Test
     public void countUniProtEntries() throws IOException {
         FileUtility fu = new FileUtility();
         String dirName = FIConfiguration.getConfiguration().get("UNIPROT_DIR");
