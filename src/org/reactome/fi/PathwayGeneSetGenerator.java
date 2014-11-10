@@ -15,9 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.security.auth.login.Configuration;
-
 import org.apache.log4j.Logger;
+import org.biopax.model.Interaction;
 import org.gk.model.GKInstance;
 import org.gk.model.InstanceUtilities;
 import org.gk.model.ReactomeJavaConstants;
@@ -29,8 +28,10 @@ import org.gk.render.RenderablePathway;
 import org.junit.Test;
 import org.reactome.data.ProteinIdFilters;
 import org.reactome.data.ReactomeAnalyzer;
+import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
+import org.reactome.fi.util.InteractionUtilities;
 import org.reactome.hibernate.HibernateFIReader;
 import org.reactome.kegg.KeggAnalyzer;
 
@@ -77,6 +78,40 @@ public class PathwayGeneSetGenerator {
 //        fu.saveSetMapInSort(id2Topics, "Test.txt");
 //        id2Topics = fu.loadSetMap(R3Constants.PROTEIN_ID_TO_TOPIC);
 //        fu.saveSetMapInSort(id2Topics, "Test1.txt");
+    }
+    
+    @Test
+    public void countProteinsInPathways() throws Exception {
+        Map<String, Set<String>> id2Topics = fu.loadSetMap(FIConfiguration.getConfiguration().get("PROTEIN_ID_TO_TOPIC"));
+        System.out.println("Total ids in pathways: " + id2Topics.size());
+        Map<String, Set<String>> topicToIds = InteractionUtilities.switchKeyValues(id2Topics);
+        Set<String> reactomeIds = new HashSet<String>();
+        Set<String> keggIds = new HashSet<String>();
+        for (String topic : topicToIds.keySet()) {
+            if (topic.endsWith("(R)"))
+                reactomeIds.addAll(topicToIds.get(topic));
+            else if (topic.endsWith("(K)"))
+                keggIds.addAll(topicToIds.get(topic));
+        }
+        System.out.println("Ids in Reactome: " + reactomeIds.size());
+        System.out.println("Ids in KEGG: " + keggIds.size());
+        Set<String> shared = InteractionUtilities.getShared(reactomeIds, keggIds);
+        System.out.println("Shared: " + shared.size());
+        
+        // Filter based on SwissProt
+        Set<String> swissProtIds = new UniProtAnalyzer().loadSwissProtIds();
+        int total = swissProtIds.size();
+        System.out.println("\nTotal SwissProt: " + total);
+        // Check SwissIds in Reactome and KEGG
+        id2Topics.keySet().retainAll(swissProtIds);
+        System.out.println("Ids from pathways in SwissProt: " + id2Topics.size());
+        
+        reactomeIds.retainAll(swissProtIds);
+        keggIds.retainAll(swissProtIds);
+        shared = InteractionUtilities.getShared(reactomeIds, keggIds);
+        System.out.println("SwissProt ids in Reactome: " + reactomeIds.size());
+        System.out.println("SwissProt ids in KEgg: " + keggIds.size());
+        System.out.println("Shared SwissProt ids: " + shared.size());
     }
 
     private void generateIdToTopicMap(Map<String, Set<String>> id2Topics,
