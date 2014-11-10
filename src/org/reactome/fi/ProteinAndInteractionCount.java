@@ -147,18 +147,19 @@ public class ProteinAndInteractionCount {
         String[] fileNames = new String[] {
                 "FIs_Reactome.txt",
                 "FIs_pantherdb.txt",
-                "FIs_The Cancer Cell Map.txt",
+//                "FIs_The Cancer Cell Map.txt",
                 "FIs_Pathway Interaction Database.txt",
                 "FIs_BioCarta - Imported by PID.txt",
                 "FIs_KEGG.txt",
-                "TREDInteractionsInUniProt.txt"
+//                "TREDInteractionsInUniProt.txt"
         };
         Set<String> swissProtIds = new UniProtAnalyzer().loadSwissProtIds();
         int total = swissProtIds.size();
         System.out.println("total swiss prot: " + total);
         System.out.println("\nDatabase\tProteins\tSwissProt\tcoverage\tInteractions");
+        String dirName = FIConfiguration.getConfiguration().get("RESULT_DIR") + File.separator;
         for (String fileName : fileNames) {
-            Set<String> fis = fu.loadInteractions(FIConfiguration.getConfiguration().get("RESULT_DIR") + fileName);
+            Set<String> fis = fu.loadInteractions(dirName + fileName);
             Set<String> proteins = InteractionUtilities.grepIDsFromInteractions(fis);
             int proteinTotal = proteins.size();
             proteins.retainAll(swissProtIds);
