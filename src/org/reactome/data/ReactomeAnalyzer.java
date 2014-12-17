@@ -358,8 +358,25 @@ public class ReactomeAnalyzer {
     
     @SuppressWarnings("rawtypes")
     public void extractInteractorsFromReaction(GKInstance rxn, 
-                                                  Set<GKInstance> interactors) throws Exception {
+                                               Set<GKInstance> interactors) throws Exception {
         List input = rxn.getAttributeValuesList(ReactomeJavaConstants.input);
+//        // Something special for gene regulatory reaction annotated in BlackBoxEvent
+//        boolean isGeneRegulatory = false;
+//        if (rxn.getSchemClass().isa(ReactomeJavaConstants.BlackBoxEvent) && input != null && input.size() == 1) {
+//            GKInstance input1 = (GKInstance) input.get(0);
+//            if (input1.getSchemClass().isValidAttribute(ReactomeJavaConstants.referenceEntity)) {
+//                GKInstance refEntity = (GKInstance) input1.getAttributeValue(ReactomeJavaConstants.referenceEntity);
+//                if (refEntity != null && refEntity.getSchemClass().isa(ReactomeJavaConstants.ReferenceDNASequence)) {
+//                    isGeneRegulatory = true;
+//                    GKInstance output = (GKInstance) rxn.getAttributeValue(ReactomeJavaConstants.output);
+//                    if (output != null)
+//                        interactors.add(output);
+//                }
+//            }
+//        }
+//        if (!isGeneRegulatory && input != null) {
+//            interactors.addAll(input);
+//        }
         if (input != null)
             interactors.addAll(input);
         // Get catalyst

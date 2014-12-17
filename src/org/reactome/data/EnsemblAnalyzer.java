@@ -116,8 +116,9 @@ public class EnsemblAnalyzer {
     @Test
     public void dumpProteinFamilies() throws Exception {
         // Pick uniprot identifiers only
+        // As of December, 2014, table member has been replaced by seq_member
         String queryString = "select f.family_id, m.stable_id from family_member f," +
-        		" member m where f.member_id = m.member_id and m.taxon_id = ? " +
+        		" seq_member m where f.seq_member_id = m.seq_member_id and m.taxon_id = ? " +
         		"and m.source_name like 'UniProt%'";
         Connection connection = getConnection();
         connection.setReadOnly(true);

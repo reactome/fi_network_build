@@ -99,6 +99,7 @@ public class FINetworkBuilder {
         pantherConverter.testNewBatchConverter();
 
         // Check protein coverage
+        // Some files have not be generated in the following call. This method should not be called.
         ProteinAndInteractionCount count = new ProteinAndInteractionCount();
         logger.info("Count proteins...");
         count.checkUniProtNumbersInConvertedDBs();
@@ -288,11 +289,13 @@ public class FINetworkBuilder {
         fileHandler.generatePlugInFiles();
         // The following statements are used to generate the matrix file for the biggest FI network component.
         // The generated matrix should be moved to the OICR to calculate the heat kernel for the HotNet implementation
-        // using R. The generated matrix text file should NOT be copied into the WEB-INF folder.
+        // using R (using script runHeatKernel_R.sh, which should be modified for the correct file names). 
+        // The generated matrix text file should NOT be copied into the WEB-INF folder.
         HotNetMatrixCalculator hotnetMatrixCalculator = new HotNetMatrixCalculator();
         hotnetMatrixCalculator.testCalculateHeatKernel();
         // The following method should be called after the kernel file was generated from using R
-        hotnetMatrixCalculator.generateSerializedMatrixFile();
+//        HotNetMatrixCalculator hotnetMatrixCalculator = new HotNetMatrixCalculator();
+//        hotnetMatrixCalculator.generateSerializedMatrixFile();
     }
     
 }

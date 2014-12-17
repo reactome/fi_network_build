@@ -325,6 +325,15 @@ public class UniProtAnalyzer {
         }
     } 
     
+    @Test
+    public void testGenerateGeneNameToUniAccessMap() throws IOException {
+        long time1 = System.currentTimeMillis();
+        Map<String, Set<String>> geneNameToUniAccessMap = generateGeneNameToUniAccessMap(true);
+        long time2 = System.currentTimeMillis();
+        System.out.println("Total loading time: " + (time2 - time1));
+        System.out.println("Size of map: " + geneNameToUniAccessMap.size());
+    }
+    
     /**
      * Generate a map from gene name to UniProt accession numbers
      * @param needSwissProtOnly
@@ -351,10 +360,7 @@ public class UniProtAnalyzer {
                 }
                 else if (line.startsWith("GN   Name=")) { // Sometimes there are other GN lines (e.g. P02768)
 //                    System.out.println(line);
-                    // Get gene name
-                    index1 = line.indexOf("Name=");
-                    index2 = line.indexOf(";"); 
-                    geneName = line.substring(index1 + "Name=".length(), index2);
+                    geneName = extractGeneName(line);
                     InteractionUtilities.addElementToSet(nameToAcces, geneName, acc);
                     // Check Synonyms
                     index1 = line.indexOf("Synonyms=");
@@ -379,6 +385,26 @@ public class UniProtAnalyzer {
                 break;
         }
         return nameToAcces;
+    }
+
+    private String extractGeneName(String line) {
+        int index1;
+        int index2;
+        String geneName;
+        // Get gene name
+        index1 = line.indexOf("Name=");
+        index2 = line.indexOf(";");
+        // As of December, 2014, there are some lines as following:
+//                    GN   Name=QRSL1 {ECO:0000255|HAMAP-Rule:MF_03150};
+//                    GN   Name=GATB {ECO:0000255|HAMAP-Rule:MF_03147,
+        if (index2 < 0) // For case: GN   Name=GATB {ECO:0000255|HAMAP-Rule:MF_03147,
+            index2 = line.indexOf(" ", index1);
+        geneName = line.substring(index1 + "Name=".length(), index2);
+        if (geneName.contains("{")) { // For case: Name=QRSL1 {ECO:0000255|HAMAP-Rule:MF_03150}
+            index2 = geneName.indexOf("{");
+            geneName = geneName.substring(0, index2).trim();
+        }
+        return geneName;
     }
     
     public Map<String, Protein> generateUniAccToProteinMap() throws IOException {
@@ -427,8 +453,9 @@ public class UniProtAnalyzer {
                 else if (line.startsWith("GN") && (gn == null)) {
                     index = line.indexOf("Name=");
                     if (index > 0) { // Otherwise, no gene name
-                        index1 = line.indexOf(";");
-                        gn = line.substring(index + 5, index1);
+//                        index1 = line.indexOf(";");
+//                        gn = line.substring(index + 5, index1);
+                        gn = extractGeneName(line);
                     }
                 }
                 else if (line.startsWith("//")) {

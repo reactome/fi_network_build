@@ -49,8 +49,9 @@ public class HotNetMatrixCalculator {
         FIConfiguration conf = FIConfiguration.getConfiguration();
         String dir = conf.get("RESULT_DIR");
 //        String heatKernelFileName = "results/pagerank/HeatKernel_HotNet_time_01_2012_021913.txt";
-        String fileName = "HeatKernel_HotNet_time_01_2013_010214";
-        String heatKernelFileName =  dir +  File.separator + fileName + ".txt";
+//        String fileName = "HeatKernel_HotNet_time_01_2013_010214";
+        String fileName = conf.get("HEAT_KERNEL_HOTNET_FILE_NAME");
+        String heatKernelFileName = dir +  File.separator + fileName + ".txt";
         long time1 = System.currentTimeMillis();
         DoubleMatrix2D matrix = loadHeatKernelMatrix(heatKernelFileName);
         System.out.println("Matrix: " + matrix.rows() + ", " + matrix.columns());

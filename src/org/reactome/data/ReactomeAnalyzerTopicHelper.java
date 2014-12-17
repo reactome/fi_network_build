@@ -127,12 +127,14 @@ public class ReactomeAnalyzerTopicHelper {
                     if (list != null)
                         children.addAll(list);
                 }
+                // As of December 15, 2014, hasCandidate will not be used, which
+                // reduces the total FIs about 12% (from 144733 to 127382).
                 // Check for candidate set: added on June 24, 2009
-                if (inst.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasCandidate)) {
-                    List list = inst.getAttributeValuesList(ReactomeJavaConstants.hasCandidate);
-                    if (list != null)
-                        children.addAll(list);
-                }
+//                if (inst.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasCandidate)) {
+//                    List list = inst.getAttributeValuesList(ReactomeJavaConstants.hasCandidate);
+//                    if (list != null)
+//                        children.addAll(list);
+//                }
                 if (children.size() == 0)
                     continue;
                 for (Iterator it = children.iterator(); it.hasNext();) {
