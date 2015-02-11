@@ -8,6 +8,7 @@ elv.dbName=test_reactome_40
 resources.dir=/usr/local/apache-tomcat/webapps/caBigR3WebApp/WebContent/WEB-INF/
 survival.analysis.temp.dir=/usr/local/apache-tomcat/temp
 fi.gene.file=FIsInGene.txt
+fi.gene.annotation.file=FIsInGene_121514_with_annotations.txt
 fi.bigComp.gene.file=FIsInGene_041709_BigComp.txt
 fi.pathway.gene.file=FIsInGene_Pathway_041709.txt
 fi.predicted.gene.file=FIsInGene_Predicted_041709.txt
@@ -21,4 +22,7 @@ kegg.hsa.list=kegg_hsa.list
 # These properties are used for survival analysis
 survival.analysis.r.script=CGISurvivalAnalysis.R
 mcl.script=mcl_script.sh
-heat.kernel.file=HeatKernel_HotNet_time_01_2012_021913.txt
+# For HotNet analysis. This should be a serialized matrix file.
+heat.kernel.file=HeatKernel_HotNet_time_01_2014_121514.ser
+tomcat.lib=/usr/local/apache-tomcat/lib
+webapp.dir=/usr/local/apache-tomcat/webapps/caBigR3WebApp2014/WEB-INF

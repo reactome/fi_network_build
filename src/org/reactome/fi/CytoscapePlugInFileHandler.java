@@ -165,12 +165,15 @@ public class CytoscapePlugInFileHandler {
     private Map<String, String> getKeyToFileNameMap() {
         Map<String, String> map = new HashMap<String, String>();
         map.put("fi.gene.file", "GENE_FI_FILE_NAME");
+        map.put("fi.gene.annotation.file", "GENE_FI_ANNOTATION_FILE_NAME");
         map.put("fi.bigComp.gene.file", "GENE_FI_BIG_COMP_FILE_NAME");
         map.put("fi.pathway.gene.file", "GENE_FI_PATHWAY_FILE_NAME");
         map.put("fi.predicted.gene.file", "GENE_FI_PREDICTED_FILE_NAME");
         map.put("name.to.pathways", "GENE_TO_TOPIC");
         map.put("protein.acc.to.name", "PROTEIN_ACCESSION_TO_NAME_FILE");
         map.put("name.to.reactome.pathways", "GENE_TO_REACTOME_PATHWAYS");
+        map.put("heat.kernel.file", "HEAT_KERNEL_HOTNET_SER_FILE_NAME");
+        map.put("webapp.dir", "WEBAPP_DIR");
         return map;
     }
     

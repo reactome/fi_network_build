@@ -38,6 +38,9 @@ TRED_FI_FILE=${RESULT_DIR}/FIs_TRED.txt
 MINIMUM_PAHTWAY_SIZE = 3
 GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_121514_BigComp.txt
 GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_121514.txt
+# This file will be handled later on using the caBigR3Web project. However, it is listed here
+# for creating the configration file
+GENE_FI_ANNOTATION_FILE_NAME=${RESULT_DIR}/FIsInGene_121514_with_annotations.txt
 GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_121514.txt
 GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_121514.txt
 # File for mapping accession to names dumped from the FI network
@@ -139,3 +142,10 @@ SERVLET_CONFIG_FILE=${RESULT_DIR}/reactomews${YEAR}.config.prop
 
 # For Hotnet
 HEAT_KERNEL_HOTNET_FILE_NAME=HeatKernel_HotNet_time_01_2014_121514
+# For configuration
+HEAT_KERNEL_HOTNET_SER_FILE_NAME=${HEAT_KERNEL_HOTNET_FILE_NAME}.ser
+
+# For web app. This is used to generate the configuratio file for the web app.
+WEBAPP_DIR=/usr/local/apache-tomcat/webapps/caBigR3WebApp2014/WEB-INF
+# For converting infor factor graphs
+FACTOR_GRAPH_FILE=${RESULT_DIR}/PathwayDiagramsFactorGraphs.xml.zip

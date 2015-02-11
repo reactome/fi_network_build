@@ -296,6 +296,9 @@ public class FINetworkBuilder {
         // The following method should be called after the kernel file was generated from using R
 //        HotNetMatrixCalculator hotnetMatrixCalculator = new HotNetMatrixCalculator();
 //        hotnetMatrixCalculator.generateSerializedMatrixFile();
+        // Generate factor graphs for pathway diagrams to be used by the Cytoscape app
+        FactorGraphDumper fgDumper = new FactorGraphDumper();
+        fgDumper.dump();
     }
     
 }
