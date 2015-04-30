@@ -7,6 +7,7 @@ package org.reactome.funcInt;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * This abstract class is used to supclass for Protein, Gene, mRNA. This mainly is used for 
@@ -40,6 +41,7 @@ public abstract class GenomeEncodedEntity {
         this.sequence = aa;
     }
     
+    @XmlTransient // Don't want these sequences to be returned in the client
     public String getSequence() {
         return this.sequence;
     }
