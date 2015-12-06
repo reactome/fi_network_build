@@ -7,6 +7,7 @@ package org.reactome.fi;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -20,7 +21,9 @@ import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
 import org.gk.persistence.MySQLAdaptor;
 import org.junit.Test;
+import org.reactome.factorgraph.Factor;
 import org.reactome.factorgraph.FactorGraph;
+import org.reactome.factorgraph.Variable;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.pathway.factorgraph.PathwayToFactorGraphConverter;
 import org.reactome.pathway.factorgraph.ReactomePathwayFGRunner;
@@ -43,6 +46,11 @@ public class FactorGraphDumper {
         FileUtility.initializeLogging();
     }
     
+    private List<String> getNamesFoEscape() {
+        String names = "ATP,ADP,Pi,H2O,GTP,GDP,CO2,H+";
+        return Arrays.asList(names.split(","));
+    }
+    
     /**
      * This is the actual method to perform dumping.
      * @throws Exception
@@ -58,6 +66,8 @@ public class FactorGraphDumper {
         List<GKInstance> pathways = runner.getPathwayList();
         logger.info("Total pathways for converting into factor graphs: " + pathways.size());
         PathwayToFactorGraphConverter converter = new PathwayToFactorGraphConverter();
+        // Don't forget to set this
+        converter.setNamesForEscape(getNamesFoEscape());
         long time1 = System.currentTimeMillis();
         int count = 1;
         JAXBBindableList<FactorGraph> fgList = new JAXBBindableList<FactorGraph>();
@@ -71,6 +81,7 @@ public class FactorGraphDumper {
         }
         long time2 = System.currentTimeMillis();
         logger.info("Total time: " + (time2 - time1) + " ms");
+        resetIds(fgList);
         // Export into a file
         // Have to list both classes here.
         JAXBContext context = JAXBContext.newInstance(JAXBBindableList.class, FactorGraph.class);
@@ -89,6 +100,22 @@ public class FactorGraphDumper {
         zos.close();
     }
     
+    /**
+     * Since ids are used as identifiers for both Factors and Variables, some of ids are
+     * the same across the list of FactorGraph objects, so we have to use this method to
+     * reset these ids to make them unique to avoid messing up after reading back.
+     * @param fgList
+     */
+    private void resetIds(JAXBBindableList<FactorGraph> fgList) {
+        int id = 0;
+        for (FactorGraph fg : fgList.getList()) {
+            for (Factor factor : fg.getFactors())
+                factor.setId(id ++);
+            for (Variable var : fg.getVariables())
+                var.setId(id ++);
+        }
+    }
+    
     @Test
     public void testRead() throws Exception {
         JAXBContext context = JAXBContext.newInstance(JAXBBindableList.class, FactorGraph.class);
@@ -98,10 +125,15 @@ public class FactorGraphDumper {
         FileInputStream fis = new FileInputStream(file);
         ZipInputStream zis = new ZipInputStream(fis);
         ZipEntry entry = zis.getNextEntry(); // Have to call this method
+        @SuppressWarnings("unchecked")
         JAXBBindableList<FactorGraph> list = (JAXBBindableList<FactorGraph>) unmarshaller.unmarshal(zis);
         logger.info("Total factor graphs: " + list.getList().size());
         for (FactorGraph fg : list.getList()) {
             logger.info(fg.getName());
+            for (Variable var : fg.getVariables()) {
+                logger.info("Variable: " + var.getName());
+            }
+            break;
         }
     }
     
