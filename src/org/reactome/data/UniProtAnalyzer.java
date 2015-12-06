@@ -722,24 +722,6 @@ public class UniProtAnalyzer {
         return map;
     }
     
-    public Map<String, String> loadUniProtToGeneNameMap() throws IOException {
-        String mapFile = "/Users/wgm/Documents/caBIG_R3/datasets/HPRD/GeneSymbolToUniProtFromHGNC.txt";
-        FileUtility fu = new FileUtility();
-        fu.setInput(mapFile);
-        Map<String, String> map = new HashMap<String, String>();
-        String line = fu.readLine();
-        while ((line = fu.readLine()) != null) {
-            String[] tokens = line.split("\t");
-            if (tokens.length < 4) {
-                //System.out.println("Line cannot be used: " + line);
-                continue;
-            }
-            // tokens[1] gene name, tokens[3] uniprot id
-            map.put(tokens[3], tokens[1]);
-        }
-        return map;
-    }
-    
     public void filterIdMappingToHuman() throws IOException {
         // The file will be deleted after this method running to save space
         String inFileName = FIConfiguration.getConfiguration().get("UNIPROT_DIR") + "idmapping_selected.tab";

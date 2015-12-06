@@ -438,6 +438,44 @@ public class HibernateFIReader extends HibernateFIPersistence {
     }
     
     /**
+     * Dump a map from FIs in genes to their sources in DB_IDs.
+     * @throws Exception
+     */
+    @Test
+    public void generateFIInGeneSourceFile() throws Exception {
+        initSession();
+        Session session = sessionFactory.openSession();
+        long time1 = System.currentTimeMillis();
+        Query query = session.createQuery("FROM Interaction as i WHERE i.evidence is null");
+        List<?> list = query.list();
+        logger.info("Total interactions from pathways: " + list.size());
+        Interaction interaction = null;
+        // Use String to use other methods
+        Map<String, Set<String>> fiToSources = new HashMap<String, Set<String>>();
+        for (Iterator<?> it = list.iterator(); it.hasNext();) {
+            interaction = (Interaction) it.next();
+            String fi = getFIInName(interaction);
+            if (fi == null)
+                continue;
+            Set<ReactomeSource> fiSources = interaction.getReactomeSources();
+            if (fiSources == null)
+                continue;
+            for (ReactomeSource fiSource : fiSources) {
+                //                if (fiSource.getDataSource().equals("Reactome"))
+                InteractionUtilities.addElementToSet(fiToSources, fi, fiSource.getReactomeId() + "");
+            }
+        }
+        long time2 = System.currentTimeMillis();
+        logger.info("Time for getting interactions: " + (time2 - time1));
+        session.close();
+//        logger.info("Total Pathway FIs in Genes with sources: " + fiToSources.size());
+        logger.info("Total Reactome Pathway FIs in Genes with sources: " + fiToSources.size());
+        FileUtility fu = new FileUtility();
+        fu.saveSetMap(fiToSources, 
+                      FIConfiguration.getConfiguration().get("GENE_FI_PATHWAY_SOURCES_FILE_NAME"));
+    }
+    
+    /**
      * This method is used to generate three interaction files in gene names using
      * hibernate APIs.
      * @throws Exception
