@@ -332,6 +332,8 @@ public class KeggToReactomeConverter {
 //      group   the node is a complex of gene products (mostly a protein complex)
 //      compound
 //      map
+//      other   this type should be removed in KGML 0.70 in 2010. However,  4 entries are found in pathway hsa03320 (
+//              PPAR Signaling Pathway). They are groups of drugs. Just map them into other type in Reactome.        
         if (type.equals("enzyme") ||
             type.equals("gene")) {
             String[] tokens = name.split(" ");
@@ -352,6 +354,8 @@ public class KeggToReactomeConverter {
         else if (type.equals("map")) {
             instance = createPathwayFromName(name);
         }
+        else if (type.equals("other")) // Used an other type in 2015 version of KEGG: hsa03320.
+            instance = fileAdaptor.createNewInstance(ReactomeJavaConstants.OtherEntity); 
         //TODO: need to map "Ortholog"
         // Try to get the name from graphics
         if (instance != null) {

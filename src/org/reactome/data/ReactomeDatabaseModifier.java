@@ -81,6 +81,7 @@ public class ReactomeDatabaseModifier {
             logger.info("Total copied: " + total);
         }
         catch(Exception e) {
+            logger.error(e);
             targetDBA.rollback();
         }
     }

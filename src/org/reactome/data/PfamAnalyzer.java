@@ -4,7 +4,11 @@
  */
 package org.reactome.data;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -110,33 +114,40 @@ public class PfamAnalyzer {
     public void convertIntToPfamIDs() throws IOException {
         //String intFileName = PFAM_DIR_NAME + "int_pfamAs.txt";
         String intFileName = PFAM_DIR_NAME + "pfamA_interactions.txt";
-        Map<String, String> db2Pfam = getDBId2PFamId();
-        fu.setInput(intFileName);
-        String[] tokens = null;
-        String line = null;
-        String pfam1, pfam2;
-        Set<String> intPFamSet = new HashSet<String>();
-        while ((line = fu.readLine()) != null) {
-            tokens = line.split("\t");
-            pfam1 = db2Pfam.get(tokens[0]);
-            pfam2 = db2Pfam.get(tokens[1]);
-            if (pfam1 == null || pfam2 == null) {
-                // This is very strange:
-                // This line is wrong: '3417'   '3417'
-                // throw new IllegalStateException(line + " has unmapped ids.");
-                System.out.println("Cannot be mapped: " + line);
-                continue;
-            }
-//            pfam1 = removeQuote(pfam1);
-//            pfam2 = removeQuote(pfam2);
-            // Need to sort since some int_ids are duplicated in file intFilename
-            if (pfam1.compareTo(pfam2) < 0)
-                intPFamSet.add(pfam1 + "\t" + pfam2);
-            else
-                intPFamSet.add(pfam2 + "\t" + pfam1);
-        }
-        fu.close();
-        fu.saveInteractions(intPFamSet, PFAM_DIR_NAME + "IntPFamIDs.txt");
+        String destFileName = PFAM_DIR_NAME + "IntPFamIDs.txt";
+        // As of 2015, the above file is what we need actually. So
+        // We just make a copy of this file to the required file name
+        Files.copy(FileSystems.getDefault().getPath(intFileName), 
+                   FileSystems.getDefault().getPath(destFileName), 
+                   StandardCopyOption.REPLACE_EXISTING);
+        
+//        Map<String, String> db2Pfam = getDBId2PFamId();
+//        fu.setInput(intFileName);
+//        String[] tokens = null;
+//        String line = null;
+//        String pfam1, pfam2;
+//        Set<String> intPFamSet = new HashSet<String>();
+//        while ((line = fu.readLine()) != null) {
+//            tokens = line.split("\t");
+//            pfam1 = db2Pfam.get(tokens[0]);
+//            pfam2 = db2Pfam.get(tokens[1]);
+//            if (pfam1 == null || pfam2 == null) {
+//                // This is very strange:
+//                // This line is wrong: '3417'   '3417'
+//                // throw new IllegalStateException(line + " has unmapped ids.");
+//                System.out.println("Cannot be mapped: " + line);
+//                continue;
+//            }
+////            pfam1 = removeQuote(pfam1);
+////            pfam2 = removeQuote(pfam2);
+//            // Need to sort since some int_ids are duplicated in file intFilename
+//            if (pfam1.compareTo(pfam2) < 0)
+//                intPFamSet.add(pfam1 + "\t" + pfam2);
+//            else
+//                intPFamSet.add(pfam2 + "\t" + pfam1);
+//        }
+//        fu.close();
+//        fu.saveInteractions(intPFamSet, destFileName);
     }
     
     private Map<String, String> getDBId2PFamId() throws IOException {
