@@ -13,6 +13,7 @@ import org.gk.model.PersistenceAdaptor;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.gk.persistence.XMLFileAdaptor;
+import org.gk.schema.InvalidAttributeException;
 import org.gk.schema.SchemaAttribute;
 import org.gk.schema.SchemaClass;
 import org.junit.Test;
@@ -589,8 +590,39 @@ public class ReactomeAnalyzer {
         return builder.toString();
     }
     
+    public Map<GKInstance, Set<String>> generateFIsForReactions() throws Exception {
+        Collection reactions = prepareReactions();
+        Collection complexes = prepareComplexes();
+        GKInstance rxn = null;
+        Set<GKInstance> interactors = new HashSet<GKInstance>();
+        long time1 = System.currentTimeMillis();
+        Map<GKInstance, Set<String>> rxtToFIs = new HashMap<GKInstance, Set<String>>();
+        for (Iterator it = reactions.iterator(); it.hasNext();) {
+            rxn = (GKInstance) it.next();
+            //System.out.println("Reaction: " + c++);
+            Set<String> interactions = new HashSet<String>();
+            extractInteractorsFromReaction(rxn, interactors);
+            generateInteractions(interactors, interactions, rxn);
+            // Need to work with complexes if involved
+            for (GKInstance interactor : interactors) {
+                if (interactor.getSchemClass().isa(ReactomeJavaConstants.Complex)) {
+                    Set<GKInstance> complexInterctors = new HashSet<GKInstance>();
+                    grepComplexComponents(interactor, complexInterctors);
+                    // No need
+                    //if (interactors.size() > 10)
+                    //    continue; // cutoff set manually
+                    generateInteractions(complexInterctors, interactions, interactor);
+                }
+            }
+            interactors.clear();
+            if (interactions.size() > 0)
+                rxtToFIs.put(rxn, interactions);
+        }
+        return rxtToFIs;
+    }
+    
+    
     public Set<String> extractInteractionSet() throws Exception {
-        // Extract from gk_central reactions
         Collection reactions = prepareReactions();
         Collection complexes = prepareComplexes();
         Set<String> interactions = new HashSet<String>();
@@ -741,10 +773,15 @@ public class ReactomeAnalyzer {
                 return;
         }
         Set<GKInstance> refPepSeqs1 = grepRefPepSeqs(interactor1);
-        if (refPepSeqs1.size() == 0)
-            return;
         Set<GKInstance> refPepSeqs2 = grepRefPepSeqs(interactor2);
-        if (refPepSeqs1.size() == 0)
+        generateFIs(refPepSeqs1, 
+                    refPepSeqs2,
+                    interactions);
+    }
+
+    protected void generateFIs(Set<GKInstance> refPepSeqs1, Set<GKInstance> refPepSeqs2, Set<String> interactions)
+            throws InvalidAttributeException, Exception {
+        if (refPepSeqs1.size() == 0 || refPepSeqs2.size() == 0)
             return;
         // Permutate members in these two sets
         int comp = 0;
@@ -810,6 +847,13 @@ public class ReactomeAnalyzer {
                                                      "=",
                                                      homosapiens);
             reactionCls = dba.getSchema().getClassByName(ReactomeJavaConstants.Reaction);
+        }
+        // Need a little bit filtering for Reactome reactions only
+        for (Iterator it = reactions.iterator(); it.hasNext();) {
+            GKInstance rxt = (GKInstance) it.next();
+            GKInstance dataSource = (GKInstance) rxt.getAttributeValue(ReactomeJavaConstants.dataSource);
+            if (dataSource != null)
+                it.remove();
         }
         Collection cas = dba.fetchInstancesByClass(ReactomeJavaConstants.CatalystActivity);
         Collection regulations = dba.fetchInstancesByClass(ReactomeJavaConstants.Regulation);

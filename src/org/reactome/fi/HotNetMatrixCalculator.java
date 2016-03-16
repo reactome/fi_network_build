@@ -54,7 +54,7 @@ public class HotNetMatrixCalculator {
         String heatKernelFileName = dir +  File.separator + fileName + ".txt";
         long time1 = System.currentTimeMillis();
         DoubleMatrix2D matrix = loadHeatKernelMatrix(heatKernelFileName);
-        System.out.println("Matrix: " + matrix.rows() + ", " + matrix.columns());
+        logger.info("Matrix: " + matrix.rows() + ", " + matrix.columns());
         long time2 = System.currentTimeMillis();
         logger.info("Total time for loading a matrix from a file: " + (time2 - time1));
         // Want to use object serialization

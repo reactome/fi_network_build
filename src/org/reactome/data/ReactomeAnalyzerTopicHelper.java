@@ -6,6 +6,7 @@ package org.reactome.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -351,6 +352,170 @@ public class ReactomeAnalyzerTopicHelper {
             Set<String> genes = pathwayToGenes.get(pathway);
             System.out.println(pathway + "\t" + genes.size());
         }
+    }
+    
+    private Set<String> generateFIs(Set<GKInstance> interactors,
+                                    ReactomeAnalyzer analyzer) throws Exception {
+        Set<String> fis = new HashSet<String>();
+        List<GKInstance> list = new ArrayList<GKInstance>(interactors);
+        for (int i = 0; i < list.size() - 1; i++) {
+            GKInstance int1 = list.get(i);
+            Set<GKInstance> refs1 = InstanceUtilities.grepReferenceEntitiesForPE(int1);
+            if (refs1.size() == 0)
+                continue;
+            for (Iterator<GKInstance> it = refs1.iterator(); it.hasNext();) {
+                GKInstance ref = it.next();
+                GKInstance refDb = (GKInstance) ref.getAttributeValue(ReactomeJavaConstants.referenceDatabase);
+                if (!refDb.getDisplayName().equals("UniProt"))
+                    it.remove();;
+            }
+            if (refs1.size() == 0)
+                continue;
+            for (int j = i + 1; j < list.size(); j++) {
+                GKInstance int2 = list.get(j);
+                Set<GKInstance> refs2 = InstanceUtilities.grepReferenceEntitiesForPE(int2);
+                if (refs2.size() == 0)
+                    continue;
+                for (Iterator<GKInstance> it = refs2.iterator(); it.hasNext();) {
+                    GKInstance ref = it.next();
+                    GKInstance refDb = (GKInstance) ref.getAttributeValue(ReactomeJavaConstants.referenceDatabase);
+                    if (!refDb.getDisplayName().equals("UniProt"))
+                        it.remove();;
+                }
+                if (refs2.size() == 0)
+                    continue;
+                analyzer.generateFIs(refs1, refs2, fis);
+            }
+        }
+//        if (fis.size() > 0)
+//            return fis;
+//        // Try to use complexes
+//        for (GKInstance inst : interactors) {
+//            if (inst.getSchemClass().isa(ReactomeJavaConstants.Complex)) {
+//                Set<GKInstance> complexInteractors = 
+//            }
+//        }
+        return fis;
+    }
+    
+    @Test
+    public void checkReactomeFIsCoverage() throws Exception {
+        ReactomeAnalyzer analyzer = new ReactomeAnalyzer();
+        Collection<GKInstance> reactions = analyzer.prepareReactions();
+        // Use reactions only
+        for (Iterator<GKInstance> it = reactions.iterator(); it.hasNext();) {
+            GKInstance inst = it.next();
+            if (inst.getSchemClass().isa(ReactomeJavaConstants.Reaction))
+                continue;
+            it.remove();
+        }
+        Collection<GKInstance> complexes = analyzer.prepareComplexes();
+        System.out.println("Total reactions: " + reactions.size());
+        Map<GKInstance, Set<String>> rxtToFIs = new HashMap<GKInstance, Set<String>>();
+        int noIntCount = 0;
+        int proteinChemicalCount = 0;
+        int oneProteinOneChemical = 0;
+        int oneFICount = 0;
+        int associtations = 0;
+        for (GKInstance rxt : reactions) {
+            Set<GKInstance> interactors = new HashSet<GKInstance>();
+            analyzer.extractInteractorsFromReaction(rxt, interactors);
+            Set<String> fis = generateFIs(interactors, analyzer);
+            if (fis.size() > 0) {
+                rxtToFIs.put(rxt, fis);
+                if (fis.size() == 1)
+                    oneFICount ++;
+                continue;
+            }
+            Set<GKInstance> proteins = new HashSet<GKInstance>();
+            Set<GKInstance> chemicals = new HashSet<GKInstance>();
+            for (GKInstance inst : interactors) {
+                Set<GKInstance> refs = InstanceUtilities.grepReferenceEntitiesForPE(inst);
+                for (GKInstance ref : refs) {
+                    GKInstance refDb = (GKInstance) ref.getAttributeValue(ReactomeJavaConstants.referenceDatabase);
+                    if (refDb.getDisplayName().equals("ChEBI"))
+                        chemicals.add(ref);
+                    else if (refDb.getDisplayName().equals("UniProt"))
+                        proteins.add(ref);
+                }
+            }
+            if (proteins.size() > 0 && chemicals.size() > 0) {
+                proteinChemicalCount ++;
+                if (proteins.size() == 1 && chemicals.size() == 1)
+                    oneProteinOneChemical ++;
+            }
+            else {
+                // Check if it is associtation
+                List<GKInstance> outputs = rxt.getAttributeValuesList(ReactomeJavaConstants.output);
+                if (outputs.size() == 1) {
+                    GKInstance output = outputs.get(0);
+                    if (output.getSchemClass().isa(ReactomeJavaConstants.Complex)) {
+                        List<GKInstance> inputs = rxt.getAttributeValuesList(ReactomeJavaConstants.input);
+                        if (inputs.size() > 1) {
+                            associtations ++;
+                            continue;
+                        }
+                    }
+                }
+                noIntCount ++;
+//                System.out.println(rxt);
+            }
+        }
+        System.out.println("Reactions having FIs: " + rxtToFIs.size());
+        System.out.println("Reactions having one FI: " + oneFICount);
+        System.out.println("Reactions don't have FIs: " + noIntCount);
+        System.out.println("Interactions between proteins and chemicals: " + proteinChemicalCount);
+        System.out.println("One protein and one chemical: " + oneProteinOneChemical);
+        System.out.println("Possible associtations: " + associtations); // This number is added to reactions having FIs to get the total reactions that have FIs.
+//        if (true)
+//            return;
+        
+        // Load Proteins in the Reactome FI
+        String resultDir = FIConfiguration.getConfiguration().get("RESULT_DIR");
+        // Interactions
+        String[] files = new String[] {
+                FIConfiguration.getConfiguration().get("IREFINDEX_HUMAN_PPI_FILE"),
+                FIConfiguration.getConfiguration().get("IREFINDEX_MOUSE_TO_HUMAN_PPI_FILE"),
+                FIConfiguration.getConfiguration().get("IREFINDEX_FLY_TO_HUMAN_PPI_FILE"),
+                FIConfiguration.getConfiguration().get("IREFINDEX_WORM_TO_HUMAN_PPI_FILE"),
+                FIConfiguration.getConfiguration().get("IREFINDEX_YEAST_TO_HUMAN_PPI_FILE")
+        };
+        FileUtility fu = new FileUtility();
+        Set<String> interactions = new HashSet<String>();
+        for (String file : files) {
+            Set<String> tmp = fu.loadInteractions(file);
+//            System.out.println("Interactions in " + file + ": " + tmp.size());
+            interactions.addAll(tmp);
+//            System.out.println("Merged: " + interactions.size());
+        }
+        System.out.println("Total interactions: " + interactions.size());
+        Map<GKInstance, Set<String>> cannotMapped = new HashMap<GKInstance, Set<String>>();
+        for (GKInstance rxt : rxtToFIs.keySet()) {
+            Set<String> fis = rxtToFIs.get(rxt);
+            Set<String> shared = InteractionUtilities.getShared(fis, interactions);
+            if (shared.size() == 0 && fis.size() > 1) {
+                cannotMapped.put(rxt, fis);
+            }
+        }
+        System.out.println("Reactions cannot map to interactions: " + cannotMapped.size());
+        // Check with domain domain interactions
+        PfamAnalyzer pfamAnalyzer = new PfamAnalyzer();
+        int count = 0;
+        int cannotMappedCount = 0;
+        for (GKInstance rxt : rxtToFIs.keySet()) {
+            Set<String> fis = rxtToFIs.get(rxt);
+            for (String fi : fis) {
+                boolean isMapped = pfamAnalyzer.checkIfInteracting(fi);
+                if (isMapped) {
+                    count ++;
+                    if (cannotMapped.keySet().contains(rxt))
+                        cannotMappedCount ++;
+                    break;
+                }
+            }
+        }
+        System.out.println("Reactions mapped to domain interactions: " + count);
+        System.out.println("No interaction reactions mapped to domain interactions: " + cannotMappedCount);
     }
     
 }

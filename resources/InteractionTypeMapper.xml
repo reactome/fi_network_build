@@ -238,9 +238,14 @@
         direction="->" />
     <type name="PPrel: inhibition, ubiquitination" reverse="PPrel: inhibited, ubiquitination"
         direction="-|" />
-    <!-- The following four types are added in Deceember, 2014 -->
+    <!-- The following four types are added in December, 2014 -->
     <type name="PPrel: activation, methylation" reverse="PPrel: activated, methylation" direction="->" />
     <type name="PCrel: expression" reverse="PCrel: expressed by" direction="->" />
     <type name="PPrel: inhibition, methylation" reverse="PPrel: inhibited, methylation" direction="-|" />
     <type name="PPrel: activation, phosphorylation, binding/association" reverse="PPrel: activated, phosphorylation, binding/association" direction="->" />    
+    <!-- The following three types are added in March, 2016 for release 2015 -->
+    <type name="PPrel: inhibition, glycosylation" reverse="PPrel: inhibited glycosylation" direction="-|" />
+    <type name="PPrel: glycosylation" reverse="PPrel: glycosylated" direction="-" />
+    <type name="PPrel: inhibition, dephosphorylation, indirect effect" reverse="PPrel: inhibited, dephosphorylation, indirect effect" direction="-|" />
+    
 </InteractionTypeMapper>

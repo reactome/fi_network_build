@@ -74,6 +74,8 @@ public class FactorGraphDumper {
         for (GKInstance pathway : pathways) {
             logger.info(count +": " + pathway);
             FactorGraph fg = converter.convertPathway(pathway);
+            if (fg == null)
+                throw new IllegalStateException(pathway + " cannot be converted into a factor graph!");
             fgList.getList().add(fg);
             count ++;
 //            if (count == 4)

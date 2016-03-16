@@ -157,7 +157,7 @@ public class FeatureHandlerForV3 {
         featureToPairs.put("carlosGeneExp", carlosGeneExp);
         return featureToPairs;
     }
-    
+
     @Test
     public void countInFeatures() throws IOException {
         UniProtAnalyzer uniAnalyzer = new UniProtAnalyzer();

@@ -143,8 +143,10 @@ public class CytoscapePlugInFileHandler {
                     String value = FIConfiguration.getConfiguration().get(keyToFileName.get(key));
                     // Just need the file only
                     File file = new File(value);
-                    if (!file.exists())
-                        throw new IllegalStateException("Cannot find file: " + value);
+                    if (!file.exists()) {
+//                        throw new IllegalStateException("Cannot find file for " + key + ": " + value);
+                        logger.error("Cannot find file for " + key + ": " + value);
+                    }
                     line = assignValue(line, file.getName());
                     break;
                 }

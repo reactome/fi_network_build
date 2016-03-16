@@ -121,7 +121,8 @@ public class HibernateFIReader extends HibernateFIPersistence {
                                                       String name2,
                                                       Session session) throws Exception {
         List<Interaction> rtn = new ArrayList<Interaction>();
-        Query query = session.createQuery("FROM Interaction as i WHERE i.firstProtein.shortName = ? AND i.secondProtein.shortName = ?");
+        Query query = session.createQuery("FROM Interaction as i WHERE i.firstProtein.shortName = ? AND "
+                                                                    + "i.secondProtein.shortName = ?");
         query.setString(0, name1);
         query.setString(1, name2);
         List interactions = query.list();
@@ -305,7 +306,7 @@ public class HibernateFIReader extends HibernateFIPersistence {
         new FIFileAnalyzer().saveFIInOrder(fis, fileName);
     }
     
-    private String getFIInName(Interaction interaction) {
+    protected String getFIInName(Interaction interaction) {
         Protein protein1 = interaction.getFirstProtein();
         Protein protein2 = interaction.getSecondProtein();
         //String name1 = protein1.getLabel();
@@ -468,11 +469,26 @@ public class HibernateFIReader extends HibernateFIPersistence {
         long time2 = System.currentTimeMillis();
         logger.info("Time for getting interactions: " + (time2 - time1));
         session.close();
-//        logger.info("Total Pathway FIs in Genes with sources: " + fiToSources.size());
-        logger.info("Total Reactome Pathway FIs in Genes with sources: " + fiToSources.size());
+        logger.info("Total Pathway FIs in Genes with sources: " + fiToSources.size());
+//        logger.info("Total Reactome Pathway FIs in Genes with sources: " + fiToSources.size());
         FileUtility fu = new FileUtility();
         fu.saveSetMap(fiToSources, 
                       FIConfiguration.getConfiguration().get("GENE_FI_PATHWAY_SOURCES_FILE_NAME"));
+    }
+    
+    protected List fetchPredictedFIs(Session session) throws Exception {
+        Query query = session.createQuery("FROM Interaction as i WHERE i.evidence.probability >= ?");
+        query.setDouble(0, CUT_OFF_VALUE);
+        List list = query.list();
+        System.out.println("Total interactions from prediction: " + list.size());
+        return list;
+    }
+    
+    protected List fetchAnnotatedFIs(Session session) throws Exception {
+        Query query = session.createQuery("FROM Interaction as i WHERE i.evidence is null");
+        List list = query.list();
+        System.out.println("Total interactions from pathways: " + list.size());
+        return list;
     }
     
     /**
@@ -484,11 +500,8 @@ public class HibernateFIReader extends HibernateFIPersistence {
     public void generateFIFileInGeneInHibernate() throws Exception {
         initSession();
         Session session = sessionFactory.openSession();
-        Query query = session.createQuery("FROM Interaction as i WHERE i.evidence.probability >= ?");
-        query.setDouble(0, CUT_OFF_VALUE);
         long time1 = System.currentTimeMillis();
-        List list = query.list();
-        System.out.println("Total interactions from prediction: " + list.size());
+        List list = fetchPredictedFIs(session);
         Interaction interaction = null;
         //String fileName = FIConfiguration.getConfiguration().get("RESULT_DIR + "FI73_041408.txt";
         // Used to hold FIs to count how many proteins and interactions
@@ -504,9 +517,7 @@ public class HibernateFIReader extends HibernateFIPersistence {
             predictedFIs.add(fi);
             allFIs.add(fi);
         }
-        query = session.createQuery("FROM Interaction as i WHERE i.evidence is null");
-        list = query.list();
-        System.out.println("Total interactions from pathways: " + list.size());
+        list = fetchAnnotatedFIs(session);
         for (Iterator it = list.iterator(); it.hasNext();) {
             interaction = (Interaction) it.next();
 //            // Avoid FIs from panther and INOH

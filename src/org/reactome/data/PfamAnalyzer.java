@@ -168,4 +168,33 @@ public class PfamAnalyzer {
         return txt.substring(1, txt.length() - 1);
     }
     
+    
+    @Test
+    public void checkCoverage() throws IOException {
+        UniProtAnalyzer uniAnalyzer = new UniProtAnalyzer();
+        Set<String> swissIds = uniAnalyzer.loadSwissProtIds();
+        System.out.println("Total Swiss IDs: " + swissIds.size());
+        Map<String, Set<String>> uni2PfamMap = getUni2PfamMap();
+        int size = uni2PfamMap.size();
+        Set<String> proteins = new HashSet<String>(uni2PfamMap.keySet());
+        proteins.retainAll(swissIds);
+        double percentage = (double) proteins.size() / swissIds.size();
+        System.out.println("PfamDomainInt" + "\t" + size + "\t" + proteins.size() + "\t" + percentage);
+        // Load Proteins in the Reactome FI
+        String resultDir = FIConfiguration.getConfiguration().get("RESULT_DIR");
+        Set<String> reactomeFIs = new FileUtility().loadInteractions(resultDir + File.separator + "FIs_Reactome.txt");
+        Set<String> reactomeFIsProteins = InteractionUtilities.grepIDsFromInteractions(reactomeFIs);
+        System.out.println("Proteins in ReactomeFIs: " + reactomeFIsProteins.size());
+        Set<String> inSwissProt = new HashSet<String>(reactomeFIsProteins);
+        inSwissProt.retainAll(swissIds);
+        System.out.println("\tIn SwissProt: " + inSwissProt.size() + " (" + (double)inSwissProt.size() / reactomeFIsProteins.size() + ")");
+        Set<String> inpFAM = new HashSet<String>(reactomeFIsProteins);
+        inpFAM.retainAll(uni2PfamMap.keySet());
+        System.out.println("\tIn pFAM: " + inpFAM.size() + " (" + (double) inpFAM.size() / reactomeFIsProteins.size() + ")");
+        inpFAM = new HashSet<String>(reactomeFIsProteins);
+        inpFAM.retainAll(proteins);
+        System.out.println("\tFilter to SwissProt: " + inpFAM.size() + " (" + (double) inpFAM.size()/reactomeFIsProteins.size() + ")");
+    }
+    
+    
 }

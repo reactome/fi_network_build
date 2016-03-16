@@ -248,7 +248,9 @@ public class UniProtAnalyzer {
     
     public Set<String> loadSwissProtIds() throws IOException {
         FileUtility fu = new FileUtility();
-        return fu.loadSet(FIConfiguration.getConfiguration().get("UNIPROT_DIR") + "SwissProtIDs.txt");
+        Map<String, String> idToAccMap = fu.loadInteractionPairs(FIConfiguration.getConfiguration().get("UNIPROT_DIR") + "SwissProtACIDMap.txt",
+                                                                 "\t");
+        return new HashSet<String>(idToAccMap.values());
     }
     
     /**

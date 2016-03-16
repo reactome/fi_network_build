@@ -4,12 +4,14 @@
  */
 package org.reactome.data;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.gk.model.GKInstance;
 import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;

@@ -4,6 +4,16 @@
  */
 package org.reactome.fi;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Test;
@@ -15,6 +25,7 @@ import org.reactome.data.IRefIndexMITTabAnalyzer;
 import org.reactome.data.MicroarrayDataAnalyzer;
 import org.reactome.data.PfamAnalyzer;
 import org.reactome.data.UniProtAnalyzer;
+import org.reactome.fi.util.FIConfiguration;
 import org.reactome.hibernate.HibernateFIReader;
 import org.reactome.kegg.KeggToReactomeConverter;
 import org.reactome.panther.PantherToReactomeConverterTest;
@@ -32,6 +43,7 @@ import org.reactome.tred.TREDToReactomeConverter;
  * 6). predictFIs()
  * 7). buildFIDb()
  * 8). generateCytoscapePlugInFiles()
+ * 9). compareFilesToPreviousVersion()
  * @author gwu
  *
  */
@@ -261,6 +273,13 @@ public class FINetworkBuilder {
         HibernateFIReader hibernateReader = new HibernateFIReader();
         logger.info("Running HibernateFIReader.generateFIFileInGeneInHiberante()...");
         hibernateReader.generateFIFileInGeneInHibernate();
+        // Create a map from pathway fis to their original sources
+        logger.info("Running HibernateFIReader.generateFIInGeneSourceFile()...");
+        hibernateReader.generateFIInGeneSourceFile();
+        // Annotated the FIs: This may need some manual work.
+//        logger.info("Running InteractionAnnotator.annotateAllFIs()...");
+//        InteractionAnnotator annotator = new InteractionAnnotator();
+//        annotator.annoateAllFIs();
         // Generate the largest graph component
         FIGraphAnalyzer graphAnalyzer = new FIGraphAnalyzer();
         logger.info("Running FIGraphAnalyzer.analyzeComponents()...");
@@ -296,9 +315,53 @@ public class FINetworkBuilder {
         // The following method should be called after the kernel file was generated from using R
 //        HotNetMatrixCalculator hotnetMatrixCalculator = new HotNetMatrixCalculator();
 //        hotnetMatrixCalculator.generateSerializedMatrixFile();
+        
         // Generate factor graphs for pathway diagrams to be used by the Cytoscape app
+        // Consider running this with its own step to avoid a long logging.
         FactorGraphDumper fgDumper = new FactorGraphDumper();
         fgDumper.dump();
+        // Don't forget to generate FIsInGene_xxxxxx_with_annotations.txt file by using
+        // the method in caBigR3 project: 
+    }
+    
+    /**
+     * This method is used to generate a comparison file to compare files
+     * generated for this version to a previous version. The results are better
+     * to be viewed in Excel, and copied to the combined_logging.txt file.
+     * @throws IOException
+     */
+    @Test
+    public void compareFilesToPreviousVersion() throws IOException {
+        FIConfiguration config = FIConfiguration.getConfiguration();
+        String year = config.get("YEAR");
+        String preYear = (new Integer(year) - 1) + "";
+        File dir = new File(config.get("RESULT_DIR"));
+        Map<String, File> nameToFile = getNameToFile(dir);
+        File preDir = new File("results/" + preYear);
+        Map<String, File> preNameToFile = getNameToFile(preDir);
+        Set<String> allNames = new HashSet<String>(nameToFile.keySet());
+        allNames.addAll(preNameToFile.keySet());
+        List<String> nameList = new ArrayList<String>(allNames);
+        Collections.sort(nameList);
+        // Just print out files in the system out for easy view
+        System.out.println("\t" + year + "\t" + preYear);
+        for (String name : nameList) {
+            if (name.startsWith("."))
+                continue; // Don't show hidden file
+            File file = nameToFile.get(name);
+            File preFile = preNameToFile.get(name);
+            System.out.println(name + "\t" + 
+                               (file == null ? "NA" : file.length()) + "\t" + 
+                               (preFile == null ? "NA" : preFile.length()));
+        }
+    }
+    
+    private Map<String, File> getNameToFile(File dir) {
+        Map<String, File> nameToFile = new HashMap<String, File>();
+        File[] files = dir.listFiles();
+        for (File file : files) 
+            nameToFile.put(file.getName(), file);
+        return nameToFile;
     }
     
 }
