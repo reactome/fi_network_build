@@ -72,15 +72,20 @@ public class FactorGraphDumper {
         int count = 1;
         JAXBBindableList<FactorGraph> fgList = new JAXBBindableList<FactorGraph>();
         for (GKInstance pathway : pathways) {
+//            if (!pathway.getDBID().equals(446203L))
+//                continue;
             logger.info(count +": " + pathway);
             FactorGraph fg = converter.convertPathway(pathway);
             if (fg == null)
                 throw new IllegalStateException(pathway + " cannot be converted into a factor graph!");
+//            fg.exportFG(System.out);
             fgList.getList().add(fg);
             count ++;
 //            if (count == 4)
 //                break;
         }
+//        if (true)
+//            return;
         long time2 = System.currentTimeMillis();
         logger.info("Total time: " + (time2 - time1) + " ms");
         resetIds(fgList);

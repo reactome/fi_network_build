@@ -484,6 +484,24 @@ public class FIFileAnalyzer {
         counter.countVsSwissProt(InteractionUtilities.grepIDsFromInteractions(allFIs));
     }
     
+    @Test
+    public void checkTotalFIsAndNamesInFile() throws IOException {
+        String fileName = FIConfiguration.getConfiguration().get("GENE_FI_ANNOTATION_FILE_NAME");
+        fu.setInput(fileName);
+        Set<String> totalNames = new HashSet<String>();
+        String line = fu.readLine();
+        Set<String> fis = new HashSet<String>();
+        while ((line = fu.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            totalNames.add(tokens[0]);
+            totalNames.add(tokens[1]);
+            fis.add(tokens[0] + "\t" + tokens[1]);
+        }
+        fu.close();
+        System.out.println("Total names: " + totalNames.size());
+        System.out.println("Total FIs: " + fis.size());
+    }
+    
     /**
      * Load pathway FIs in UniProt ids.
      * @return

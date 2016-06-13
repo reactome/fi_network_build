@@ -192,13 +192,17 @@ public class CytoscapePlugInFileHandler {
                 config.get("KEGG_DIR") + "map_title.tab",
                 config.get("KEGG_HSA_KGML_DIR") + "hsa.list",
                 "resources" + File.separator + "InteractionTypeMapper.xml",
+                "resources" + File.separator + "mcl_script.sh", // This is needed for mcl clustering
+                "resources" + File.separator + "CGISurvivalAnalysis.R"
         };
         String[] targetNames = new String[] {
                 "gene_association.goa_human",
                 "GO.terms_and_ids.txt",
                 "kegg_map_title.tab",
                 "kegg_hsa.list",
-                "InteractionTypeMapper.xml"
+                "InteractionTypeMapper.xml",
+                "mcl_script.sh",
+                "CGISurvivalAnalysis.R"
         };
         FileUtility fu = new FileUtility();
         logger.info("Copying files to the results directory ...");
