@@ -58,6 +58,34 @@ public class FIFileAnalyzer {
 //    }
     
     /**
+     * This method is used to check the connections to UBC, which has over 3,000 FIs
+     * in the 2015 version of the Reactome FI network.
+     * @throws IOException
+     */
+    @Test
+    public void checkUBCConnections() throws IOException {
+//        String fiFileName = FIConfiguration.getConfiguration().get("GENE_FI_FILE_NAME");
+        String fiFileName = FIConfiguration.getConfiguration().get("GENE_FI_BIG_COMP_FILE_NAME");
+        System.out.println("FI file name: " + fiFileName);
+        Set<String> fis = fu.loadInteractions(fiFileName);
+        Map<String, Set<String>> proteinToPartners = InteractionUtilities.generateProteinToPartners(fis);
+        Set<String> ubcPartners = proteinToPartners.get("UBC");
+        System.out.println("UBC: " + ubcPartners.size());
+        
+        // Generate a file without UBC
+        int lastIndex = fiFileName.lastIndexOf(".");
+        String fiFileName1 = fiFileName.substring(0, lastIndex) + "_NoUBC" + fiFileName.substring(lastIndex);
+        fu.setOutput(fiFileName1);
+        for (String fi : fis) {
+            String[] tokens = fi.split("\t");
+            if (tokens[0].equals("UBC") || tokens[1].equals("UBC"))
+                continue;
+            fu.printLine(fi);
+        }
+        fu.close();
+    }
+    
+    /**
      * This method is used to check ZNF genes in the FI files.
      * @throws IOException
      */
