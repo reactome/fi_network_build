@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.biopax.model.Interaction;
 import org.gk.model.GKInstance;
 import org.gk.model.InstanceUtilities;
 import org.gk.model.ReactomeJavaConstants;
@@ -303,6 +302,9 @@ public class PathwayGeneSetGenerator {
         @SuppressWarnings("unchecked")
         Collection<GKInstance> pathways = dba.fetchInstance(query);
         logger.info("Total human pathways in Reactome: " + pathways.size());
+        // Did a fix on July 23, 2016 to get non-disease pathways only
+        pathways = getNonDiseasePathways(dba, pathways);
+        logger.info("After removing pathways in Disease: " + pathways.size());
         // Get a map from protein ids to topics (pathways)
         Map<String, Set<String>> id2Topics = new HashMap<String, Set<String>>();
         ProteinIdFilters filters = new ProteinIdFilters();
@@ -320,4 +322,29 @@ public class PathwayGeneSetGenerator {
         fileName = FIConfiguration.getConfiguration().get("GENE_TO_REACTOME_PATHWAYS");
         generateNameToTopicMap(id2Topics, fileName);
     }
+    
+    // This is a fix performed on July 23, 2016 to remove pathways under Disease since they have
+    // not listed in the hierarchy for Reactome pathway analysis
+    // However, we cannot just remove pathways listed under Disease since normal pathways may be listed
+    // there too. We don't want to remove them. So we do another away around.
+    private Set<GKInstance> getNonDiseasePathways(MySQLAdaptor dba,
+                                                  Collection<GKInstance> pathways) throws Exception {
+        Set<GKInstance> nonDiseasePathways = new HashSet<GKInstance>();
+        Collection<GKInstance> frontPages = dba.fetchInstancesByClass(ReactomeJavaConstants.FrontPage);
+        for (GKInstance frontPage : frontPages) {
+            List<GKInstance> items = frontPage.getAttributeValuesList(ReactomeJavaConstants.frontPageItem);
+            for (GKInstance item : items) {
+                if (item.getDisplayName().equals("Disease"))
+                    continue; // Escape disease
+                if (pathways.contains(item)) {
+                    Set<GKInstance> events = InstanceUtilities.getContainedEvents(item);
+                    for (GKInstance event : events)
+                        if (event.getSchemClass().isa(ReactomeJavaConstants.Pathway))
+                            nonDiseasePathways.add(event);
+                }
+            }
+        }
+        return nonDiseasePathways;
+    }
+    
 }
