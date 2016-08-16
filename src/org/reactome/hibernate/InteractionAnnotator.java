@@ -5,7 +5,6 @@
  */
 package org.reactome.hibernate;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +23,6 @@ import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -50,6 +48,8 @@ public class InteractionAnnotator extends HibernateFIReader {
     private Map<String, String> reverseNameToName;
     // For return reactome sources for pathway fis
     private Map<String, Set<Long>> fiToSources;
+    // A flag to limit annotations to the Reactome data source only
+    private boolean useReactomeSourceOnly = false; // Default should be false
     
     public InteractionAnnotator() throws Exception {
         initInteractionTypes();
@@ -245,6 +245,9 @@ public class InteractionAnnotator extends HibernateFIReader {
             needReverse = true;
         FIAnnotation fiType = null;
         for (ReactomeSource src : sources) {
+            // Check if the annotation should be limited to Reactome only
+            if (useReactomeSourceOnly && !src.getDataSource().equals("Reactome"))
+                continue;
             if (src.getSourceType() == ReactomeSourceType.COMPLEX)
                 fiType = nameToType.get("complex");
             else if (src.getSourceType() == ReactomeSourceType.INTERACTION) {
@@ -589,17 +592,10 @@ public class InteractionAnnotator extends HibernateFIReader {
                                             config.get("REACTOME_SOURCE_DB_NAME"),
                                             config.get("DB_USER"),
                                             config.get("DB_PWD"));
-        // Auto-generate the FI file name with annotations
-        String fiFileName = config.get("GENE_FI_FILE_NAME");
-        int index = fiFileName.lastIndexOf(".");
-        String outFileName = fiFileName.substring(0, index) + "_with_annotations" + fiFileName.substring(index);
-        File hibernateConfig = new File("resources/funcIntHibernate.cfg.xml");
-        
         setSourceDBA(dba);
         // Objects related to hibernate session
-        HibernateFIReader hibernateReader = new HibernateFIReader();
-        SessionFactory sf = hibernateReader.initSession();
-        Session session = sf.openSession();
+        initSession();
+        Session session = sessionFactory.openSession();
         Query query = session.createQuery("FROM Interaction as i WHERE i.firstProtein.shortName = ? "
                 + "AND i.secondProtein.shortName = ?");
 //        String fi = "TRAPPC2P1\tZBTB33";
@@ -611,12 +607,12 @@ public class InteractionAnnotator extends HibernateFIReader {
         // A list of FIs that cannot be annotated because of sequence-based merging
         // In 2015 version
         String[] fis = new String[] {
-                "BRCA1 TRAPPC2B", //has no type! Interaction: 51029
+//                "BRCA1 TRAPPC2B", //has no type! Interaction: 51029
                 "EP300 HSPA1A", // has no type! Interaction: 36573
                 "HSF1 HSPA1A", // has no type! Interaction: 131579
-                "HSPA1A JUN", // has no type! Interaction: 17546
-                "HSPA1A PPARGC1A", // has no type! Interaction: 93702
-                "TRAPPC2B ZBTB33" // has no type! Interaction: 158201
+//                "HSPA1A JUN", // has no type! Interaction: 17546
+//                "HSPA1A PPARGC1A", // has no type! Interaction: 93702
+//                "TRAPPC2B ZBTB33" // has no type! Interaction: 158201
         };
         for (String fi : fis) {
             String[] genes = fi.split(" ");
@@ -630,6 +626,62 @@ public class InteractionAnnotator extends HibernateFIReader {
                                         fiAnnot.getScore());
             System.out.println(text);
         }
+        session.close();
+    }
+    
+    /**
+     * Use this method to generate a FI network containing FIs from Reactome only.
+     * The annotations will be performed for Reactome source only.
+     * @throws Exception
+     */
+    @Test
+    public void generateAnnotatedReactomeFIs() throws Exception {
+        FIConfiguration config = FIConfiguration.getConfiguration();
+        MySQLAdaptor dba = new MySQLAdaptor("localhost",
+                                            config.get("REACTOME_SOURCE_DB_NAME"),
+                                            config.get("DB_USER"),
+                                            config.get("DB_PWD"));
+        setSourceDBA(dba);
+        
+        // Auto-generate the FI file name with annotations
+        String fiFileName = config.get("GENE_FI_FILE_NAME");
+        int index = fiFileName.lastIndexOf(".");
+        String outFileName = fiFileName.substring(0, index) + "_Reactome_Annotated" + fiFileName.substring(index);
+        // Intiailize hibernate
+        initSession();
+        Session session = sessionFactory.openSession();
+        List<?> annotatedFIs = fetchAnnotatedFIs(session);
+        List<Interaction> reactomeFIs = new ArrayList<Interaction>();
+        // Filter to Reactome FIs
+        // For output
+        Set<String> fisInGenes = new HashSet<String>();
+        for (Object obj : annotatedFIs) {
+            Interaction fi = (Interaction) obj;
+            Set<ReactomeSource> sources = fi.getReactomeSources();
+            for (ReactomeSource src : sources) {
+                if (src.getDataSource().equals("Reactome")) {
+                    reactomeFIs.add(fi);
+                    String fiInGene = getFIInName(fi);
+                    if (fiInGene != null)
+                        fisInGenes.add(fiInGene);
+                    break;
+                }
+            }
+        }
+        logger.info("Total Reactome FIs: " + reactomeFIs.size());
+        useReactomeSourceOnly = true;
+        boolean hasUnknown = annotate(reactomeFIs, outFileName);
+        session.close();
+        if (hasUnknown) {
+            // Signaling to stop for manual fix
+            throw new IllegalStateException("Unknown annotation has been found. Need a manual fix. Check errors in logging!");
+        }
+        // Generate a FI file without annotation
+        outFileName = fiFileName.substring(0, index) + "_Reactome" + fiFileName.substring(index);
+        List<String> fiList = new ArrayList<String>(fisInGenes);
+        Collections.sort(fiList);
+        FileUtility fu = new FileUtility();
+        fu.saveCollection(fiList, outFileName);
     }
     
     /**
@@ -709,6 +761,16 @@ public class InteractionAnnotator extends HibernateFIReader {
         List<?> annotatedFIs = fetchAnnotatedFIs(session);
         List allFIs = new ArrayList(predictedFIs);
         allFIs.addAll(annotatedFIs);
+        boolean hasUnknown = annotate(allFIs, outFileName);
+        session.close();
+        if (hasUnknown) {
+            // Signaling to stop for manual fix
+            throw new IllegalStateException("Unknown annotation has been found. Need a manual fix. Check errors in logging!");
+        }
+    }
+    
+    private boolean annotate(List<?> allFIs,
+                             String outFileName) throws IOException, Exception {
         Map<String, List<Interaction>> fiInGeneToFIs = new HashMap<String, List<Interaction>>();
         for (Object obj : allFIs) {
             Interaction i = (Interaction) obj;
@@ -722,7 +784,7 @@ public class InteractionAnnotator extends HibernateFIReader {
             }
             list.add(i);
         }
-        logger.info("Total FIs including predicted and annotated: " + fiInGeneToFIs.size());
+        logger.info("Total FIs for annotations: " + fiInGeneToFIs.size());
         // Sort it for easy comparison with other files
         List<String> fiInGeneList = new ArrayList<String>(fiInGeneToFIs.keySet());
         Collections.sort(fiInGeneList);
@@ -731,8 +793,8 @@ public class InteractionAnnotator extends HibernateFIReader {
         fu.setOutput(outFileName);
         fu.printLine("Gene1\tGene2\tAnnotation\tDirection\tScore");
         int count = 0;
-        long time1 = System.currentTimeMillis();
         boolean hasUnknown = false;
+        long time1 = System.currentTimeMillis();
         for (String fiInGene : fiInGeneList) {
 //            if (!(line.contains("ATF2") && line.contains("CDKN1A")))
 //                continue;
@@ -756,13 +818,9 @@ public class InteractionAnnotator extends HibernateFIReader {
 //                logger.info("Total annotated FIs: " + count);
         }
         fu.close();
-        session.close();
         logger.info("Total interactions: " + count);
         long time2 = System.currentTimeMillis();
         logger.info("Total time: " + (time2 - time1));
-        if (hasUnknown) {
-            // Signaling to stop for manual fix
-            throw new IllegalStateException("Unknown annotation has been found. Need a manual fix. Check errors in logging!");
-        }
+        return hasUnknown;
     }
 }
