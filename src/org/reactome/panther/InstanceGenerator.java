@@ -66,15 +66,21 @@ public class InstanceGenerator {
         return rtn;
     }
     
-    public GKInstance getRegulationType(String type) throws Exception {
-        GKInstance regulationType = searchInstance(ReactomeJavaConstants.RegulationType, type);
-        if (regulationType != null)
-            return regulationType;
-        regulationType = createInstance(ReactomeJavaConstants.RegulationType);
-        regulationType.addAttributeValue(ReactomeJavaConstants.name, type);
-        regulationType.setDisplayName(type);
-        return regulationType;
-    }
+//    /**
+//     * This method is deleted because RegulationType has been deleted in the Reactome data model (Dec 28, 2016).
+//     * @param type
+//     * @return
+//     * @throws Exception
+//     */
+//    public GKInstance getRegulationType(String type) throws Exception {
+//        GKInstance regulationType = searchInstance(ReactomeJavaConstants.RegulationType, type);
+//        if (regulationType != null)
+//            return regulationType;
+//        regulationType = createInstance(ReactomeJavaConstants.RegulationType);
+//        regulationType.addAttributeValue(ReactomeJavaConstants.name, type);
+//        regulationType.setDisplayName(type);
+//        return regulationType;
+//    }
     
     public GKInstance createCompartment(Element compartmentElm, 
             PantherNameHandler nameHandler) throws Exception {

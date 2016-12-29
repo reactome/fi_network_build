@@ -611,6 +611,43 @@ public class HibernateFIReader extends HibernateFIPersistence {
         return rtn;
     }
     
+    @Test
+    public void testQueryFIsForAccession() throws Exception {
+        String accession = "Q8N726";
+        initSession();
+        Session session = sessionFactory.openSession();
+        List<Interaction> fis = queryFIsForAccessio(accession, session);
+        System.out.println("Total FIs for " + accession + ": " + fis.size());
+        for (Interaction fi : fis) {
+            Evidence evidence = fi.getEvidence();
+//            System.out.println(fi.getFirstProtein().getPrimaryAccession() + "\t" + 
+//                               fi.getSecondProtein().getPrimaryAccession() + "\t" + 
+//                               fi.getFirstProtein().getShortName() + "\t" + 
+//                               fi.getSecondProtein().getShortName() + "\t" + 
+//                               (evidence == null ? "extractedFI" : 
+//                                                   ("predictedFI" + "\t" + evidence.getProbability() + "\t" + 
+//                                                                           evidence.getHumanInteraction() + "\t" + 
+//                                                                           evidence.getMousePPI() + "\t" + 
+//                                                                           evidence.getDmePPI() + "\t" + 
+//                                                                           evidence.getScePPI() + "\t" + 
+//                                                                           evidence.getCelPPI() + "\t" +
+//                                                                           evidence.getPfamDomainInt())));
+            if (evidence != null)
+                continue;
+            Set<ReactomeSource> sources = fi.getReactomeSources();
+            for (ReactomeSource source : sources) {
+                if (source.getDataSource().equals("Reactome")) {
+                    System.out.println(fi.getFirstProtein().getPrimaryAccession() + "\t" + 
+                                       fi.getSecondProtein().getPrimaryAccession() + "\t" + 
+                                       fi.getFirstProtein().getShortName() + "\t" + 
+                                       fi.getSecondProtein().getShortName());
+                    break;
+                }
+            }
+        }
+        session.close();
+    }
+    
     public List<Interaction> queryFIsForAccessio(String accession, 
                                                  Session session) throws Exception {
         List<Interaction> rtn = new ArrayList<Interaction>();

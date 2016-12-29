@@ -4,6 +4,7 @@
  */
 package org.reactome.data;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -20,6 +21,8 @@ import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
+import org.reactome.fi.util.Value;
+import org.reactome.weka.FeatureHandlerForV3;
 
 @SuppressWarnings("unchecked")
 public class ReactomeAnalyzer {
@@ -590,41 +593,417 @@ public class ReactomeAnalyzer {
         return builder.toString();
     }
     
-    public Map<GKInstance, Set<String>> generateFIsForReactions() throws Exception {
-        Collection reactions = prepareReactions();
-        Collection complexes = prepareComplexes();
-        GKInstance rxn = null;
-        Set<GKInstance> interactors = new HashSet<GKInstance>();
-        long time1 = System.currentTimeMillis();
-        Map<GKInstance, Set<String>> rxtToFIs = new HashMap<GKInstance, Set<String>>();
-        for (Iterator it = reactions.iterator(); it.hasNext();) {
-            rxn = (GKInstance) it.next();
-            //System.out.println("Reaction: " + c++);
-            Set<String> interactions = new HashSet<String>();
-            extractInteractorsFromReaction(rxn, interactors);
-            generateInteractions(interactors, interactions, rxn);
-            // Need to work with complexes if involved
-            for (GKInstance interactor : interactors) {
-                if (interactor.getSchemClass().isa(ReactomeJavaConstants.Complex)) {
-                    Set<GKInstance> complexInterctors = new HashSet<GKInstance>();
-                    grepComplexComponents(interactor, complexInterctors);
-                    // No need
-                    //if (interactors.size() > 10)
-                    //    continue; // cutoff set manually
-                    generateInteractions(complexInterctors, interactions, interactor);
-                }
+    private Set<GKInstance> grepComplexes(Set<GKInstance> interactors) throws Exception {
+        Set<GKInstance> complexes = new HashSet<GKInstance>();
+        for (GKInstance interactor : interactors) {
+            if (interactor.getSchemClass().isa(ReactomeJavaConstants.Complex))
+                complexes.add(interactor);
+            Set<GKInstance> temp = InstanceUtilities.getContainedInstances(interactor,
+                                                                           ReactomeJavaConstants.hasMember,
+                                                                           ReactomeJavaConstants.hasComponent);
+            for (GKInstance inst : temp) {
+                if (inst.getSchemClass().isa(ReactomeJavaConstants.Complex))
+                    complexes.add(inst);
             }
-            interactors.clear();
-            if (interactions.size() > 0)
-                rxtToFIs.put(rxn, interactions);
         }
-        return rxtToFIs;
+        return complexes;
     }
     
+    /**
+     * Generate a mapping file from genes to reactions.
+     * @throws Exception
+     */
+    @Test
+    public void generateGenesToReactionsMap() throws Exception {
+        Collection reactions = prepareReactions();
+        Collection complexes = prepareComplexes();
+        // Get the directory
+        String resultDir = FIConfiguration.getConfiguration().get("RESULT_DIR");
+        String fileName = resultDir + File.separator + "ReactomeGenesToReactions_082316.txt";
+        FileUtility fu = new FileUtility();
+        fu.setOutput(fileName);
+        // No header is required
+        for (Iterator it = reactions.iterator(); it.hasNext();) {
+            GKInstance rxn = (GKInstance) it.next();
+            Set<String> genes = grepGenesFromReaction(rxn);
+            if (genes.size() == 0)
+                continue;
+            for (String gene : genes)
+                fu.printLine(gene + "\t" + rxn.getDisplayName());
+        }
+        fu.close();
+    }
+    
+    private Set<String> grepGenesFromComplex(GKInstance complex) throws Exception {
+        Set<String> genes = new HashSet<String>();
+        grepGenesFromEntity(complex, genes);
+        return genes;
+    }
+    
+    private void grepGenesFromEntity(GKInstance pe,
+                                     Set<String> genes) throws Exception {
+        Set<GKInstance> refEntities = InstanceUtilities.grepReferenceEntitiesForPE(pe);
+        for (GKInstance refEntity : refEntities) {
+            if (refEntity.getSchemClass().isValidAttribute(ReactomeJavaConstants.geneName)) {
+                String geneName = (String) refEntity.getAttributeValue(ReactomeJavaConstants.geneName);
+                if (geneName != null)
+                    genes.add(geneName);
+            }
+        }
+    }
+
+    private Set<String> grepGenesFromReaction(GKInstance rxn) throws Exception {
+        Set<GKInstance> participants = InstanceUtilities.getReactionParticipants(rxn);
+        Set<String> genes = new HashSet<String>();
+        for (GKInstance participant : participants) {
+            grepGenesFromEntity(participant, genes);
+        }
+        return genes;
+    }
+    
+    @Test
+    public void generateFIsForOneReaction() throws Exception {
+        MySQLAdaptor dba = (MySQLAdaptor) getMySQLAdaptor();
+        Long dbId = 5672965L; // RAS GEFs promote RAS nucleotide exchange
+//        dbId = 5672972L; // MAP2Ks and MAPKs bind to the activated RAF complex
+//        dbId = 69213L; // Formation of Cyclin D:Cdk4/6 complexes 
+//        dbId = 5617896L; // Retinoic acid activates HOXD4 chromatin
+        String dirName = "/Users/gwu/Documents/EclipseWorkspace/caBigR3/results/DriverGenes/Drivers_0816/";
+        String fileName = dirName + "FIsInReaction" + dbId + ".txt";
+        generateFIsForOneReaction(dba,
+                                  dbId,
+                                  fileName);
+    }
+    
+    /**
+     * Extract Reactome FIs for complexes and reactions related to cancer genes. 
+     * @throws Exception
+     */
+    @Test
+    public void generateFIsForCancerReactionsAndComplexes() throws Exception {
+        String dirName = "/Users/gwu/Documents/EclipseWorkspace/caBigR3/results/DriverGenes/Drivers_0816/";
+        // Load known missense cancer driver genes
+        Set<String> cancerDrivers = new HashSet<String>();
+        String cancerGeneFileName = dirName + "AllKnownMissenseDriver.txt";
+        FileUtility fu = new FileUtility();
+        fu.setInput(cancerGeneFileName);
+        String line = fu.readLine();
+        while ((line = fu.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            cancerDrivers.add(tokens[0]);
+        }
+        fu.close();
+        System.out.println("Total cancer drivers: " + cancerDrivers.size());
+        
+        // Grep FIs from complexes and reactions
+        Set<String> fis = new HashSet<String>();
+        Collection<GKInstance> complexes = prepareComplexes();
+        System.out.println("Total complexes: " + complexes.size());
+        Collection<GKInstance> reactions = prepareReactions();
+        System.out.println("Total reactions: " + reactions.size());
+        Set<GKInstance> cancerReactions = new HashSet<GKInstance>();
+        Set<GKInstance> cancerComplexes = new HashSet<GKInstance>();
+        for (GKInstance reaction : reactions) {
+            Set<String> genes = grepGenesFromReaction(reaction);
+            if (genes == null || genes.size() == 0)
+                continue;
+            if (InteractionUtilities.isShared(genes, cancerDrivers))
+                cancerReactions.add(reaction);
+        }
+        for (GKInstance complex : complexes) {
+            Set<String> genes = grepGenesFromComplex(complex);
+            if (genes == null || genes.size() == 0)
+                continue;
+            if (InteractionUtilities.isShared(genes, cancerDrivers))
+                cancerComplexes.add(complex);
+        }
+        System.out.println("Total cancer reactions: " + cancerReactions.size());
+        System.out.println("Total cancer complexes: " + cancerComplexes.size());
+        Set<String> cancerFIs = extractInteractionSet(cancerReactions, cancerComplexes);
+
+        // Export these FIs
+        String outFileName = dirName + "FIsInCancerReactionsAndComplexes_122116.txt";
+        fu.saveCollection(cancerFIs, outFileName);
+    }
+    
+    @Test
+    public void generateFIsForReactionsWithFeatures() throws Exception {
+        MySQLAdaptor dba = (MySQLAdaptor) getMySQLAdaptor();
+        String dirName = "/Users/gwu/Documents/EclipseWorkspace/caBigR3/results/DriverGenes/Drivers_0816/";
+        
+        String rxtFile = dirName + "SelectedForInteractome3d_091416.txt";
+        List<Long> dbIds = loadReactionIds(rxtFile);
+        System.out.println("Total DB_IDs: " + dbIds.size());
+        List<Long> dbIdsFDR05 = loadReactionIds(dirName + "SelectedForInteractome3d_fdr_05_091416.txt");
+        System.out.println("Total DB_IDs for FDR <= 0.05: " + dbIdsFDR05.size());
+        
+        String outFileName = dirName + "FIsInSelectedReactions_FDR_05_092516.txt";
+        generateFIsForReactionsWithFeatures(dba, 
+                                            dbIdsFDR05,
+                                            outFileName);
+        
+        
+//        dbIdsFDR05.removeAll(dbIds); // Reactions between [0.05, 0.01)
+//        System.out.println("Total DB_IDs for FDRs [0.05, 0.01): " + dbIdsFDR05.size());
+//        generateFIsForReactionsWithFeatures(dba,
+//                                            dbIdsFDR05, 
+//                                            dirName + "FIsInSelectedForInteractome3d_FDR_05_01_091416.txt");
+        
+//        String outFileName = dirName + "FIsInSelectedForInteractome3d_091416.txt";
+//        generateFIsForReactionsWithFeatures(dba, dbIds, outFileName);
+    }
+
+    private List<Long> loadReactionIds(String rxtFile) throws IOException {
+        FileUtility fu = new FileUtility();
+        fu.setInput(rxtFile);
+        String line = fu.readLine();
+        List<Long> dbIds = new ArrayList<Long>();
+        while ((line = fu.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            dbIds.add(new Long(tokens[0]));
+        }
+        fu.close();
+        return dbIds;
+    }
+    
+    private void generateFIsForOneReaction(MySQLAdaptor dba,
+                                           Long dbId,
+                                           String fileName) throws Exception, IOException {
+        List<Long> dbIds = new ArrayList<Long>();
+        dbIds.add(dbId);
+        generateFIsForReactionsWithFeatures(dba, dbIds, fileName);
+    }
+
+    public void generateFIsForReactionsWithFeatures(MySQLAdaptor dba,
+                                                    Collection<Long> dbIds,
+                                                    String fileName) throws Exception, IOException {
+        Set<String> interactions = new HashSet<String>();
+        Set<String> rxtFIs = new HashSet<String>();
+        Set<GKInstance> interactors = new HashSet<GKInstance>();
+        Map<String, Set<Long>> fiToRxtIDs = new HashMap<String, Set<Long>>();
+        for (Long dbId : dbIds) {
+            GKInstance reaction = dba.fetchInstance(dbId);
+            interactors.clear();
+            rxtFIs.clear();
+            generateFIsForSingleReaction(interactors, rxtFIs, reaction, false, false);
+            if (rxtFIs.size() == 0)
+                continue;
+            interactions.addAll(rxtFIs);
+            for (String fi : rxtFIs) {
+                InteractionUtilities.addElementToSet(fiToRxtIDs,
+                                                     fi, 
+                                                     dbId);
+            }
+        }
+        
+        // Feature handler
+        FeatureHandlerForV3 featureHandler = new FeatureHandlerForV3();
+        List<String> featureList = featureHandler.getFeatureList();
+        Map<String, Value> fiToValue = featureHandler.convertPairsToValues(interactions, true);
+        
+        Map<String, String> idToGene = getUniProtToGeneMap(dba);
+        
+//        for (String fi : interactions)
+//            System.out.println(fi.replace('\t', ' '));
+        FileUtility fu = new FileUtility();
+        fu.setOutput(fileName);
+        fu.printLine("UniProt1\tUniProt2\tGene1\tGene2\tPositiveFeature\tHumanPPI\tMousePPI\tFlyPPI\tWormPPI\tYeastPPI\tDomainInt\tReactions");
+        for (String fi : interactions) {
+            Value value = fiToValue.get(fi);
+            Boolean posFeature = value.humanInteraction |
+                                 value.mousePPI |
+                                 value.dmePPI |
+                                 value.celPPI |
+                                 value.scePPI |
+                                 value.pfamDomainInt;
+            int index = fi.indexOf("\t");
+            String gene1 = idToGene.get(fi.substring(0, index));
+            String gene2 = idToGene.get(fi.substring(index + 1));
+            String rxtIds = fiToRxtIDs.get(fi).toString();
+            rxtIds = rxtIds.substring(1, rxtIds.length() - 1);
+            fu.printLine(fi + "\t" + 
+                               gene1 + "\t" + 
+                               gene2 + "\t" +
+                               posFeature + "\t" + 
+                               value.humanInteraction + "\t" + 
+                               value.mousePPI + "\t" + 
+                               value.dmePPI + "\t" + 
+                               value.celPPI + "\t" + 
+                               value.scePPI + "\t" +
+                               value.pfamDomainInt + "\t" + 
+                               rxtIds);
+        }
+        fu.close();
+    }
+    
+    @Test
+    public void generateFIsToReactionsMap() throws Exception {
+        Collection reactions = prepareReactions();
+        Collection complexes = prepareComplexes();
+        // Get the directory
+        String resultDir = FIConfiguration.getConfiguration().get("RESULT_DIR");
+//        String fileName = resultDir + File.separator + "ReactomeFIsToReactions_082216.txt";
+        String fileName = resultDir + File.separator + "ReactomeFIsToReactionsWithComplexes_082516.txt";
+        FileUtility fu = new FileUtility();
+        fu.setOutput(fileName);
+        // No header is required
+        Set<GKInstance> interactors = new HashSet<GKInstance>();
+        Set<String> interactions = new HashSet<String>();
+        for (Iterator it = reactions.iterator(); it.hasNext();) {
+            GKInstance rxn = (GKInstance) it.next();
+            //System.out.println("Reaction: " + c++);
+            generateFIsForSingleReaction(interactors, interactions, rxn, false, true);
+            interactors.clear();
+            if (interactions.size() == 0)
+                continue;
+            for (String interaction : interactions) {
+                fu.printLine(interaction + "\t" +  rxn.getDBID() + "\t" + rxn.getDisplayName());
+            }
+            interactions.clear();
+            interactors.clear();
+        }
+        fu.close();
+    }
+
+    private void generateFIsForSingleReaction(Set<GKInstance> interactors,
+                                              Set<String> interactions,
+                                              GKInstance rxn,
+                                              boolean includeFIsInComplex,
+                                              boolean useGeneName) throws Exception {
+        extractInteractorsFromReaction(rxn, interactors);
+        generateInteractions(interactors, interactions, rxn, useGeneName);
+        if (!includeFIsInComplex)
+            return;
+        // Collect FIs from complexes involved in reactions
+        Set<GKInstance> rxnComplexes = grepComplexes(interactors);
+        for (GKInstance complex : rxnComplexes) {
+            Set<GKInstance> complexInteractors = new HashSet<GKInstance>();
+            grepComplexComponents(complex, complexInteractors);
+            generateInteractions(complexInteractors, 
+                                 interactions,
+                                 complex,
+                                 useGeneName);
+        }
+    }
+    
+    /**
+     * Generate a map from reactions to pathways.
+     * @throws Exception
+     */
+    @Test
+    public void generateReactionsToPathwaysMap() throws Exception {
+        Collection reactions = prepareReactions();
+        MySQLAdaptor dba = (MySQLAdaptor) getMySQLAdaptor();
+        Collection<GKInstance> pathways = dba.fetchInstanceByAttribute(ReactomeJavaConstants.Pathway,
+                                                              ReactomeJavaConstants.species,
+                                                              "=",
+                                                              48887);
+        dba.loadInstanceAttributeValues(pathways, new String[]{
+                ReactomeJavaConstants.hasEvent,
+                ReactomeJavaConstants.dataSource
+        });
+        System.out.println("Total human pathways: " + pathways.size());
+        // Remove disease pathway
+        Long diseaseId = 1643685L;
+        GKInstance disease = dba.fetchInstance(diseaseId);
+        Set<GKInstance> diseasePathways = InstanceUtilities.getContainedEvents(disease);
+        pathways.removeAll(diseasePathways);
+        pathways.remove(disease);
+        System.out.println("Remove disease pathways: " + pathways.size());
+        // Get the directory
+        String resultDir = FIConfiguration.getConfiguration().get("RESULT_DIR");
+        String fileName = resultDir + File.separator + "ReactomeReactionsToPathways_090116.txt";
+        FileUtility fu = new FileUtility();
+        fu.setOutput(fileName);
+        // No header is required
+        for (GKInstance pathway : pathways) {
+            if(pathway.getAttributeValue(ReactomeJavaConstants.dataSource) != null)
+                continue; // Use Reactome only
+            System.out.println("Handling " + pathway);
+            Set<GKInstance> pathwayEvents = InstanceUtilities.grepPathwayEventComponents(pathway);
+            for (GKInstance event : pathwayEvents) {
+                if (!(event.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)))
+                    continue;
+                fu.printLine(event.getDBID() + "\t" +  pathway.getDisplayName());
+            }
+        }
+        fu.close();
+    }
+    
+    /**
+     * Use this method to generate a map from FIs to Pathways.
+     * @throws Exception
+     */
+    @Test
+    public void generateFIsToPathwaysMap() throws Exception {
+        Collection reactions = prepareReactions();
+        Collection complexes = prepareComplexes();
+        MySQLAdaptor dba = (MySQLAdaptor) getMySQLAdaptor();
+        Collection<GKInstance> pathways = dba.fetchInstanceByAttribute(ReactomeJavaConstants.Pathway,
+                                                              ReactomeJavaConstants.species,
+                                                              "=",
+                                                              48887);
+        dba.loadInstanceAttributeValues(pathways, new String[]{
+                ReactomeJavaConstants.hasEvent,
+                ReactomeJavaConstants.dataSource
+        });
+        System.out.println("Total human pathways: " + pathways.size());
+        // Remove disease pathway
+        Long diseaseId = 1643685L;
+        GKInstance disease = dba.fetchInstance(diseaseId);
+        Set<GKInstance> diseasePathways = InstanceUtilities.getContainedEvents(disease);
+        pathways.removeAll(diseasePathways);
+        pathways.remove(disease);
+        System.out.println("Remove disease pathways: " + pathways.size());
+        // Get the directory
+        String resultDir = FIConfiguration.getConfiguration().get("RESULT_DIR");
+        String fileName = resultDir + File.separator + "ReactomeFIsToPathways_082216.txt";
+        FileUtility fu = new FileUtility();
+        fu.setOutput(fileName);
+        // No header is required
+        Set<GKInstance> interactors = new HashSet<GKInstance>();
+        Set<String> interactions = new HashSet<String>();
+        for (GKInstance pathway : pathways) {
+            if(pathway.getAttributeValue(ReactomeJavaConstants.dataSource) != null)
+                continue; // Use Reactome only
+            System.out.println("Handling " + pathway);
+            Set<GKInstance> pathwayEvents = InstanceUtilities.grepPathwayEventComponents(pathway);
+            interactions.clear();
+            for (GKInstance event : pathwayEvents) {
+                if (!(event.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)))
+                    continue;
+                interactors.clear();
+                extractInteractorsFromReaction(event, interactors);
+                generateInteractions(interactors, interactions, event, true);
+            }
+            Set<GKInstance> pathwayEntities = InstanceUtilities.grepPathwayParticipants(pathway);
+            for (GKInstance entity : pathwayEntities) {
+                if (!entity.getSchemClass().isa(ReactomeJavaConstants.Complex))
+                    continue;
+                interactors.clear();
+                grepComplexComponents(entity, interactors);
+                generateInteractions(interactors, interactions, entity, true);
+            }
+            if (interactions.size() == 0)
+                continue;
+            for (String interaction : interactions) {
+                // Use this format so that we can use gene set based classes
+                interaction = interaction.replace("\t", ",");
+                fu.printLine(interaction + "\t" +  pathway.getDisplayName());
+            }
+        }
+        fu.close();
+    }
     
     public Set<String> extractInteractionSet() throws Exception {
         Collection reactions = prepareReactions();
         Collection complexes = prepareComplexes();
+        return extractInteractionSet(reactions, 
+                                     complexes);
+    }
+
+    private Set<String> extractInteractionSet(Collection reactions,
+                                              Collection complexes) throws Exception {
         Set<String> interactions = new HashSet<String>();
         GKInstance rxn = null;
         Set<GKInstance> interactors = new HashSet<GKInstance>();
@@ -686,13 +1065,24 @@ public class ReactomeAnalyzer {
     protected void generateInteractions(Set<GKInstance> interactors, 
                                         Set<String> interactions,
                                         GKInstance source) throws Exception {
+        generateInteractions(interactors, interactions, source, false);
+    }
+    
+    private void generateInteractions(Set<GKInstance> interactors, 
+                                      Set<String> interactions,
+                                      GKInstance source,
+                                      boolean useGeneNames) throws Exception {
         List<GKInstance> list = new ArrayList<GKInstance>(interactors);
         int size = list.size();
         for (int i = 0; i < size - 1; i++) {
             GKInstance interactor1 = list.get(i);
             for (int j = i + 1; j < size; j++) {
                 GKInstance interactor2 = list.get(j);
-                generateInteractions(interactor1, interactor2, interactions, source);
+                generateInteractions(interactor1, 
+                                     interactor2,
+                                     interactions,
+                                     source,
+                                     useGeneNames);
             }
         }
     }
@@ -766,7 +1156,8 @@ public class ReactomeAnalyzer {
     private void generateInteractions(GKInstance interactor1, 
                                       GKInstance interactor2,
                                       Set<String> interactions,
-                                      GKInstance source) throws Exception {
+                                      GKInstance source,
+                                      boolean useGeneNames) throws Exception {
         if (excludeComplex) {
             if (interactor1.getSchemClass().isa(ReactomeJavaConstants.Complex) ||
                 interactor2.getSchemClass().isa(ReactomeJavaConstants.Complex))
@@ -776,22 +1167,33 @@ public class ReactomeAnalyzer {
         Set<GKInstance> refPepSeqs2 = grepRefPepSeqs(interactor2);
         generateFIs(refPepSeqs1, 
                     refPepSeqs2,
-                    interactions);
+                    interactions,
+                    useGeneNames);
     }
 
-    protected void generateFIs(Set<GKInstance> refPepSeqs1, Set<GKInstance> refPepSeqs2, Set<String> interactions)
-            throws InvalidAttributeException, Exception {
+    protected void generateFIs(Set<GKInstance> refPepSeqs1, 
+                               Set<GKInstance> refPepSeqs2, 
+                               Set<String> interactions,
+                               boolean useGeneNames) throws InvalidAttributeException, Exception {
         if (refPepSeqs1.size() == 0 || refPepSeqs2.size() == 0)
             return;
         // Permutate members in these two sets
         int comp = 0;
         String pair = null;
         for (GKInstance ref1 : refPepSeqs1) {
-            String uid1 = (String) ref1.getAttributeValue(ReactomeJavaConstants.identifier);
+            String uid1 = null;
+            if (useGeneNames && ref1.getSchemClass().isValidAttribute(ReactomeJavaConstants.geneName))
+                uid1 = (String) ref1.getAttributeValue(ReactomeJavaConstants.geneName);
+            else
+                uid1 = (String) ref1.getAttributeValue(ReactomeJavaConstants.identifier);
             if (uid1 == null)
                 continue;
             for (GKInstance ref2 : refPepSeqs2) {
-                String uid2 = (String) ref2.getAttributeValue(ReactomeJavaConstants.identifier);
+                String uid2 = null;
+                if (useGeneNames && ref2.getSchemClass().isValidAttribute(ReactomeJavaConstants.geneName))
+                    uid2 = (String) ref2.getAttributeValue(ReactomeJavaConstants.geneName);
+                else
+                    uid2 = (String) ref2.getAttributeValue(ReactomeJavaConstants.identifier);
                 if (uid2 == null)
                     continue;
                 comp = uid1.compareTo(uid2);
@@ -1134,5 +1536,23 @@ public class ReactomeAnalyzer {
             fu.printLine(pathway.getDBID() + "\t" + pathway.getDisplayName());
         fu.close();
         System.out.println("Total Pathways: " + list.size());
+    }
+    
+    private Map<String, String> getUniProtToGeneMap(MySQLAdaptor dba) throws Exception {
+        Collection<GKInstance> refSeqs = dba.fetchInstanceByAttribute(ReactomeJavaConstants.ReferenceGeneProduct,
+                                                                      ReactomeJavaConstants.species,
+                                                                      "=",
+                                                                      48887L);
+        dba.loadInstanceAttributeValues(refSeqs, new String[]{
+                ReactomeJavaConstants.identifier,
+                ReactomeJavaConstants.geneName
+        });
+        Map<String, String> idToGene = new HashMap<String, String>();
+        for (GKInstance inst : refSeqs) {
+            String id = (String) inst.getAttributeValue(ReactomeJavaConstants.identifier);
+            String gene = (String) inst.getAttributeValue(ReactomeJavaConstants.geneName);
+            idToGene.put(id, gene);
+        }
+        return idToGene;
     }
 }

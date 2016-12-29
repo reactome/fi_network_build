@@ -384,7 +384,7 @@ public class ReactomeAnalyzerTopicHelper {
                 }
                 if (refs2.size() == 0)
                     continue;
-                analyzer.generateFIs(refs1, refs2, fis);
+                analyzer.generateFIs(refs1, refs2, fis, false);
             }
         }
 //        if (fis.size() > 0)

@@ -332,6 +332,8 @@ public class KeggToReactomeConverter {
 //      group   the node is a complex of gene products (mostly a protein complex)
 //      compound
 //      map
+//      brite   see this type in the 2016 version of KGML. This is a link to ATC, which is for drug identification.
+//              for the time being. It will be converted into a simple small molecules. 
 //      other   this type should be removed in KGML 0.70 in 2010. However,  4 entries are found in pathway hsa03320 (
 //              PPAR Signaling Pathway). They are groups of drugs. Just map them into other type in Reactome.        
         if (type.equals("enzyme") ||
@@ -349,7 +351,7 @@ public class KeggToReactomeConverter {
         //else if (type.equals("group")) {
         //    instance = fileAdaptor.createNewInstance(ReactomeJavaConstants.Complex);
         //}
-        else if (type.equals("compound"))
+        else if (type.equals("compound") || type.equals("brite"))
             instance = fileAdaptor.createNewInstance(ReactomeJavaConstants.SimpleEntity);
         else if (type.equals("map")) {
             instance = createPathwayFromName(name);

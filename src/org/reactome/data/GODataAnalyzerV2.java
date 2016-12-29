@@ -29,7 +29,7 @@ import org.reactome.fi.util.PositiveChecker;
  */
 public class GODataAnalyzerV2 {
     private FileUtility fu = new FileUtility();
-    private String GOA_FILE_NAME = FIConfiguration.getConfiguration().get("GO_DIR") + "gene_association.goa_human";
+    private String GOA_FILE_NAME = FIConfiguration.getConfiguration().get("GOA_FILE_NAME");
     private GOTermLoader termLoader;
     
     public GODataAnalyzerV2() {

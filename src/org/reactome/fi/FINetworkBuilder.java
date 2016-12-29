@@ -21,6 +21,7 @@ import org.reactome.b2rPostProcessor.NciPIDConverterRunner;
 import org.reactome.data.EncodeTFTargetToReactomeConverter;
 import org.reactome.data.EnsemblAnalyzer;
 import org.reactome.data.GODataAnalyzerV2;
+import org.reactome.data.GOTermLoader;
 import org.reactome.data.IRefIndexMITTabAnalyzer;
 import org.reactome.data.MicroarrayDataAnalyzer;
 import org.reactome.data.PfamAnalyzer;
@@ -68,6 +69,11 @@ public class FINetworkBuilder {
         uniProtAnalyzer.generateEntrezGeneToUniProt();
         logger.info("Running UniProtAnalyzer.generateUniToPfamMap()...");
         uniProtAnalyzer.generateUniToPfamMap();
+        // For GO annotation. As of 2016, go.obo is downloaded and terms_and_ids.txt
+        // should be generated before other procedures.
+        GOTermLoader loader = new GOTermLoader();
+        logger.info("Generating GO.terms_and_ids.txt from go.obo...");
+        loader.generateGOTermsToIdsFromObo();
     }
     
     /**

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Test;
+import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 
 /**
@@ -142,5 +144,61 @@ public class GOTermLoader {
         }
         fu.close();
         return id2Term;
+    }
+    
+    /**
+     * As of 2016, only go.obo is downloaded and then processed to generate GO.terms_and_ids.txt
+     * file to keep to update. The original file was generated in 2012 and not udpated.
+     * @throws IOException
+     */
+    @Test
+    public void generateGOTermsToIdsFromObo() throws IOException {
+        String goDir = FIConfiguration.getConfiguration().get("GO_DIR");
+        String srcFile = goDir + "go.obo";
+        String targetFile = goDir + "GO.terms_and_ids.txt";
+        fu.setInput(srcFile);
+        fu.setOutput(targetFile);
+        // Output follows the following format as in the original GO.terms_and_ids.txt
+        // GO:0000000 [tab] text string [tab] F|P|C
+        // where F = molecular function, P = biological process, C = cellular component
+        String line = null;
+        boolean isInTerm = false;
+        StringBuilder builder = new StringBuilder();
+        while ((line = fu.readLine()) != null) {
+            if (line.trim().length() == 0) {
+                isInTerm = false;
+            }
+            else if (line.equals("[Term]"))
+                isInTerm = true;
+            else if (isInTerm) {
+                if (line.startsWith("id:")) {
+                    builder.append(extractValue(line));
+                }
+                else if (line.startsWith("name:"))
+                    builder.append("\t").append(extractValue(line));
+                else if (line.startsWith("namespace:")) {
+                    builder.append("\t").append(getNameSapce(line));
+                    fu.printLine(builder.toString());
+                    builder.setLength(0);
+                }
+            }
+        }
+        fu.close();
+    }
+    
+    private String extractValue(String line) {
+        int index = line.indexOf(":");
+        return line.substring(index + 1).trim();
+    }
+    
+    private String getNameSapce(String line) {
+        String value = extractValue(line);
+        if (value.equals("molecular_function"))
+            return "F";
+        if (value.equals("biological_process"))
+            return "P";
+        if (value.equals("cellular_component"))
+            return "C";
+        throw new IllegalArgumentException("Don't know the namespace: " + value);
     }
 }

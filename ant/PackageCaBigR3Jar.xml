@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     This is used to pack some classes from the caBigR3 project.                                                             
+     ====================================================================== -->
+<project name="caBigR3package" default="package" basedir="..">
+	<property name = "srcDir" value = "../caBigR3/src" />
+	<property name = "clsDir" value = "../caBigR3/classes" />
+	<property name = "targetDir" value = "lib" />
+
+	<target name="package">
+		<jar destfile="${targetDir}/caBigR3.jar">
+			<fileset dir="${srcDir}">
+				<include name="org/reactome/factorgraph/**" />
+				<include name="org/reactome/pathway/factorgraph/**" />
+				<include name="org/reactome/r3/util/FileUtility*" />
+				<include name="org/reactome/r3/util/JAXBBindableList*" />
+			</fileset>
+			<fileset dir="${clsDir}">
+				<include name="org/reactome/factorgraph/**" />
+				<include name="org/reactome/pathway/factorgraph/**" />
+				<include name="org/reactome/r3/util/FileUtility*" />
+				<include name="org/reactome/r3/util/JAXBBindableList*" />
+			</fileset>
+		</jar>
+	</target>
+
+</project>

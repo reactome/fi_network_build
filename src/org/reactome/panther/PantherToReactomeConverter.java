@@ -457,8 +457,9 @@ public class PantherToReactomeConverter implements Converter {
 		if (inhibitedEvents.size() > 0) {
 			for (GKInstance event : inhibitedEvents) {
 				GKInstance nr = createInstance(ReactomeJavaConstants.NegativeRegulation);
-				GKInstance regulationType = instanceGenerator.getRegulationType(PantherConstants.INHIBITION_TYPE);
-				nr.setAttributeValue(ReactomeJavaConstants.regulationType, regulationType);
+				// RegulationType has been deleted.
+//				GKInstance regulationType = instanceGenerator.getRegulationType(PantherConstants.INHIBITION_TYPE);
+//				nr.setAttributeValue(ReactomeJavaConstants.regulationType, regulationType);
 				nr.setAttributeValue(ReactomeJavaConstants.regulator, inhibitor);
 				nr.setAttributeValue(ReactomeJavaConstants.regulatedEntity, event);
 				nr.addAttributeValue(ReactomeJavaConstants.name, name);
