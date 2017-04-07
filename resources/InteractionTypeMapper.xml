@@ -247,5 +247,15 @@
     <type name="PPrel: inhibition, glycosylation" reverse="PPrel: inhibited glycosylation" direction="-|" />
     <type name="PPrel: glycosylation" reverse="PPrel: glycosylated" direction="-" />
     <type name="PPrel: inhibition, dephosphorylation, indirect effect" reverse="PPrel: inhibited, dephosphorylation, indirect effect" direction="-|" />
-    
+    <!-- The following 5 types are added in February, 2017 for Release 2016 -->
+    <type name="PPrel: activation, dissociation" reverse="PPrel: activated, dissociation"
+        direction="->" />
+    <type name="PCrel: inhibition, phosphorylation" reverse="PCrel: inhibited, phosphorylation"
+        direction="-|" />
+    <type name="PPrel: inhibition, missing interaction" reverse="PPrel: inhibited, missing interaction"
+        direction="-|" />
+    <type name="PCrel: inhibition, missing interaction" reverse="PCrel: inhibited, missing interaction"
+        direction="-|" />
+    <type name="GErel: expression, missing interaction" reverse="GErel: expressed by, missing interaction"
+        direction="->" />
 </InteractionTypeMapper>

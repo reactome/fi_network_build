@@ -24,7 +24,9 @@ import org.reactome.fi.util.FeatureChecker;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
 import org.reactome.fi.util.PositiveChecker;
+import org.reactome.fi.util.Value;
 import org.reactome.tred.TREDAnalyzer;
+import org.reactome.weka.FeatureHandlerForV3;
 
 /**
  * This class is used to handle the interaction file generated from the hibernate adaptor.
@@ -39,6 +41,50 @@ public class FIFileAnalyzer {
     
     public FIFileAnalyzer() {
         fu = new FileUtility();
+    }
+    
+    @Test
+    public void addHasPPIEvidenceFeature() throws Exception {
+        String dirName = "/Users/gwu/git/Ogmios/results/";
+        String inFile = dirName + "ProteinFIsInReactions_032017.txt";
+        
+        Set<String> fis = new HashSet<String>();
+        fu.setInput(inFile);
+        String line = fu.readLine();
+        while ((line = fu.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            fis.add(tokens[0] + "\t" + tokens[1]);
+        }
+        fu.close();
+        // Attach PPI feature
+        FeatureHandlerForV3 featureHandler = new FeatureHandlerForV3();
+        List<String> featureList = featureHandler.getFeatureList();
+        Map<String, Value> fiToValue = featureHandler.convertPairsToValues(fis, true);
+        
+        String outFile = dirName + "ProteinFIsInReactionsWithPPIEvidence_032017.txt";
+        fu.setInput(inFile);
+        fu.setOutput(outFile);
+        line = fu.readLine();
+        fu.printLine(line + "\thasPPIEvidence");
+        int totalPPITrue = 0;
+        int totalFIs = 0;
+        while ((line = fu.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            Value value = fiToValue.get(tokens[0] + "\t" + tokens[1]);
+            Boolean posFeature = value.humanInteraction |
+                    value.mousePPI |
+                    value.dmePPI |
+                    value.celPPI |
+                    value.scePPI |
+                    value.pfamDomainInt;
+            fu.printLine(line + "\t" + posFeature);
+            totalFIs ++;
+            if (posFeature)
+                totalPPITrue ++;
+        }
+        fu.close();
+        System.out.println("Total FIs: " + totalFIs);
+        System.out.println("Total FIs having PPI evidence: " + totalPPITrue);
     }
     
 //    /**

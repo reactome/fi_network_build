@@ -25,6 +25,7 @@ import org.reactome.data.GOTermLoader;
 import org.reactome.data.IRefIndexMITTabAnalyzer;
 import org.reactome.data.MicroarrayDataAnalyzer;
 import org.reactome.data.PfamAnalyzer;
+import org.reactome.data.ReactomeAnalyzer;
 import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.hibernate.HibernateFIReader;
@@ -274,11 +275,21 @@ public class FINetworkBuilder {
      */
     @Test
     public void generateCytoscapePlugInFiles() throws Exception {
+        // These two files are used for reaction-based enrichment analysis
+        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
+        logger.info("Running ReactomeAnalyzer.generateGenesToReactionsMap()...");
+        reactomeAnalyzer.generateGenesToReactionsMap();
+        logger.info("Running ReactomeAnalyzer.generateFIsToReactionsMap()...");
+        reactomeAnalyzer.generateFIsToReactionsMap();
+        if (true)
+            return;
         // Generate a file containing FIs in gene names so that it can be used in 
         // plug-in and data analysis
         HibernateFIReader hibernateReader = new HibernateFIReader();
         logger.info("Running HibernateFIReader.generateFIFileInGeneInHiberante()...");
         hibernateReader.generateFIFileInGeneInHibernate();
+//        if (true)
+//            return;
         // Create a map from pathway fis to their original sources
         logger.info("Running HibernateFIReader.generateFIInGeneSourceFile()...");
         hibernateReader.generateFIInGeneSourceFile();

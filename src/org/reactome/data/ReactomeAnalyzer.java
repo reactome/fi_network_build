@@ -618,8 +618,8 @@ public class ReactomeAnalyzer {
         Collection reactions = prepareReactions();
         Collection complexes = prepareComplexes();
         // Get the directory
-        String resultDir = FIConfiguration.getConfiguration().get("RESULT_DIR");
-        String fileName = resultDir + File.separator + "ReactomeGenesToReactions_082316.txt";
+        String fileName = FIConfiguration.getConfiguration().get("GENE_TO_REACTOME_REACTIONS");
+//        String fileName = resultDir + File.separator + "ReactomeGenesToReactions_082316.txt";
         FileUtility fu = new FileUtility();
         fu.setOutput(fileName);
         // No header is required
@@ -837,13 +837,24 @@ public class ReactomeAnalyzer {
     }
     
     @Test
+    public void testGenerateFIsForSingleReaction() throws Exception {
+        PersistenceAdaptor dba = getMySQLAdaptor();
+        // For a single test
+        GKInstance reaction = dba.fetchInstance(6802941L);
+        Set<GKInstance> interactors = new HashSet<GKInstance>();
+        Set<String> interactions = new HashSet<String>();
+        generateFIsForSingleReaction(interactors, interactions, reaction, false, true);
+        System.out.println("Total interactions: " + interactions.size());
+    }
+    
+    @Test
     public void generateFIsToReactionsMap() throws Exception {
         Collection reactions = prepareReactions();
         Collection complexes = prepareComplexes();
         // Get the directory
-        String resultDir = FIConfiguration.getConfiguration().get("RESULT_DIR");
+        String fileName = FIConfiguration.getConfiguration().get("FI_TO_REACTOME_REACTIONS");
 //        String fileName = resultDir + File.separator + "ReactomeFIsToReactions_082216.txt";
-        String fileName = resultDir + File.separator + "ReactomeFIsToReactionsWithComplexes_082516.txt";
+//        String fileName = resultDir + File.separator + "ReactomeFIsToReactionsWithComplexes_082516.txt";
         FileUtility fu = new FileUtility();
         fu.setOutput(fileName);
         // No header is required
@@ -1222,6 +1233,14 @@ public class ReactomeAnalyzer {
                                                             ReactomeJavaConstants.species,
                                                             "=",
                                                             homosapiens);
+        // Change made on January 31, 2017. Previously all human complexes are used,
+        // which should be regarded as a bug. Do the following for filtering.
+        for (Iterator it = complexes.iterator(); it.hasNext();) {
+            GKInstance complex = (GKInstance) it.next();
+            GKInstance dataSource = (GKInstance) complex.getAttributeValue(ReactomeJavaConstants.dataSource);
+            if (dataSource != null)
+                it.remove();
+        }
         SchemaClass cls = dba.getSchema().getClassByName(ReactomeJavaConstants.Complex);
         SchemaAttribute att = cls.getAttribute(ReactomeJavaConstants.hasComponent);
         dba.loadInstanceAttributeValues(complexes, att);

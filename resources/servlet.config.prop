@@ -21,7 +21,7 @@ protein.acc.to.name=ProteinAccessionToName_070110.txt
 kegg.pathway.name.to.id=kegg_map_title.tab
 kegg.hsa.list=kegg_hsa.list
 # These properties are used for survival analysis
-r.script.command=/usr/local/bin/Rscript
+r.script.command=/usr/bin/Rscript
 survival.analysis.r.script=CGISurvivalAnalysis.R
 mcl.script=mcl_script.sh
 # For HotNet analysis. This should be a serialized matrix file.

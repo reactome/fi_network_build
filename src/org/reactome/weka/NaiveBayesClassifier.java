@@ -34,8 +34,14 @@ public class NaiveBayesClassifier implements Serializable {
     private double priorPosProb = 0.001d;
     private List<String> featureList;
     private Map<String, Double> conditionalProbabilities;
+    // Cache scores for quick ROC calculation
+    private Map<String, Double> pairToScore;
     
     public NaiveBayesClassifier() {
+    }
+    
+    public void enableCache() {
+        pairToScore = new HashMap<String, Double>();
     }
     
     /**
@@ -107,6 +113,8 @@ public class NaiveBayesClassifier implements Serializable {
         if (conditionalProbabilities == null || conditionalProbabilities.size() == 0)
             throw new  IllegalStateException("NaiveBayesClassifier.calculateScore(): " +
                                              "conditional probabiltiies have not calculated!");
+        if (pairToScore != null && pairToScore.containsKey(pair))
+            return pairToScore.get(pair);
         // Calculate the positive side
         double posProbs = priorPosProb;
         // calculate the negative probability
@@ -132,7 +140,10 @@ public class NaiveBayesClassifier implements Serializable {
             negProbs *= prob;
         }
         // Combine positive and negative to give a score
-        return posProbs / (posProbs + negProbs);
+        double rtn = posProbs / (posProbs + negProbs);
+        if (pairToScore != null)
+            pairToScore.put(pair, rtn);
+        return rtn;
     }
     
     public void calculateConditionalProbabilities(Set<String> posPairs,

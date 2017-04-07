@@ -14,12 +14,14 @@
 				<include name="org/reactome/pathway/factorgraph/**" />
 				<include name="org/reactome/r3/util/FileUtility*" />
 				<include name="org/reactome/r3/util/JAXBBindableList*" />
+				<include name="org/reactome/r3/util/InteractionUtilities*" />
 			</fileset>
 			<fileset dir="${clsDir}">
 				<include name="org/reactome/factorgraph/**" />
 				<include name="org/reactome/pathway/factorgraph/**" />
 				<include name="org/reactome/r3/util/FileUtility*" />
 				<include name="org/reactome/r3/util/JAXBBindableList*" />
+				<include name="org/reactome/r3/util/InteractionUtilities*" />
 			</fileset>
 		</jar>
 	</target>

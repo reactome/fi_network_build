@@ -322,6 +322,7 @@ public class NBCAnalyzer {
             rocFU.printLine("Cutoff\tFalse_Positive_Rate\tTrue_Positive_Rate");
         int totalPoints = thresholdPoints;
         double step = 1.0 / totalPoints;
+        nbc.enableCache();
         for (int i = 0; i < totalPoints + 1; i++) {
             double cutoff = 0.0 + step * i;
             //System.out.println("Cutoff: " + cutoff);
