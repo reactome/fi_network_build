@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import org.gk.database.util.DiseaseAttributeAutoFiller;
 import org.gk.model.GKInstance;
 import org.gk.model.InstanceUtilities;
 import org.gk.model.PersistenceAdaptor;
@@ -729,17 +730,31 @@ public class ReactomeAnalyzer {
     @Test
     public void generateFIsForReactionsWithFeatures() throws Exception {
         MySQLAdaptor dba = (MySQLAdaptor) getMySQLAdaptor();
-        String dirName = "/Users/gwu/Documents/EclipseWorkspace/caBigR3/results/DriverGenes/Drivers_0816/";
+//        String dirName = "/Users/gwu/Documents/EclipseWorkspace/caBigR3/results/DriverGenes/Drivers_0816/";
+//        
+//        String rxtFile = dirName + "SelectedForInteractome3d_091416.txt";
+//        List<Long> dbIds = loadReactionIds(rxtFile);
+//        System.out.println("Total DB_IDs: " + dbIds.size());
+//        List<Long> dbIdsFDR05 = loadReactionIds(dirName + "SelectedForInteractome3d_fdr_05_091416.txt");
+//        System.out.println("Total DB_IDs for FDR <= 0.05: " + dbIdsFDR05.size());
+//        
+//        String outFileName = dirName + "FIsInSelectedReactions_FDR_05_092516.txt";
         
-        String rxtFile = dirName + "SelectedForInteractome3d_091416.txt";
-        List<Long> dbIds = loadReactionIds(rxtFile);
-        System.out.println("Total DB_IDs: " + dbIds.size());
-        List<Long> dbIdsFDR05 = loadReactionIds(dirName + "SelectedForInteractome3d_fdr_05_091416.txt");
-        System.out.println("Total DB_IDs for FDR <= 0.05: " + dbIdsFDR05.size());
+        // Get a set of DB_IDs 
+        String fileName = FIConfiguration.getConfiguration().get("FI_TO_REACTOME_REACTIONS");
+        FileUtility fu = new FileUtility();
+        fu.setInput(fileName);
+        Set<Long> dbIds = new HashSet<Long>();
+        String line = null;
+        while ((line = fu.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            dbIds.add(new Long(tokens[2]));
+        }
+        fu.close();
         
-        String outFileName = dirName + "FIsInSelectedReactions_FDR_05_092516.txt";
+        String outFileName = FIConfiguration.getConfiguration().get("RESULT_DIR") + File.separator + "ReactomeFIsWithPPIFeatures_041117.txt";
         generateFIsForReactionsWithFeatures(dba, 
-                                            dbIdsFDR05,
+                                            new ArrayList<Long>(dbIds),
                                             outFileName);
         
         
@@ -911,19 +926,26 @@ public class ReactomeAnalyzer {
                                                               48887);
         dba.loadInstanceAttributeValues(pathways, new String[]{
                 ReactomeJavaConstants.hasEvent,
-                ReactomeJavaConstants.dataSource
+                ReactomeJavaConstants.dataSource,
+                ReactomeJavaConstants.disease
         });
         System.out.println("Total human pathways: " + pathways.size());
         // Remove disease pathway
         Long diseaseId = 1643685L;
         GKInstance disease = dba.fetchInstance(diseaseId);
         Set<GKInstance> diseasePathways = InstanceUtilities.getContainedEvents(disease);
-        pathways.removeAll(diseasePathways);
+        for (GKInstance diseasePathway : diseasePathways) {
+            // Normal pathways may be listed under disease in the old approach for drawing pathway diagrams
+            GKInstance diseaseAttribute = (GKInstance) diseasePathway.getAttributeValue(ReactomeJavaConstants.disease);
+            if (diseaseAttribute != null)
+                pathways.remove(diseasePathway);
+        }
         pathways.remove(disease);
         System.out.println("Remove disease pathways: " + pathways.size());
         // Get the directory
         String resultDir = FIConfiguration.getConfiguration().get("RESULT_DIR");
-        String fileName = resultDir + File.separator + "ReactomeReactionsToPathways_090116.txt";
+//        String fileName = resultDir + File.separator + "ReactomeReactionsToPathways_090116.txt";
+        String fileName = resultDir + File.separator + "ReactomeReactionsToPathways_051017.txt";
         FileUtility fu = new FileUtility();
         fu.setOutput(fileName);
         // No header is required

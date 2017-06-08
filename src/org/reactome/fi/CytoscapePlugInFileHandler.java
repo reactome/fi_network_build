@@ -124,6 +124,11 @@ public class CytoscapePlugInFileHandler {
         fu.close();
     }
     
+    @Test
+    public void testGenerateConfigurationFile() throws IOException {
+        generateConfigurationFile();
+    }
+    
     /**
      * Generate a server configuration file based on the output files. Each
      * release will have output files named different because of time-stamps.
