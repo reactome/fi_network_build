@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import org.gk.database.util.DiseaseAttributeAutoFiller;
 import org.gk.model.GKInstance;
 import org.gk.model.InstanceUtilities;
 import org.gk.model.PersistenceAdaptor;
@@ -22,6 +21,7 @@ import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
+import org.reactome.fi.util.ReactomeUtilities;
 import org.reactome.fi.util.Value;
 import org.reactome.weka.FeatureHandlerForV3;
 
@@ -635,29 +635,28 @@ public class ReactomeAnalyzer {
         fu.close();
     }
     
+    /**
+     * If an EntitySet having multiple genes as its members are invovled in a reaction,
+     * the reaction will be expanded combinatorially to create multiple reactions.
+     * @param rxt
+     * @return
+     * @throws Exception
+     */
+    private Map<String, Set<String>> grepGenesFromReactionViaExpandSet(GKInstance rxt) throws Exception {
+        return null;
+    }
+    
     private Set<String> grepGenesFromComplex(GKInstance complex) throws Exception {
         Set<String> genes = new HashSet<String>();
-        grepGenesFromEntity(complex, genes);
+        ReactomeUtilities.grepGenesFromEntity(complex, genes);
         return genes;
     }
     
-    private void grepGenesFromEntity(GKInstance pe,
-                                     Set<String> genes) throws Exception {
-        Set<GKInstance> refEntities = InstanceUtilities.grepReferenceEntitiesForPE(pe);
-        for (GKInstance refEntity : refEntities) {
-            if (refEntity.getSchemClass().isValidAttribute(ReactomeJavaConstants.geneName)) {
-                String geneName = (String) refEntity.getAttributeValue(ReactomeJavaConstants.geneName);
-                if (geneName != null)
-                    genes.add(geneName);
-            }
-        }
-    }
-
     private Set<String> grepGenesFromReaction(GKInstance rxn) throws Exception {
         Set<GKInstance> participants = InstanceUtilities.getReactionParticipants(rxn);
         Set<String> genes = new HashSet<String>();
         for (GKInstance participant : participants) {
-            grepGenesFromEntity(participant, genes);
+            ReactomeUtilities.grepGenesFromEntity(participant, genes);
         }
         return genes;
     }
