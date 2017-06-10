@@ -646,13 +646,13 @@ public class ReactomeAnalyzer {
         return null;
     }
     
-    private Set<String> grepGenesFromComplex(GKInstance complex) throws Exception {
+    public Set<String> grepGenesFromComplex(GKInstance complex) throws Exception {
         Set<String> genes = new HashSet<String>();
         ReactomeUtilities.grepGenesFromEntity(complex, genes);
         return genes;
     }
     
-    private Set<String> grepGenesFromReaction(GKInstance rxn) throws Exception {
+    public Set<String> grepGenesFromReaction(GKInstance rxn) throws Exception {
         Set<GKInstance> participants = InstanceUtilities.getReactionParticipants(rxn);
         Set<String> genes = new HashSet<String>();
         for (GKInstance participant : participants) {

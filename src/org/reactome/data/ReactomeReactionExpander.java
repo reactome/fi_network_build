@@ -353,23 +353,15 @@ public class ReactomeReactionExpander {
      *
      */
     private static class InstanceVertex {
-        private static int count = 0;
         private GKInstance instance;
-        private Integer id;
         
         public InstanceVertex(GKInstance inst) {
             this.instance = inst;
-            id = count ++;
         }
         
         @Override
         public String toString() {
             return hashCode() + ": " + instance.getDBID();
-        }
-        
-        @Override
-        public int hashCode() {
-            return id;
         }
         
     }
