@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,8 +18,6 @@ import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.jgraph.graph.DefaultEdge;
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.AllDirectedPaths;
 import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.junit.Test;
@@ -30,12 +29,19 @@ import org.reactome.fi.util.ReactomeUtilities;
  * is converted into a DirectedGraph object using jGraphtT library, and then existing algorithm in the library
  * is used to find paths from inputs to outputs. To avoid cycles, inputs are removed in outputs if they are
  * used. 
+ * Note: In some cases, reactions may be expanded into a huge number. For those cases, a size limit, default 10,000,
+ * is used to control the total numbers.
  * @author gwu
  *
  */
 @SuppressWarnings("unchecked")
 public class ReactomeReactionExpander {
+    // An arbitrary cutoff to limit the size of all paths
+    private int maximumOfExpansion = 10000;
+    private final boolean DEBUG = false;
     private static final Logger logger = Logger.getLogger(ReactomeReactionExpander.class);
+    // Used to generate random index
+    private Random random;
     
     /**
      * Default constructor.
@@ -43,6 +49,14 @@ public class ReactomeReactionExpander {
     public ReactomeReactionExpander() {
     }
     
+    public int getMaximumOfExpansion() {
+        return maximumOfExpansion;
+    }
+
+    public void setMaximumOfExpansion(int maximumOfExpansion) {
+        this.maximumOfExpansion = maximumOfExpansion;
+    }
+
     @Test
     public void testExpandReaction() throws Exception {
         MySQLAdaptor dba = new MySQLAdaptor("localhost",
@@ -51,12 +65,17 @@ public class ReactomeReactionExpander {
                                             "macmysql01");
         Long dbId = 199443L;
         dbId = 2316434L;
+//        dbId = 421835L; // A huge complex participates
+//        dbId = 983709L; // A blackbox reaction has weird behavior. Cannot finish!!!
+//        dbId = 191072L; // [BlackBoxEvent:191072] Synthesis of Cx43: no input
+        dbId = 156923L; // Cannot finish: [Reaction:156923] Hydrolysis of eEF1A:GTP
         GKInstance reaction = dba.fetchInstance(dbId);
         
         // Expand the passed reaction into a list of lists of instances.
-        List<List<GKInstance>> listOfInstances = expandReaction(reaction);
+        List<Set<GKInstance>> listOfInstances = expandReaction(reaction);
+        System.out.println("Total list of instances: " + listOfInstances.size());
         for (int i = 0; i < listOfInstances.size(); i++) {
-            List<GKInstance> instances = listOfInstances.get(i);
+            Set<GKInstance> instances = listOfInstances.get(i);
             System.out.println("List " + i + ": " + instances.size());
             instances.stream().forEach(System.out::println);
         }
@@ -81,7 +100,7 @@ public class ReactomeReactionExpander {
      * @throws Exception
      */
     public Set<Set<String>> extractGenesFromReaction(GKInstance reaction) throws Exception {
-        List<List<GKInstance>> listOfInstances = expandReaction(reaction);
+        List<Set<GKInstance>> listOfInstances = expandReaction(reaction);
         Set<Set<String>> setOfGenes = listOfInstances.stream().map(instances -> {
             Set<String> genes = new HashSet<>();
             instances.stream()
@@ -105,29 +124,44 @@ public class ReactomeReactionExpander {
      * @param reaction
      * @throws Exception
      */
-    private List<List<GKInstance>> expandReaction(GKInstance reaction) throws Exception {
+    private List<Set<GKInstance>> expandReaction(GKInstance reaction) throws Exception {
         DirectedGraph<InstanceVertex, DefaultEdge> graph = convertToGraph(reaction);
+        if (graph == null)
+            return new ArrayList<>();
         Set<InstanceVertex> sources = graph
                 .vertexSet()
                 .stream()
-                .filter(inst -> graph.incomingEdgesOf(inst).size() == 0).collect(Collectors.toSet());
+                .filter(v -> graph.incomingEdgesOf(v).size() == 0).collect(Collectors.toSet());
         Set<InstanceVertex> sinks = graph
                 .vertexSet()
                 .stream()
-                .filter(inst -> graph.outgoingEdgesOf(inst).size() == 0).collect(Collectors.toSet());
+                .filter(v -> graph.outgoingEdgesOf(v).size() == 0).collect(Collectors.toSet());
         // Make sure there is only one targets
         if (sinks.size() > 1)
             throw new IllegalStateException("Converted graph from " + reaction + " has more than one sink vertex!");
         
-        AllDirectedPaths<InstanceVertex, DefaultEdge> helper = new AllDirectedPaths<>(graph);
-        List<GraphPath<InstanceVertex, DefaultEdge>> paths = helper.getAllPaths(sources, 
-                                                                                sinks, 
-                                                                                true, 
-                                                                                null);
-        List<List<GKInstance>> rtn = paths.stream().map(path -> 
-                    path.getVertexList().stream().map(v -> v.instance).collect(Collectors.toList())
-                ).collect(Collectors.toList());
-        return rtn;
+        if (DEBUG) {
+            graph.edgeSet().stream().forEach(edge -> {
+                System.out.println(graph.getEdgeSource(edge) + "\tActivate\t" + graph.getEdgeTarget(edge));
+            });
+            
+            List<Set<GKInstance>> allPaths = getAllPaths(graph, sinks.iterator().next());
+            System.out.println("\nAll paths: " + allPaths.size());
+            allPaths.stream().forEach(System.out::println);
+        }
+        
+        // We need to control the total number of paths to avoid exploding. So we use a customized
+        // implementation here instead of the existing class in jGraphT.
+//        AllDirectedPaths<InstanceVertex, DefaultEdge> helper = new AllDirectedPaths<>(graph);
+//        List<GraphPath<InstanceVertex, DefaultEdge>> paths = helper.getAllPaths(sources, 
+//                                                                                sinks, 
+//                                                                                true, 
+//                                                                                null);
+//        List<List<GKInstance>> rtn = paths.stream().map(path -> 
+//                    path.getVertexList().stream().map(v -> v.instance).collect(Collectors.toList())
+//                ).collect(Collectors.toList());
+        List<Set<GKInstance>> allPaths = getAllPaths(graph, sinks.iterator().next()); // There should be only one sinkk
+        return allPaths;
     }
     
     /**
@@ -137,11 +171,13 @@ public class ReactomeReactionExpander {
      * @throws Exception
      */
     private DirectedGraph<InstanceVertex, DefaultEdge> convertToGraph(GKInstance reaction) throws Exception {
+        // To pick up genes involved in a reaction, we don't need to study outputs.
+        Set<GKInstance> leftSideEntities = getLeftSideEntities(reaction);
+        if (leftSideEntities.size() == 0)
+            return null;
         DirectedGraph<InstanceVertex, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
         InstanceVertex rxtVertex = new InstanceVertex(reaction);
         graph.addVertex(rxtVertex);
-        // To pick up genes involved in a reaction, we don't need to study outputs.
-        Set<GKInstance> leftSideEntities = getLeftSideEntities(reaction);
         List<GKInstance> list = new ArrayList<>(leftSideEntities);
         List<InstanceVertex> vertexList = list.stream().map(inst -> new InstanceVertex(inst)).collect(Collectors.toList());
         vertexList.stream().forEach(graph::addVertex);
@@ -162,6 +198,50 @@ public class ReactomeReactionExpander {
         return graph;
     }
     
+    private List<Set<GKInstance>> getAllPaths(DirectedGraph<InstanceVertex, DefaultEdge> graph,
+                                              InstanceVertex rxtVertex) {
+        List<Set<GKInstance>> allPaths = new ArrayList<>();
+        Set<GKInstance> path0 = new HashSet<>();
+        allPaths.add(path0);
+        path0.add(rxtVertex.instance);
+        
+        getAllPathsBacktrack(allPaths, graph, rxtVertex, path0);
+        
+        return allPaths;
+    }
+    
+    private void getAllPathsBacktrack(List<Set<GKInstance>> allPaths,
+                                     DirectedGraph<InstanceVertex, DefaultEdge> graph,
+                                     InstanceVertex currentVertex,
+                                     Set<GKInstance> currentPath) {
+        Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(currentVertex);
+        if (incomingEdges == null || incomingEdges.size() == 0)
+            return; // Source nodes
+        List<DefaultEdge> list = new ArrayList<>(incomingEdges);
+        DefaultEdge firstEdge = null;
+        if (list.size() > 1 && allPaths.size() > maximumOfExpansion) {
+            // Randomly pick up one edge to backtrack
+            if (random == null)
+                random = new Random();
+            int index = random.nextInt(list.size());
+            firstEdge = list.get(index);
+        }
+        else {
+            for (int i = 1; i < list.size(); i ++) {
+                Set<GKInstance> copy = new HashSet<GKInstance>(currentPath);
+                allPaths.add(copy);
+                DefaultEdge otherEdge = list.get(i);
+                InstanceVertex otherPre = graph.getEdgeSource(otherEdge);
+                copy.add(otherPre.instance);
+                getAllPathsBacktrack(allPaths, graph, otherPre, copy);
+            }
+            firstEdge = list.get(0);
+        }
+        InstanceVertex firstPre = graph.getEdgeSource(firstEdge);
+        currentPath.add(firstPre.instance);
+        getAllPathsBacktrack(allPaths, graph, firstPre, currentPath);
+    }
+    
     /**
      * Expand the vertices representing EntitySets or Complexes until no more these types of
      * instance existing in the graph.
@@ -171,9 +251,11 @@ public class ReactomeReactionExpander {
     private void expandEntity(DirectedGraph<InstanceVertex, DefaultEdge> graph) throws Exception {
         boolean isUpdated = true; // First time
         while (isUpdated) { // Recursively calling until nothing to be changed 
+            if (DEBUG) System.out.println("Vertex: " + graph.vertexSet().size());
             isUpdated = false;
             // Need to copy this set so that we can manipulate the graph.
             Set<InstanceVertex> copy = new HashSet<>(graph.vertexSet());
+            int c = 0;
             for (InstanceVertex v : copy) {
                 GKInstance inst = v.instance;
                 // Escape the last reaction
@@ -191,6 +273,7 @@ public class ReactomeReactionExpander {
 
     private boolean expandEntitySet(DirectedGraph<InstanceVertex, DefaultEdge> graph, 
                                     InstanceVertex v) throws Exception {
+        if (DEBUG) System.out.println("Expanding: " + v.instance);
         Set<GKInstance> members = new HashSet<>();
         members.addAll(v.instance.getAttributeValuesList(ReactomeJavaConstants.hasMember));
         if (v.instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasCandidate))
@@ -211,20 +294,24 @@ public class ReactomeReactionExpander {
 
     private boolean expandComplex(DirectedGraph<InstanceVertex, DefaultEdge> graph, 
                                   InstanceVertex v) throws Exception {
+        if (DEBUG) System.out.println("Expanding: " + v.instance);
         List<GKInstance> components = v.instance.getAttributeValuesList(ReactomeJavaConstants.hasComponent);
         if (components == null || components.size() == 0)
             return false;
-        List<InstanceVertex> vComps = components.stream().map(comp -> new InstanceVertex(comp)).collect(Collectors.toList());
+        // Multiple copies of instances may be used for showing stoichiometries.
+        // Use set to remove duplicates.
+        Set<GKInstance> set = new HashSet<>(components);
+        List<InstanceVertex> vComps = set.stream().map(comp -> new InstanceVertex(comp)).collect(Collectors.toList());
         vComps.stream().forEach(graph::addVertex);
-        for (int i = 0; i < components.size() - 1; i++) {
+        for (int i = 0; i < vComps.size() - 1; i++) {
             InstanceVertex comp1 = vComps.get(i);
             InstanceVertex comp2 = vComps.get(i + 1);
             graph.addEdge(comp1, comp2);
         }
         graph.incomingEdgesOf(v).stream().forEach(edge -> 
-        graph.addEdge(graph.getEdgeSource(edge), vComps.get(0)));
+            graph.addEdge(graph.getEdgeSource(edge), vComps.get(0)));
         graph.outgoingEdgesOf(v).stream().forEach(edge -> 
-        graph.addEdge(vComps.get(vComps.size() - 1), graph.getEdgeTarget(edge)));
+            graph.addEdge(vComps.get(vComps.size() - 1), graph.getEdgeTarget(edge)));
         // Now we can remove this vertex 
         graph.removeVertex(v);
         return true;
@@ -265,15 +352,24 @@ public class ReactomeReactionExpander {
      * @author gwu
      *
      */
-    private class InstanceVertex {
+    private static class InstanceVertex {
+        private static int count = 0;
         private GKInstance instance;
+        private Integer id;
         
         public InstanceVertex(GKInstance inst) {
             this.instance = inst;
+            id = count ++;
         }
         
+        @Override
         public String toString() {
-            return instance.toString();
+            return hashCode() + ": " + instance.getDBID();
+        }
+        
+        @Override
+        public int hashCode() {
+            return id;
         }
         
     }
