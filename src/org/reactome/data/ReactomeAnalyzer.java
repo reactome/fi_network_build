@@ -635,17 +635,6 @@ public class ReactomeAnalyzer {
         fu.close();
     }
     
-    /**
-     * If an EntitySet having multiple genes as its members are invovled in a reaction,
-     * the reaction will be expanded combinatorially to create multiple reactions.
-     * @param rxt
-     * @return
-     * @throws Exception
-     */
-    private Map<String, Set<String>> grepGenesFromReactionViaExpandSet(GKInstance rxt) throws Exception {
-        return null;
-    }
-    
     public Set<String> grepGenesFromComplex(GKInstance complex) throws Exception {
         Set<String> genes = new HashSet<String>();
         ReactomeUtilities.grepGenesFromEntity(complex, genes);

@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
+import org.gk.schema.SchemaClass;
 import org.jgraph.graph.DefaultEdge;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
@@ -69,6 +70,7 @@ public class ReactomeReactionExpander {
 //        dbId = 983709L; // A blackbox reaction has weird behavior. Cannot finish!!!
 //        dbId = 191072L; // [BlackBoxEvent:191072] Synthesis of Cx43: no input
         dbId = 156923L; // Cannot finish: [Reaction:156923] Hydrolysis of eEF1A:GTP
+        dbId = 5213462L; // RIPK3 binds RIPK1: has 4 Regulations
         GKInstance reaction = dba.fetchInstance(dbId);
         
         // Expand the passed reaction into a list of lists of instances.
@@ -332,14 +334,31 @@ public class ReactomeReactionExpander {
         }
         Collection<GKInstance> regulations = reaction.getReferers(ReactomeJavaConstants.regulatedEntity);
         if (regulations != null && regulations.size() > 0) {
+            Set<GKInstance> regulators = new HashSet<>();
             for (GKInstance regulation : regulations) {
                 GKInstance regulator = (GKInstance) regulation.getAttributeValue(ReactomeJavaConstants.regulator);
                 if (regulator == null)
                     continue;
-                // Only take physical entity
-                if (regulator.getSchemClass().isa(ReactomeJavaConstants.PhysicalEntity))
-                    set.add(regulator);
+                regulators.add(regulator);
+//                // Only take physical entity
+//                if (regulator.getSchemClass().isa(ReactomeJavaConstants.PhysicalEntity))
+//                    set.add(regulator);
             }
+            if (regulators.size() > 1) {
+                // Create a pseudo EntitySet so that the reaction can be expanded, assuming only one regulator
+                // can work at the same time. Using this method will reduce the number of permuation from EntitySet,
+                // therefore, controlling the total number of reaction expansion (e.g. for reaction RIPK3 binds RIPK1,
+                // reduces from 48 to 12).
+                GKInstance regulatorSet = new GKInstance();
+                regulatorSet.setDbAdaptor(reaction.getDbAdaptor());
+                SchemaClass entitySetCls = reaction.getDbAdaptor().getSchema().getClassByName(ReactomeJavaConstants.DefinedSet);
+                regulatorSet.setSchemaClass(entitySetCls);
+                regulatorSet.setAttributeValue(ReactomeJavaConstants.hasMember,
+                                               new ArrayList<>(regulators));
+                set.add(regulatorSet);
+            }
+            else if (regulators.size() == 1)
+                set.add(regulators.iterator().next());
         }
         return set;
     }
