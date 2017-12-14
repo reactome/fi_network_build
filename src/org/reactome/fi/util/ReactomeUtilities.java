@@ -16,6 +16,7 @@ import org.gk.model.ReactomeJavaConstants;
  *
  */
 public class ReactomeUtilities {
+    public static final Long HOMO_SAPIENS_DB_ID = 48887L;
     
     public static void grepGenesFromEntity(GKInstance pe,
                                            Set<String> genes) throws Exception {
