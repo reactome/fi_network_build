@@ -6,6 +6,8 @@ package org.reactome.fi;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
@@ -31,6 +34,7 @@ import org.reactome.data.UniProtAnalyzer;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
+import org.reactome.fi.util.ReactomeUtilities;
 import org.reactome.hibernate.HibernateFIReader;
 import org.reactome.kegg.KeggAnalyzer;
 
@@ -202,6 +206,80 @@ public class PathwayGeneSetGenerator {
     }
     
     /**
+     * Some pathway diagrams have sub-pathways listed. This method is used to grep
+     * these sub-pathways based on the list of pathways generated in method {@link 
+     * generateReactomePathwayListBasedOnDiagrams() generateReactomePathwayListBasedOnDiagrams}.
+     * The example is this:  https://reactome.org/PathwayBrowser/#/R-HSA-73857&PATH=R-HSA-74160
+     * (see sub-pathway Generic Transcription Pathway) (release 63). The generated list of
+     * pathways are used for batch PGM or BN analysis.
+     * @throws Exception
+     */
+    @Test
+    public void boostPathwayListForModeling() throws Exception {
+        String fileName = FIConfiguration.getConfiguration().get("REACTOME_PATHWAYS");
+        List<Long> dbIds = Files.lines(Paths.get(fileName))
+                .map(line -> line.split("\t")[0])
+                .map(text -> new Long(text))
+                .collect(Collectors.toList());
+        logger.info("Total DB_IDs: " + dbIds.size());
+
+        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
+        MySQLAdaptor dba = (MySQLAdaptor) reactomeAnalyzer.getMySQLAdaptor();
+
+        Set<GKInstance> pathways = new HashSet<>();
+        for (Long dbId : dbIds) {
+            GKInstance pathway = dba.fetchInstance(dbId);
+            boostPathwayListForModeling(pathways, pathway, dba);
+        }
+        
+        logger.info("Total pathways after boosting: " + pathways.size());
+        String[] tokens = fileName.split("\\.");
+        String newFileName = tokens[0] + "_ForModeling." + tokens[1];
+        outputPathways(pathways, newFileName);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void boostPathwayListForModeling(Set<GKInstance> pathways,
+                                             GKInstance pathway,
+                                             MySQLAdaptor dba) throws Exception {
+        if (pathways.contains(pathway))
+            return;
+        logger.info("Check " + pathway);
+        Collection<GKInstance> diagrams = dba.fetchInstanceByAttribute(ReactomeJavaConstants.PathwayDiagram,
+                ReactomeJavaConstants.representedPathway, 
+                "=",
+                pathway);
+        if (diagrams == null || diagrams.size() != 1) {
+            String message = pathway + " doesn't have diagram or has more than one diagram: " + diagrams;
+            logger.error(message);
+            throw new IllegalStateException(message);
+        }
+        // Need to check its contained pathways
+        GKInstance diagram = diagrams.iterator().next();
+        DiagramGKBReader reader = new DiagramGKBReader();
+        RenderablePathway renderableDiagram = reader.openDiagram(diagram);
+        boolean hasEntity = false;
+        // Use this set to avoid circular link: PathwayA <-> PathwayB
+        Set<GKInstance> containedPathways = new HashSet<>();
+        for (Object obj : renderableDiagram.getComponents()) {
+            Renderable r = (Renderable) obj;
+            if (r.getReactomeId() == null)
+                continue;
+            GKInstance inst = dba.fetchInstance(r.getReactomeId());
+            if (inst.getSchemClass().isa(ReactomeJavaConstants.PhysicalEntity)) {
+                hasEntity = true;
+            }
+            else if (inst.getSchemClass().isa(ReactomeJavaConstants.Pathway)) {
+                containedPathways.add(inst);
+            }
+        }
+        if (hasEntity)
+            pathways.add(pathway);
+        for (GKInstance containedPathway : containedPathways)
+            boostPathwayListForModeling(pathways, containedPathway, dba);
+    }
+    
+    /**
      * Using this method to generate a list of pathways from Reactome. Each pathway should
      * have a corresponding pathway diagrams with entities fully laid-out.
      * @throws Exception
@@ -224,12 +302,21 @@ public class PathwayGeneSetGenerator {
             // Escape the disease topic since they should be covered by associated normal pathways
             if (item.getDisplayName().equalsIgnoreCase("Disease"))
                 continue;
+            // Exclude non-human pathways
+            GKInstance species = (GKInstance) item.getAttributeValue(ReactomeJavaConstants.species);
+            if (species == null ||
+                !species.getDBID().equals(ReactomeUtilities.HOMO_SAPIENS_DB_ID))
+                continue;
             grepPathwaysWithDiagrams(item, pathways, dba);
         }
+        String fileName = FIConfiguration.getConfiguration().get("REACTOME_PATHWAYS");
+        outputPathways(pathways, fileName);
+    }
+
+    private void outputPathways(Set<GKInstance> pathways, String fileName) throws IOException {
         // Want to sort it before output
         List<GKInstance> list = new ArrayList<GKInstance>(pathways);
         InstanceUtilities.sortInstances(list);
-        String fileName = FIConfiguration.getConfiguration().get("REACTOME_PATHWAYS");
         FileUtility fu = new FileUtility();
         fu.setOutput(fileName);
         for (GKInstance pathway : list)
