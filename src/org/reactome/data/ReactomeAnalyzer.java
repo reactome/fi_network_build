@@ -1485,8 +1485,10 @@ public class ReactomeAnalyzer {
      * second level is based on assumption that the lower level pathways should be more like functional units
      * than upper level pathways.
      * @throws Exception
+     * @deprecated: Use method in PathwayGeneSetGenerator instead.
      */
     @Test
+    @Deprecated
     public void generateListOfPathways() throws Exception {
         Set<GKInstance> pathwaySet = new HashSet<GKInstance>();
         MySQLAdaptor releasedDBA = (MySQLAdaptor) getMySQLAdaptor();
@@ -1554,6 +1556,10 @@ public class ReactomeAnalyzer {
             }
             bigTopics.clear();
             bigTopics.addAll(next);
+        }
+        if (true) {
+            pathwaySet.forEach(pathway -> System.out.println(pathway.getDBID() + "\t" + pathway.getDisplayName()));
+            return;
         }
         // Want to sort it before output
         List<GKInstance> list = new ArrayList<GKInstance>(pathwaySet);
