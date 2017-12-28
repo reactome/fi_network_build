@@ -69,8 +69,8 @@ public class ReactomeReactionExpander {
 //        dbId = 421835L; // A huge complex participates
 //        dbId = 983709L; // A blackbox reaction has weird behavior. Cannot finish!!!
 //        dbId = 191072L; // [BlackBoxEvent:191072] Synthesis of Cx43: no input
-        dbId = 156923L; // Cannot finish: [Reaction:156923] Hydrolysis of eEF1A:GTP
-        dbId = 5213462L; // RIPK3 binds RIPK1: has 4 Regulations
+//        dbId = 156923L; // Cannot finish: [Reaction:156923] Hydrolysis of eEF1A:GTP
+//        dbId = 5213462L; // RIPK3 binds RIPK1: has 4 Regulations
         GKInstance reaction = dba.fetchInstance(dbId);
         
         // Expand the passed reaction into a list of lists of instances.

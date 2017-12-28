@@ -4,23 +4,33 @@
  */
 package org.reactome.kegg;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -36,10 +46,110 @@ import org.reactome.fi.util.InteractionUtilities;
  *
  */
 public class KeggAnalyzer{
+    private static final Logger logger = Logger.getLogger(KeggAnalyzer.class);
     //private final String DIR_NAME = "/Users/wgm/Documents/caBIG_R3/datasets/KEGG/";
     private final String DIR_NAME = FIConfiguration.getConfiguration().get("KEGG_DIR");
     
     public KeggAnalyzer() {
+    }
+    
+    /**
+     * Because the account access issue, new pathways for the 2017 version
+     * are downloaded directly from KEGG's web site based on this method. After
+     * download, the total list of pathways is updated for these new pathways.
+     * Note: This list was collected from http://www.genome.jp/kegg/docs/upd_map.html
+     * after removing metabolic and non-human pathways.
+     * @throws Exception
+     */
+    @Test
+    public void downloadNewPathways() throws Exception {
+        String fileName = DIR_NAME + "NewPathwaysIn2017.txt";
+        // 8/7/17  4926    Relaxin signaling pathway   Newly added
+        List<String> ids = Files.lines(Paths.get(fileName))
+                                .map(line -> line.split("\t")[1])
+                                .collect(Collectors.toList());
+        logger.info("Total ids: " + ids.size());
+        // To get the detailed information, KEGG API is used
+        String targetDir = DIR_NAME + File.separator + "hsa" + File.separator;
+        logger.info("Target dir: " + targetDir);
+        for (String id : ids) {
+            // Get KGML
+            String hsaId = "hsa0" + id;
+            logger.info("Handling " + hsaId);
+            downloadPathwayFile(hsaId, "kgml", targetDir);
+            downloadPathwayFile(hsaId, "conf", targetDir);
+        }
+        // These new files should be added to map_title.tab for generating pathways to genes mapping.
+    }
+    
+    private void downloadPathwayFile(String hsaId, String type, String targetDir) throws IOException {
+        URL url = new URL("http://rest.kegg.jp/get/" + hsaId + "/" + type);
+        String fileName = null;
+        if (type.equals("kgml"))
+            fileName = targetDir + hsaId + ".xml";
+        else if (type.equals("conf"))
+            fileName = targetDir + hsaId + ".conf";
+        FileUtility fu = new FileUtility();
+        fu.setOutput(fileName);
+        InputStream is = url.openStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            fu.printLine(line);
+        }
+        fu.close();
+    }
+    
+    /**
+     * For some new pathways, we load genes from their conf files.
+     * @param confFileName
+     * @return
+     * @throws Exception
+     */
+    private Set<String> loadPathwayGenesInConfFile(String confFileName) throws IOException {
+        try (Stream<String> lines = Files.lines(Paths.get(confFileName))) {
+            Set<String> genes = new HashSet<>();
+            lines.forEach(line -> {
+                // Used as a mark
+                String marker = "/dbget-bin/www_bget?hsa";
+                int index = line.indexOf(marker);
+                if (index < 0)
+                    return;
+                String subLine = line.substring(index + marker.length());
+                grepGenes(subLine, genes);
+            });
+            return genes;
+        }
+    }
+    
+    /**
+     * Parse genes from something line the following:
+     * 3320+hsa:3326+hsa:7184   3320 (HSP90AA1), 3326 (HSP90AB1), 7184 (HSP90B1)
+     * @param line
+     * @param genes
+     */
+    private void grepGenes(String line, Set<String> genes) {
+        Pattern pattern = Pattern.compile("\\((\\w+)\\)");
+        Matcher matcher = pattern.matcher(line);
+        int start = 0;
+        while (matcher.find(start)) {
+            String gene = matcher.group(1);
+            genes.add(gene);
+            start = matcher.end();
+        }
+    }
+    
+    @Test
+    public void testParseGenes() {
+        String line = "3320+hsa:3326+hsa:7184   3320 (HSP90AA1), 3326 (HSP90AB1), 7184 (HSP90B1)";
+        Pattern pattern = Pattern.compile("\\((\\w+)\\)");
+        Matcher matcher = pattern.matcher(line);
+        int start = 0;
+        while (matcher.find(start)) {
+            String gene = matcher.group(1);
+            System.out.println(gene);
+            start = matcher.end();
+        }
     }
     
     @Test
@@ -164,7 +274,6 @@ public class KeggAnalyzer{
         CharBuffer charBuffer = charset.decode(buffer);
         Matcher matcher = pattern.matcher(charBuffer);
         int start = 0;
-        boolean needGet = false;
         while (matcher.find(start)) {
             String name = matcher.group(1);
             //System.out.println(name);
@@ -175,6 +284,7 @@ public class KeggAnalyzer{
             }
             start = matcher.end();
         }
+        fis.close();
         return list;
     }
     
@@ -200,32 +310,51 @@ public class KeggAnalyzer{
      */
     public Map<String, Set<String>> loadPathwayToGeneNamesMapFromHsaList() throws IOException {
         String dirName = FIConfiguration.getConfiguration().get("KEGG_DIR");
-        String listFile = dirName + File.separator + "hsa" + File.separator + "hsa.list";
         String titleFile = dirName + File.separator + "map_title.tab";
-        Map<String, Set<String>> pathwayToGenes = new HashMap<String, Set<String>>();
         FileUtility fu = new FileUtility();
         Map<String, String> pathwayIdToName = new HashMap<String, String>();
+        Set<String> useConfIds = new HashSet<>();
         // Load names
         fu.setInput(titleFile);
         String line = null;
         while ((line = fu.readLine()) != null) {
+//            System.out.println(line);
+            if (line.startsWith("#"))
+                continue; // Treat it as a comment line
             String[] tokens = line.split("\t");
             pathwayIdToName.put("path:hsa" + tokens[0], tokens[1] + "(K)");
+            if (tokens.length > 2 && tokens[2].equals("useConf"))
+                useConfIds.add(tokens[0]);
         }
         fu.close();
         // Load genes
+        String listFile = dirName + File.separator + "hsa" + File.separator + "hsa.list";
         fu.setInput(listFile);
         int index;
+        Map<String, Set<String>> pathwayToGenes = new HashMap<String, Set<String>>();
+        // Gather all touched pathways ids
+        Set<String> touchedIds = new HashSet<>();
         while ((line = fu.readLine()) != null) {
             String[] tokens = line.split("\t");
             if (tokens.length < 3 || tokens[2].trim().length() == 0) // For some bug from KEGG that generates an empty string token
                 continue; // Small molecules and other types
             String pathwayName = pathwayIdToName.get(tokens[0]);
+            touchedIds.add(tokens[0]);
             index = tokens[2].indexOf(" ");
             String gene = tokens[2].substring(4, index);
             InteractionUtilities.addElementToSet(pathwayToGenes, pathwayName, gene);
         }
         fu.close();
+        logger.info("Handling new pathways: " + useConfIds.size());
+        // Handle new pathways
+        for (String id : useConfIds) {
+            String confFileName = dirName + File.separator + "hsa" + File.separator + "hsa" + id + ".conf";
+            Set<String> genes = loadPathwayGenesInConfFile(confFileName);
+            String pathwayName = pathwayIdToName.get("path:hsa" + id);
+            if (pathwayName == null)
+                throw new IllegalStateException("Cannot find pathway name for " + id);
+            genes.forEach(gene -> InteractionUtilities.addElementToSet(pathwayToGenes, pathwayName, gene));
+        }
         return pathwayToGenes;
     }
     
