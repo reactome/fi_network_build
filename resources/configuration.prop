@@ -52,7 +52,7 @@ PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_022717.txt
 # We need a flattened list of pathways from Reactome for enrichment analysis
 #REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways022717.txt
 #REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways090217.txt
-REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways112717.txt
+REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways112717_TEST.txt
 # As of Decemember, 2013, we also want to dump all Reactome pathways in order
 # to do a hierarhy based pathway enrichment analysis
 PROTEIN_ID_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinIdToReactomePathways022717.txt
@@ -111,7 +111,8 @@ NCI_NATURE_DIR=${DATA_SET_DIR}/NCI-Pathways/031709/
 # For ensembl related files
 ENSEMBL_DIR=${DATA_SET_DIR}/Ensembl/release_91/
 ENSEMBL_COMPARA_DATABASE=ensembl_compara_91
-ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies.txt
+#ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies.txt
+ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies_Zebrafish.txt
 # For GO related files
 GO_DIR=${DATA_SET_DIR}/GO/122217/
 GOA_FILE_NAME=${GO_DIR}/goa_human.gaf
