@@ -258,4 +258,5 @@
         direction="-|" />
     <type name="GErel: expression, missing interaction" reverse="GErel: expressed by, missing interaction"
         direction="->" />
+    <type name="GErel: dephosphorylation, expression" reverse="GErel: dephosphorylated by, expressed by" direction="-" />
 </InteractionTypeMapper>

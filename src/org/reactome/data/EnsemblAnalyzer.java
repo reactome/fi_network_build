@@ -291,11 +291,15 @@ public class EnsemblAnalyzer {
     private List<Integer> getNeededTaxonIds() {
         List<Integer> rtns = new ArrayList<Integer>();
         rtns.add(9606); // homo sapiens
-//        rtns.add(4932); // S. cerevisiae
-        rtns.add(559292); // S.cerevisae S288C: Have to use this yeast. Don't use 4932!!! Otherwise, the hit is very low
-        rtns.add(6239); // C. elegans
-        rtns.add(7227); // D. melanogaster
-        rtns.add(10090); // Mus musculus
+////        rtns.add(4932); // S. cerevisiae
+//        rtns.add(559292); // S.cerevisae S288C: Have to use this yeast. Don't use 4932!!! Otherwise, the hit is very low
+//        rtns.add(6239); // C. elegans
+//        rtns.add(7227); // D. melanogaster
+//        rtns.add(10090); // Mus musculus
+        
+        // for Zebrafish check
+        rtns.add(7955);
+        
         return rtns;
     }
     

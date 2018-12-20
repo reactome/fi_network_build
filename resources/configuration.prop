@@ -38,31 +38,32 @@ TRED_FI_FILE=${RESULT_DIR}/FIs_TRED.txt
 #INTERACTION_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIs_042109_BigComp.txt
 # The minimum size used for a pathway
 MINIMUM_PAHTWAY_SIZE = 3
-GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_022717_BigComp.txt
-GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_022717.txt
+GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_071718_BigComp.txt
+GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_071718.txt
 # This file will be handled later on using the caBigR3Web project. However, it is listed here
 # for creating the configuration file
-GENE_FI_ANNOTATION_FILE_NAME=${RESULT_DIR}/FIsInGene_022717_with_annotations.txt
-GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_022717.txt
-GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_022717.txt
+GENE_FI_ANNOTATION_FILE_NAME=${RESULT_DIR}/FIsInGene_071718_with_annotations.txt
+GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_071718.txt
+GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_071718.txt
 # Used in order to create a quick map from FIs to their pathway sources
-GENE_FI_PATHWAY_SOURCES_FILE_NAME=${RESULT_DIR}/PathwayFIToSources_022717.txt
+GENE_FI_PATHWAY_SOURCES_FILE_NAME=${RESULT_DIR}/PathwayFIToSources_071718.txt
 # File for mapping accession to names dumped from the FI network
-PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_022717.txt
+PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_071718.txt
 # We need a flattened list of pathways from Reactome for enrichment analysis
 #REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways022717.txt
-#REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways090217.txt
-REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways112717_TEST.txt
+REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways071718.txt
+#REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways112717_TEST.txt
 # As of Decemember, 2013, we also want to dump all Reactome pathways in order
 # to do a hierarhy based pathway enrichment analysis
-PROTEIN_ID_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinIdToReactomePathways022717.txt
-GENE_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinNameToReactomePathways022717.txt
+PROTEIN_ID_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinIdToReactomePathways071718.txt
+GENE_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinNameToReactomePathways071718.txt
 # For Reactome reaction-based enrichment analysis
-GENE_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeGenesToReactions022717.txt
-FI_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeFIsToReactions022717.txt
+GENE_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeGenesToReactions071718.txt
+FI_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeFIsToReactions071718.txt
 # Gene sets based on pathways
-PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic022717.txt
-GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics022717.txt
+PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic071718.txt
+GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics071718.txt
+REACTOME_GMT_FILE_NAME = ${RESULT_DIR}/ReactomePathways_071718.gmt
 
 CUT_OFF_VALUE=0.50d
 PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_122717.txt
@@ -153,7 +154,7 @@ BP_DOMAIN_SHARED_PAIRS=${RESULT_DIR}/BP_Domain_Shared_Pairs.txt
 SERVLET_CONFIG_FILE=${RESULT_DIR}/reactomews${YEAR}.config.prop
 
 # For Hotnet
-HEAT_KERNEL_HOTNET_FILE_NAME=HeatKernel_HotNet_time_01_2016_040417
+HEAT_KERNEL_HOTNET_FILE_NAME=HeatKernel_HotNet_time_01_2017_071718
 # For configuration
 HEAT_KERNEL_HOTNET_SER_FILE_NAME=${HEAT_KERNEL_HOTNET_FILE_NAME}.ser
 

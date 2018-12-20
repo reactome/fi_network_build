@@ -4,6 +4,8 @@
  */
 package org.reactome.data;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.gk.model.GKInstance;
 import org.gk.model.InstanceUtilities;
@@ -352,6 +355,13 @@ public class ReactomeAnalyzerTopicHelper {
             Set<String> genes = pathwayToGenes.get(pathway);
             System.out.println(pathway + "\t" + genes.size());
         }
+    }
+    
+    @Test
+    public void countTotalPathways() throws Exception {
+        String fileName = FIConfiguration.getConfiguration().get("GENE_TO_TOPIC");
+        Set<String> pathways = Files.lines(Paths.get(fileName)).map(line -> line.split("\t")[1]).collect(Collectors.toSet());
+        System.out.println("Total pathways: " + pathways.size());
     }
     
     private Set<String> generateFIs(Set<GKInstance> interactors,

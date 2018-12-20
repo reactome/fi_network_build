@@ -15,6 +15,9 @@ fi.pathway.gene.file=FIsInGene_Pathway_041709.txt
 fi.predicted.gene.file=FIsInGene_Predicted_041709.txt
 name.to.pathways=ProteinNameToTopics_041709.txt
 name.to.reactome.pathways=ReactomeGeneToPathway_111413.txt
+# Test code
+reactome.reaction.to.pathways=ReactomeReactionsToPathways_051017.txt
+reactome.pathway.list=ReactomePathways071718.txt
 goa.file.name=gene_association.goa_human
 go.term.id=GO.terms_and_ids.txt
 protein.acc.to.name=ProteinAccessionToName_070110.txt
@@ -28,3 +31,5 @@ mcl.script=mcl_script.sh
 heat.kernel.file=HeatKernel_HotNet_time_01_2014_121514.ser
 tomcat.lib=/usr/local/apache-tomcat/lib
 webapp.dir=/usr/local/apache-tomcat/webapps/caBigR3WebApp2014/WEB-INF
+# for loading drugcentral drug/target interactions
+drugcentral.file=drug.target.interaction.08292017.tsv

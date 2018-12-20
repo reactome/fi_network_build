@@ -5,6 +5,7 @@
 package org.reactome.fi;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,6 +36,7 @@ import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
 import org.reactome.fi.util.ReactomeUtilities;
+import org.reactome.gsea.ReactomeToMsigDBExport;
 import org.reactome.hibernate.HibernateFIReader;
 import org.reactome.kegg.KeggAnalyzer;
 
@@ -232,7 +234,18 @@ public class PathwayGeneSetGenerator {
             boostPathwayListForModeling(pathways, pathway, dba);
         }
         
+        // Some normal pathway diagrams have disease pathways drawn as potential downstream 
+        // pathways. Using the following statements to exclude them.
+        GKInstance disease = dba.fetchInstance(1643685L); // The topmost Disease pathway
+        Set<GKInstance> diseasePathways = InstanceUtilities.getContainedEvents(disease);
+        diseasePathways.add(disease);
+        diseasePathways.retainAll(pathways);
+        logger.info("Pathways in disease: " + diseasePathways.size());
+        diseasePathways.forEach(System.out::println);
+        
         logger.info("Total pathways after boosting: " + pathways.size());
+        pathways.removeAll(diseasePathways);
+        logger.info("Total pathways after removing disease pathways: " + pathways.size());
         String[] tokens = fileName.split("\\.");
         String newFileName = tokens[0] + "_ForModeling." + tokens[1];
         outputPathways(pathways, newFileName);
@@ -365,13 +378,20 @@ public class PathwayGeneSetGenerator {
             grepPathwaysWithDiagrams(comp, pathways, dba);
     }
     
-    /**
-     * This method is used to generate gene name to pathway map for all pathways in the Reactome
-     * database.
-     */
     @Test
-    public void generateReactomeGeneToPathwayMap() throws Exception {
+    public void generateReactomeGMTFile() throws Exception {
         ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
+        Collection<GKInstance> pathways = getPathwaysForExport(reactomeAnalyzer);
+
+        ReactomeToMsigDBExport gmtExporter = new ReactomeToMsigDBExport();
+        gmtExporter.setSizeCutoff(MINIMUM_PATHWAY_SIZE);
+        
+        String reactomeGmtFileName = FIConfiguration.getConfiguration().get("REACTOME_GMT_FILE_NAME");
+        FileOutputStream fos = new FileOutputStream(reactomeGmtFileName);
+        gmtExporter.exportInGMT(pathways, fos);
+    }
+    
+    private Collection<GKInstance> getPathwaysForExport(ReactomeAnalyzer reactomeAnalyzer) throws Exception {
         MySQLAdaptor dba = (MySQLAdaptor) reactomeAnalyzer.getMySQLAdaptor();
         // Got all human pathways
         // This is humna DB_ID
@@ -392,6 +412,18 @@ public class PathwayGeneSetGenerator {
         // Did a fix on July 23, 2016 to get non-disease pathways only
         pathways = getNonDiseasePathways(dba, pathways);
         logger.info("After removing pathways in Disease: " + pathways.size());
+        return pathways;
+    }
+    
+    /**
+     * This method is used to generate gene name to pathway map for all pathways in the Reactome
+     * database.
+     */
+    @Test
+    public void generateReactomeGeneToPathwayMap() throws Exception {
+        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
+        Collection<GKInstance> pathways = getPathwaysForExport(reactomeAnalyzer);
+        logger.info("generateReactomeGeneToPathwayMap(): total " + pathways.size() + " pathways.");
         // Get a map from protein ids to topics (pathways)
         Map<String, Set<String>> id2Topics = new HashMap<String, Set<String>>();
         ProteinIdFilters filters = new ProteinIdFilters();

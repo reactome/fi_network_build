@@ -281,8 +281,8 @@ public class FINetworkBuilder {
         reactomeAnalyzer.generateGenesToReactionsMap();
         logger.info("Running ReactomeAnalyzer.generateFIsToReactionsMap()...");
         reactomeAnalyzer.generateFIsToReactionsMap();
-        if (true)
-            return;
+//        if (true)
+//            return;
         // Generate a file containing FIs in gene names so that it can be used in 
         // plug-in and data analysis
         HibernateFIReader hibernateReader = new HibernateFIReader();
@@ -293,10 +293,7 @@ public class FINetworkBuilder {
         // Create a map from pathway fis to their original sources
         logger.info("Running HibernateFIReader.generateFIInGeneSourceFile()...");
         hibernateReader.generateFIInGeneSourceFile();
-        // Annotated the FIs: This may need some manual work.
-//        logger.info("Running InteractionAnnotator.annotateAllFIs()...");
-//        InteractionAnnotator annotator = new InteractionAnnotator();
-//        annotator.annoateAllFIs();
+
         // Generate the largest graph component
         FIGraphAnalyzer graphAnalyzer = new FIGraphAnalyzer();
         logger.info("Running FIGraphAnalyzer.analyzeComponents()...");
@@ -314,8 +311,10 @@ public class FINetworkBuilder {
         logger.info("Running PathwayGeneSetGenerator.generateProteinNameToPathwayMap()...");
         genesetGenerator.generateProteinNameToPathwayMap();
         // Generate a list of all pathways in the Reactome database. This list of pathways is used for 
-        // an pathway enrichment analysis in a hierarchical way (aka not based on flatenned list)
+        // pathway enrichment analysis in a hierarchical way (aka not based on flatenned list)
         genesetGenerator.generateReactomeGeneToPathwayMap();
+        // Generate GMT file for GSEA analysis
+        genesetGenerator.generateReactomeGMTFile();
         // Dump MySQL databases to MyISAM types so that they can be loaded into the deployment machine
         // or be backed up
         MySQLDatabaseHandler dbHandler = new MySQLDatabaseHandler();
@@ -339,6 +338,11 @@ public class FINetworkBuilder {
         fgDumper.dump();
         // Don't forget to generate FIsInGene_xxxxxx_with_annotations.txt file by using
         // the method in caBigR3 project: 
+        // The method should be run is in class org.reactome.r3.fi.InteractionAnnotator.annotateAllFIs()
+        // in project caBigR3WebApp. This should be moved to here in the future.
+//        logger.info("Running InteractionAnnotator.annotateAllFIs()...");
+//        InteractionAnnotator annotator = new InteractionAnnotator();
+//        annotator.annoateAllFIs();
     }
     
     /**
