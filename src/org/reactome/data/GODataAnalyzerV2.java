@@ -34,6 +34,8 @@ public class GODataAnalyzerV2 {
     
     public GODataAnalyzerV2() {
         termLoader = new GOTermLoader();
+        // As of the 2018 version, we will escape annotations loaded directly from Reactome.
+        termLoader.setEscapeReactomeAnnotations(true);
         termLoader.setGoaFileName(GOA_FILE_NAME);
     }
     
@@ -284,6 +286,13 @@ public class GODataAnalyzerV2 {
         proteinToTermsList.add(proteinToTerms);
         proteinToTerms = loadProteinToGOCCTerms();
         proteinToTermsList.add(proteinToTerms);
+//        if (true) {
+//            for (int i = 0; i < proteinToTermsList.size(); i++) {
+//                Map<String, Set<String>> map = proteinToTermsList.get(i);
+//                System.out.println(i + ": " + map.size());
+//            }
+//            return;
+//        }
         int index = 0;
         for (Map<String, Set<String>> proteinToTerms1 : proteinToTermsList) {
             if (index == 0)

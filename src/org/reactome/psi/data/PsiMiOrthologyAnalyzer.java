@@ -27,6 +27,7 @@ import org.reactome.fi.util.InteractionUtilities;
  */
 public class PsiMiOrthologyAnalyzer {
     private FileUtility fu = new FileUtility();
+    private ProteinIdFilters proteinFilter;
     
     public PsiMiOrthologyAnalyzer() {
     }
@@ -57,9 +58,10 @@ public class PsiMiOrthologyAnalyzer {
     
     private void normalizePPIs(String inFileName,
                                String outFileName) throws Exception {
-        ProteinIdFilters filters = new ProteinIdFilters();
+        if (proteinFilter == null)
+            proteinFilter = new ProteinIdFilters();
         Set<String> ppis = fu.loadInteractions(inFileName);
-        Set<String> normalized = filters.normalizeProteinPairs(ppis);
+        Set<String> normalized = proteinFilter.normalizeProteinPairs(ppis);
         fu.outputSet(normalized, outFileName);
         System.out.printf("Before normalization: %d, after: %d%n",
                           ppis.size(),
@@ -160,11 +162,25 @@ public class PsiMiOrthologyAnalyzer {
         EnsemblAnalyzer analyzer = new EnsemblAnalyzer();
         Map<String, Set<String>> mouseToHuman = analyzer.loadMouseToHumanMapInUniProt();
         System.out.println("Total mouse proteins: " + mouseToHuman.size());
+//        normalizeHumanIds(mouseToHuman);
         generateHumanPPIsFromOtherSpeciesInUniprot(FIConfiguration.getConfiguration().get("IREFINDEX_MOUSE_PPI_FILE"), 
                                                    FIConfiguration.getConfiguration().get("IREFINDEX_MOUSE_TO_HUMAN_PPI_FILE"),
                                                    mouseToHuman);
         normalizePPIs(FIConfiguration.getConfiguration().get("IREFINDEX_MOUSE_TO_HUMAN_PPI_FILE"),
                       FIConfiguration.getConfiguration().get("HUMAN_PPIS_FROM_MOUSE_FILE"));
+    }
+    
+    private void normalizeHumanIds(Map<String, Set<String>> toHuman) throws Exception {
+        if (proteinFilter == null)
+            proteinFilter = new ProteinIdFilters();
+        Set<String> copy = new HashSet<>(toHuman.keySet());
+        for (String otherId : copy) {
+            Set<String> humanIds = toHuman.get(otherId);
+            Set<String> filtered = proteinFilter.filter(humanIds);
+            if (filtered.size() == 0)
+                continue;
+            toHuman.put(otherId, filtered);
+        }
     }
     
     /**
@@ -253,15 +269,21 @@ public class PsiMiOrthologyAnalyzer {
         int index = 0;
         int compare = 0;
         for (String otherPPI : otherPPIs) {
+            // In 2018, this mouse PPI is excluded explicitily since the extremely large
+            // map: over 20,000 * 20,000 mapping
+            if (otherPPI.equals("P01899\tP01900"))
+                continue;
             index = otherPPI.indexOf("\t");
             String yeastId1 = otherPPI.substring(0, index);
             Set<String> humanIds1 = toHumanMap.get(yeastId1);
             if (humanIds1 == null)
                 continue;
+//            System.out.println(yeastId1 + " -> " + humanIds1.size());
             String yeastId2 = otherPPI.substring(index + 1);
             Set<String> humanIds2 = toHumanMap.get(yeastId2);
             if (humanIds2 == null)
                 continue;
+//            System.out.println(yeastId2 + " -> " + humanIds2.size());
             // Create human PPIs
             for (String humanId1 : humanIds1) {
                 String mapped1 = idMap.get(humanId1);
@@ -278,6 +300,7 @@ public class PsiMiOrthologyAnalyzer {
                         humanPPIs.add(mapped2 + "\t" + mapped1);
                 }
             }
+//            System.out.println("Human PPIs: " + humanPPIs.size());
         }
         // Total human PPIs in checksums
         System.out.printf("Mapped human PPIs from other species: %d -> %d%n",
@@ -285,6 +308,27 @@ public class PsiMiOrthologyAnalyzer {
                           humanPPIs.size());
         fu.outputSet(humanPPIs, 
                      outFileName);
+    }
+    
+    private void createHumanPPIs(Set<String> humanIds1, 
+                                 Set<String> humanIds2, 
+                                 Map<String, String> idMap,
+                                 Set<String> humanPPIs) {
+        for (String humanId1 : humanIds1) {
+            String mapped1 = idMap.get(humanId1);
+            if (mapped1 == null)
+                continue;
+            for (String humanId2 : humanIds2) {
+                String mapped2 = idMap.get(humanId2);
+                if (mapped2 == null)
+                    continue;
+                int compare = mapped1.compareTo(mapped2);
+                if (compare < 0)
+                    humanPPIs.add(mapped1 + "\t" + mapped2);
+                else if (compare > 0)
+                    humanPPIs.add(mapped2 + "\t" + mapped1);
+            }
+        }
     }
 
     private void generateHumanPPIsFromOtherSpecies(String inFileName,

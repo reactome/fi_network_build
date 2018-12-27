@@ -424,7 +424,7 @@ public class InteractionAnnotator extends HibernateFIReader {
     private Set<GKInstance> getRegulators(GKInstance reaction,
                                           String clsName) throws Exception {
         Set<GKInstance> regulators = new HashSet<GKInstance>();
-        Collection regulations = reaction.getReferers(ReactomeJavaConstants.regulatedEntity);
+        Collection regulations = InstanceUtilities.getRegulations(reaction);
         if (regulations != null) {
             for (Iterator it1 = regulations.iterator(); it1.hasNext();) {
                 GKInstance regulation = (GKInstance) it1.next();

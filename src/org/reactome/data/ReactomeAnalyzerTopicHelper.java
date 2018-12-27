@@ -265,7 +265,7 @@ public class ReactomeAnalyzerTopicHelper {
                         }
                     }
                 }
-                Collection regulations = tmp.getReferers(ReactomeJavaConstants.regulatedEntity);
+                Collection regulations = InstanceUtilities.getRegulations(tmp);
                 if (regulations != null && regulations.size() > 0) {
                     for (Iterator it = regulations.iterator(); it.hasNext();) {
                         GKInstance regulation = (GKInstance) it.next();

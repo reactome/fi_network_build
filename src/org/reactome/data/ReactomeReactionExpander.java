@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
+import org.gk.model.InstanceUtilities;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.gk.schema.SchemaClass;
@@ -332,7 +333,7 @@ public class ReactomeReactionExpander {
                     set.add(catalyst);
             }
         }
-        Collection<GKInstance> regulations = reaction.getReferers(ReactomeJavaConstants.regulatedEntity);
+        Collection<GKInstance> regulations = InstanceUtilities.getRegulations(reaction);
         if (regulations != null && regulations.size() > 0) {
             Set<GKInstance> regulators = new HashSet<>();
             for (GKInstance regulation : regulations) {

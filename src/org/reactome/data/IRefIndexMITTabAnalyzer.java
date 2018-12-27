@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.gk.model.GKInstance;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
@@ -29,9 +29,50 @@ import org.reactome.fi.util.InteractionUtilities;
  *
  */
 public class IRefIndexMITTabAnalyzer {
+    private static final Logger logger = Logger.getLogger(IRefIndexMITTabAnalyzer.class);
     private FileUtility fu = new FileUtility();
     
     public IRefIndexMITTabAnalyzer() {
+    }
+    
+    /**
+     * Starting from release 15.0, interactions from Reactome have been
+     * integrated into iRefIndex. For our purpose, these interations
+     * should be excluded from our data sources. Run this method first before
+     * using iRefIndex. However, other data sources may include Reactome interactions,
+     * which may be hidden from this filtering.
+     * @throws Exception
+     */
+    @Test
+    public void filterReactomeInteractions() throws Exception {
+        String dirName = FIConfiguration.getConfiguration().get("IREFINDEX_DIR");
+        File dir = new File(dirName);
+        File[] files = dir.listFiles();
+        for (File file : files) {
+            String fileName = file.getName();
+            if (fileName.matches("(\\d)+\\.mitab\\.(\\d|-)+\\.txt")) {
+                logger.info("Filtering " + fileName + "...");
+                int filtered = 0;
+                int lastIndex = fileName.lastIndexOf(".");
+                String outFileName = fileName.substring(0, lastIndex) + ".NoReactome.txt";
+                fu.setInput(file.getAbsolutePath());
+                fu.setOutput(dirName + outFileName);
+                String line = fu.readLine();
+                fu.printLine(line);
+                while ((line = fu.readLine()) != null) {
+                    String[] tokens = line.split("\t");
+                    // If a PPI is from Reactome only, it should be excluded.
+                    if (tokens[12].equals("MI:0467(reactome)")) {
+                        filtered ++;
+                        continue;
+                    }
+                    fu.printLine(line);
+                }
+                fu.close();
+                logger.info("Total filtered: " + filtered);
+                logger.info("Filtered file: " + outFileName);
+            }
+        }
     }
     
     /**
@@ -39,7 +80,7 @@ public class IRefIndexMITTabAnalyzer {
      * @throws IOException
      */
     @Test
-    public void loadMousePPIs() throws IOException {
+    public void loadMousePPIs() throws Exception {
         extractPPIs(FIConfiguration.getConfiguration().get("IREFINDEX_MOUSE_FILE"),
                     FIConfiguration.getConfiguration().get("IREFINDEX_MOUSE_PPI_FILE"),
                     false);
@@ -50,7 +91,7 @@ public class IRefIndexMITTabAnalyzer {
      * @throws IOException
      */
     @Test
-    public void loadYeastPPIs() throws IOException {
+    public void loadYeastPPIs() throws Exception {
         extractPPIs(FIConfiguration.getConfiguration().get("IREFINDEX_YEAST_FILE"),
                     FIConfiguration.getConfiguration().get("IREFINDEX_YEAST_PPI_FILE"),
                     false);
@@ -61,21 +102,21 @@ public class IRefIndexMITTabAnalyzer {
     }
     
     @Test
-    public void loadFlyPPIs() throws IOException {
+    public void loadFlyPPIs() throws Exception {
         extractPPIs(FIConfiguration.getConfiguration().get("IREFINDEX_FLY_FILE"),
                     FIConfiguration.getConfiguration().get("IREFINDEX_FLY_PPI_FILE"),
                     false);
     }
     
     @Test
-    public void loadWormPPIs() throws IOException {
+    public void loadWormPPIs() throws Exception {
         extractPPIs(FIConfiguration.getConfiguration().get("IREFINDEX_WORM_FILE"),
                     FIConfiguration.getConfiguration().get("IREFINDEX_WORM_PPI_FILE"),
                     false);
     }
     
     @Test
-    public void loadHumanPPIs() throws IOException {
+    public void loadHumanPPIs() throws Exception {
         extractPPIs(FIConfiguration.getConfiguration().get("IREFINDEX_HUMAN_FILE"), 
                     FIConfiguration.getConfiguration().get("IREFINDEX_HUMAN_PPI_FILE"),
                     true);
@@ -83,14 +124,22 @@ public class IRefIndexMITTabAnalyzer {
     
     private void extractPPIs(String srcFileName,
                              String outFileName,
-                             boolean needToFilterTohuman) throws IOException {
+                             boolean needToFilterTohuman) throws Exception {
         long time1 = System.currentTimeMillis();
         fu.setInput(srcFileName);
         String line = fu.readLine(); // MITTAB header
         int compare = 0;
         Set<String> ppis = new HashSet<String>();
+        int filtered = 0;
         while ((line = fu.readLine()) != null) {
             String[] tokens = line.split("\t");
+            // Starting from version 15.0, Reactome PPIs in the PSI-MI Tab format
+            // are included. These PPIs should be excluded for our NBC training
+            // If a PPI is from Reactome only, it should be excluded.
+            if (tokens[12].equals("MI:0467(reactome)")) {
+                filtered ++;
+                continue;
+            }
             String protein1 = tokens[0];
             String uniprotId1 = getUniProtId(protein1);
             String protein2 = tokens[1];
@@ -104,7 +153,8 @@ public class IRefIndexMITTabAnalyzer {
                 ppis.add(uniprotId2 + "\t" + uniprotId1); // Ignore self-interaction
         }
         fu.close();
-        System.out.println("Total PPIs: " + ppis.size());
+        logger.info("Reactome PPIs filtered out: " + filtered);
+        logger.info("Total PPIs: " + ppis.size());
         if (needToFilterTohuman) {
             Set<String> totalIds = InteractionUtilities.grepIDsFromInteractions(ppis);
             checkWithUniProtIds(totalIds);
@@ -118,13 +168,17 @@ public class IRefIndexMITTabAnalyzer {
                     !uniProtIds.contains(tokens[1]))
                     it.remove();
             }
+            ProteinIdFilters filters = new ProteinIdFilters();
+            logger.info("Before filtering: " + ppis.size());
+            ppis = filters.normalizeProteinPairs(ppis);
+            logger.info("After filtering: " + ppis.size());
             totalIds = InteractionUtilities.grepIDsFromInteractions(ppis);
             checkWithUniProtIds(totalIds);
         }
         fu.saveInteractions(ppis,
                             outFileName);
         long time2 = System.currentTimeMillis();
-        System.out.println("Total time: " + (time2 - time1));
+        logger.info("Total time: " + (time2 - time1));
     }
     
     private void checkWithUniProtIds(Set<String> totalIds) throws IOException {

@@ -105,12 +105,14 @@ public class PantherAnalyzer extends ReactomeAnalyzer {
             dba.loadInstanceAttributeValues(reactions, att);
             att = cls.getAttribute(ReactomeJavaConstants.catalystActivity);
             dba.loadInstanceAttributeValues(reactions, att);
+            att = cls.getAttribute(ReactomeJavaConstants.regulatedBy);
+            dba.loadInstanceAttributeValues(reactions, att);
             cls = dba.getSchema().getClassByName(ReactomeJavaConstants.CatalystActivity);
             att = cls.getAttribute(ReactomeJavaConstants.physicalEntity);
             dba.loadInstanceAttributeValues(cas, att);
             cls = dba.getSchema().getClassByName(ReactomeJavaConstants.Regulation);
-            att = cls.getAttribute(ReactomeJavaConstants.regulatedEntity);
-            dba.loadInstanceAttributeValues(regulations, att);
+//            att = cls.getAttribute(ReactomeJavaConstants.regulatedEntity);
+//            dba.loadInstanceAttributeValues(regulations, att);
             att = cls.getAttribute(ReactomeJavaConstants.regulator);
             dba.loadInstanceAttributeValues(regulations, att);
             cls = dba.getSchema().getClassByName(ReactomeJavaConstants.EntityWithAccessionedSequence);

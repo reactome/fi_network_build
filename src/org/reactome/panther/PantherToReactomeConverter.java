@@ -332,7 +332,9 @@ public class PantherToReactomeConverter implements Converter {
 	private void createRequirement(GKInstance event, GKInstance regulator) throws Exception {
 		GKInstance requirement = createInstance(ReactomeJavaConstants.Requirement);
 		requirement.addAttributeValue(ReactomeJavaConstants.regulator, regulator);
-		requirement.addAttributeValue(ReactomeJavaConstants.regulatedEntity, event);
+		if (event.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)) {
+		    event.addAttributeValue(ReactomeJavaConstants.regulatedBy, requirement);
+		}
 		InstanceDisplayNameGenerator.setDisplayName(requirement);
 	}
 
@@ -461,8 +463,10 @@ public class PantherToReactomeConverter implements Converter {
 //				GKInstance regulationType = instanceGenerator.getRegulationType(PantherConstants.INHIBITION_TYPE);
 //				nr.setAttributeValue(ReactomeJavaConstants.regulationType, regulationType);
 				nr.setAttributeValue(ReactomeJavaConstants.regulator, inhibitor);
-				nr.setAttributeValue(ReactomeJavaConstants.regulatedEntity, event);
-				nr.addAttributeValue(ReactomeJavaConstants.name, name);
+				if (event.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent))
+				    event.addAttributeValue(ReactomeJavaConstants.regulatedBy, nr);
+				// Name is not a valid attribute for Regulation
+//				nr.addAttributeValue(ReactomeJavaConstants.name, name);
 				InstanceDisplayNameGenerator.setDisplayName(nr);
 			}
 		} else {
@@ -1204,7 +1208,12 @@ public class PantherToReactomeConverter implements Converter {
 		if (target == null)
 			return; // Just in case
 		GKInstance regulation = createInstance(clsType);
-		regulation.addAttributeValue(ReactomeJavaConstants.regulatedEntity, target);
+//		regulation.addAttributeValue(ReactomeJavaConstants.regulatedEntity, target);
+		if (target.getSchemClass().isValidAttribute(ReactomeJavaConstants.regulatedBy)) {
+		    SchemaAttribute att = target.getSchemClass().getAttribute(ReactomeJavaConstants.regulatedBy);
+		    if (att.isValidValue(regulation))
+		        target.addAttributeValue(ReactomeJavaConstants.regulatedBy, regulation);
+		}
 		regulation.addAttributeValue(ReactomeJavaConstants.regulator, regulator);
 		InstanceDisplayNameGenerator.setDisplayName(regulation);
 	}

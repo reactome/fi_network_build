@@ -52,14 +52,14 @@ public class InstanceGenerator {
         rtn = idToInstanceMap.get(compName);
         if (rtn != null)
             return rtn;
-        rtn = searchInstance(ReactomeJavaConstants.EntityCompartment, compName);
+        rtn = searchInstance(ReactomeJavaConstants.Compartment, compName);
         if (rtn != null) {
             // Try to speed up the searching
             idToInstanceMap.put(compName, rtn);
             return rtn;
         }
         // Have to construct one
-        rtn = createInstance(ReactomeJavaConstants.EntityCompartment);
+        rtn = createInstance(ReactomeJavaConstants.Compartment);
         rtn.setDisplayName(compName);
         rtn.addAttributeValue(ReactomeJavaConstants.name, compName);
         idToInstanceMap.put(compName, rtn);
@@ -97,11 +97,11 @@ public class InstanceGenerator {
         if (longName == null)
             // Use the default name
             longName = id;
-        GKInstance instance = searchInstance(ReactomeJavaConstants.EntityCompartment, longName);
+        GKInstance instance = searchInstance(ReactomeJavaConstants.Compartment, longName);
         if (instance != null)
             return instance;
         String name = compartmentElm.getAttributeValue(PantherConstants.NAME_ATT_NAME);
-        instance = createInstance(ReactomeJavaConstants.EntityCompartment);
+        instance = createInstance(ReactomeJavaConstants.Compartment);
 //      Use longname as displayName. For level 1 model, name is just like id in level 2
 //      model, it is too short.
         instance.setDisplayName(longName);

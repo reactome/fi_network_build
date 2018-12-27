@@ -1,18 +1,18 @@
 # This is a configuration file. Make sure all directories and files are correct
-YEAR=2017
+YEAR=2018
 RESULT_DIR=results/${YEAR}
 # the data sets directory
 DATA_SET_DIR=datasets
 
 # local database that is used as the data source
-REACTOME_SOURCE_DB_NAME=reactome_63_plus_i
+REACTOME_SOURCE_DB_NAME=reactome_67_plus_i
 # Used for generate the list of pathways for release 63 before generating the FI network for Rory
 #REACTOME_SOURCE_DB_NAME=reactome_slice_63
 DB_USER=root
 DB_PWD=macmysql01
 
 # A snapshot of gk_central database used to copy human ReferenceGeneProducts
-REACTOME_GK_CENTRAL_DB_NAME=gk_central_122217
+REACTOME_GK_CENTRAL_DB_NAME=gk_central_122118
 
 # This database name should be the same as the name used in funcIntHibernate.cfg.xml
 FI_DB_NAME=FI_${YEAR}
@@ -66,22 +66,22 @@ GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics071718.txt
 REACTOME_GMT_FILE_NAME = ${RESULT_DIR}/ReactomePathways_071718.gmt
 
 CUT_OFF_VALUE=0.50d
-PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_122717.txt
+PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_122518.txt
 
 # Used to control the UniProt version
-UNIPROT_DIR=${DATA_SET_DIR}/UniProt/release_2017_12/
+UNIPROT_DIR=${DATA_SET_DIR}/UniProt/release_2018_12/
     
 # Directory for pFam
-PFAM_DIR_NAME=${DATA_SET_DIR}/Pfam/31.0/
+PFAM_DIR_NAME=${DATA_SET_DIR}/Pfam/32.0/
 # Directory for RH file
 RH_DIR_NAME=${DATA_SET_DIR}/GenomeResearch_RH_Map/fully_combined_RH_network/
 
 # These parameters are related to KEGG pathways
-KEGG_DIR=${DATA_SET_DIR}/KEGG/122217/
+KEGG_DIR=${DATA_SET_DIR}/KEGG/122218/
 # Unzipped human KGML files should be in this directory
 KEGG_HSA_KGML_DIR=${KEGG_DIR}/hsa/
 # The converted KEGG pathways is saved in this project file
-KEGG_CONVERTED_FILE=${KEGG_DIR}/KEGG_122217.rtpj
+KEGG_CONVERTED_FILE=${KEGG_DIR}/KEGG_122218.rtpj
 # This file is used to map KEGG gene ids to UniProt ids
 KEGG_ID_TO_UNIPROT_MAP_FILE=${KEGG_DIR}/hsa_genes_uniprot.list
 
@@ -90,19 +90,19 @@ KEGG_ID_TO_UNIPROT_MAP_FILE=${KEGG_DIR}/hsa_genes_uniprot.list
 PANTHER_DIR=${DATA_SET_DIR}/Panther/Version3.0.1/
 PANTHER_FILES_DIR=${PANTHER_DIR}/SBML/
 PANTHER_MAPPING_FILE=${PANTHER_DIR}/SequenceAssociationPathway3.01.txt
-PANTHER_CONVERTED_FILE=${PANTHER_DIR}/Panther_3_0_1_122217.rtpj
+PANTHER_CONVERTED_FILE=${PANTHER_DIR}/Panther_3_0_1_122218.rtpj
     
 # Used for the Nature-PID database files
 # There is no need to change the dir since this is not updated any more
 NATURE_PID_DIR=${DATA_SET_DIR}/NCI-Pathways/011612/
 NATURE_PID_CURATED=${NATURE_PID_DIR}/NCI-Nature_Curated.bp2.owl
-NATURE_PID_CURATED_CONVERTED=${NATURE_PID_DIR}/NCI-Nature_Curated.bp2.122217.rtpj
+NATURE_PID_CURATED_CONVERTED=${NATURE_PID_DIR}/NCI-Nature_Curated.bp2.122218.rtpj
 NATURE_PID_BIOCARTA=${NATURE_PID_DIR}/BioCarta.bp2.owl
-NATURE_PID_BIOCARTA_CONVERTED=${NATURE_PID_DIR}/BioCarta.bp2.122217.rtpj
+NATURE_PID_BIOCARTA_CONVERTED=${NATURE_PID_DIR}/BioCarta.bp2.122218.rtpj
     
 # This file is used to map Entrez id to UniProt accession number
-IPROCLASS_HUMAN_FILE = ${DATA_SET_DIR}/iproclass/122217/h_sapiens.tb
-ENTREZ_TO_UNIPROT_MAP_FILE_NAME=${DATA_SET_DIR}/iproclass/122217/EntrezToUniProt.txt
+IPROCLASS_HUMAN_FILE = ${DATA_SET_DIR}/iproclass/122118/h_sapiens.tb
+ENTREZ_TO_UNIPROT_MAP_FILE_NAME=${DATA_SET_DIR}/iproclass/122118/EntrezToUniProt.txt
 
 # For IntAct data set
 INTACT_DIR=${DATA_SET_DIR}/IntAct/022412/
@@ -110,34 +110,34 @@ INTACT_HUMAN_DIR=${INTACT_DIR}/human/
 # For NCI_Nature
 NCI_NATURE_DIR=${DATA_SET_DIR}/NCI-Pathways/031709/
 # For ensembl related files
-ENSEMBL_DIR=${DATA_SET_DIR}/Ensembl/release_91/
-ENSEMBL_COMPARA_DATABASE=ensembl_compara_91
-#ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies.txt
-ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies_Zebrafish.txt
+ENSEMBL_DIR=${DATA_SET_DIR}/Ensembl/release_94/
+ENSEMBL_COMPARA_DATABASE=ensembl_compara_94
+ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies.txt
+#ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies_Zebrafish.txt
 # For GO related files
-GO_DIR=${DATA_SET_DIR}/GO/122217/
+GO_DIR=${DATA_SET_DIR}/GO/122218/
 GOA_FILE_NAME=${GO_DIR}/goa_human.gaf
 # ENCODE data
 ENCODE_DIR=${DATA_SET_DIR}/encode
 ENCODE_TFF_FILE=${ENCODE_DIR}/tf-targets.txt
-ENCODE_TFF_CONVERTED_FILE=${ENCODE_DIR}/tf-targets_122217.rtpj
+ENCODE_TFF_CONVERTED_FILE=${ENCODE_DIR}/tf-targets_122218.rtpj
 # For TRED files
 TRED_DIR=${DATA_SET_DIR}/TRED/
-TRED_CONVERTED_FILE=${TRED_DIR}/TRED_122217.rtpj
+TRED_CONVERTED_FILE=${TRED_DIR}/TRED_122218.rtpj
 # Constants for iRefIndex data files downloaded from iRefIndex
-IREFINDEX_DIR=${DATA_SET_DIR}/iRefIndex/14.0/
-IREFINDEX_HUMAN_FILE=${IREFINDEX_DIR}/9606.mitab.04072015.txt
+IREFINDEX_DIR=${DATA_SET_DIR}/iRefIndex/15.0/
+IREFINDEX_HUMAN_FILE=${IREFINDEX_DIR}/9606.mitab.01-22-2018.txt
 IREFINDEX_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsInUniProt.txt
-IREFINDEX_YEAST_FILE=${IREFINDEX_DIR}/559292.mitab.04072015.txt
+IREFINDEX_YEAST_FILE=${IREFINDEX_DIR}/559292.mitab.01-22-2018.txt
 IREFINDEX_YEAST_PPI_FILE=${IREFINDEX_DIR}/YeastPPIsInUniProt.txt
 IREFINDEX_YEAST_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromYeastInUniProt.txt
-IREFINDEX_FLY_FILE=${IREFINDEX_DIR}/7227.mitab.04072015.txt
+IREFINDEX_FLY_FILE=${IREFINDEX_DIR}/7227.mitab.01-22-2018.txt
 IREFINDEX_FLY_PPI_FILE=${IREFINDEX_DIR}/FLyPPIsInUniProt.txt
 IREFINDEX_FLY_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromFLyInUniProt.txt
-IREFINDEX_WORM_FILE=${IREFINDEX_DIR}/6239.mitab.04072015.txt
+IREFINDEX_WORM_FILE=${IREFINDEX_DIR}/6239.mitab.01-22-2018.txt
 IREFINDEX_WORM_PPI_FILE=${IREFINDEX_DIR}/WormPPIsInUniProt.txt
 IREFINDEX_WORM_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromWormInUniProt.txt
-IREFINDEX_MOUSE_FILE=${IREFINDEX_DIR}/10090.mitab.04072015.txt
+IREFINDEX_MOUSE_FILE=${IREFINDEX_DIR}/10090.mitab.01-22-2018.txt
 IREFINDEX_MOUSE_PPI_FILE=${IREFINDEX_DIR}/MousePPIsInUniProt.txt
 IREFINDEX_MOUSE_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromMouseInUniProt.txt
 # For storing normalized PPIs mapped from non-human species
@@ -147,7 +147,7 @@ HUMAN_PPIS_FROM_FLY_FILE=${RESULT_DIR}/HumanPPIsFromFly122816.txt
 HUMAN_PPIS_FROM_MOUSE_FILE=${RESULT_DIR}/HumanPPIsFromMouse122816.txt
 
 # The following propertied are used during NBC training
-ROC_CURVE_FILE=${RESULT_DIR}/ROC_100_122717.txt
+ROC_CURVE_FILE=${RESULT_DIR}/ROC_100_122518.txt
 BP_DOMAIN_SHARED_PAIRS=${RESULT_DIR}/BP_Domain_Shared_Pairs.txt
 
 # Used for Reactome servlet configuration. Usually don't need to change

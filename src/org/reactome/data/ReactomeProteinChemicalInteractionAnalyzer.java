@@ -442,7 +442,7 @@ public class ReactomeProteinChemicalInteractionAnalyzer extends ReactomeAnalyzer
                     return true;
             }
         }
-        Collection<GKInstance> regulations = reaction.getReferers(ReactomeJavaConstants.regulatedEntity);
+        Collection<GKInstance> regulations = InstanceUtilities.getRegulations(reaction);
         if (regulations != null && regulations.size() > 0) {
             for (Iterator it = regulations.iterator(); it.hasNext();) {
                 GKInstance regulation = (GKInstance) it.next();

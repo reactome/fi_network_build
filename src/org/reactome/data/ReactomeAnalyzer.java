@@ -395,7 +395,7 @@ public class ReactomeAnalyzer {
             }
         }
         // Check regulators
-        Collection regulations = rxn.getReferers(ReactomeJavaConstants.regulatedEntity);
+        Collection regulations = InstanceUtilities.getRegulations(rxn);
         if (regulations != null) {
             for (Iterator it1 = regulations.iterator(); it1.hasNext();) {
                 GKInstance regulation = (GKInstance) it1.next();
@@ -1298,12 +1298,14 @@ public class ReactomeAnalyzer {
         dba.loadInstanceAttributeValues(reactions, att);
         att = reactionCls.getAttribute(ReactomeJavaConstants.catalystActivity);
         dba.loadInstanceAttributeValues(reactions, att);
+        att = reactionCls.getAttribute(ReactomeJavaConstants.regulatedBy);
+        dba.loadInstanceAttributeValues(reactions, att);
         reactionCls = dba.getSchema().getClassByName(ReactomeJavaConstants.CatalystActivity);
         att = reactionCls.getAttribute(ReactomeJavaConstants.physicalEntity);
         dba.loadInstanceAttributeValues(cas, att);
         reactionCls = dba.getSchema().getClassByName(ReactomeJavaConstants.Regulation);
-        att = reactionCls.getAttribute(ReactomeJavaConstants.regulatedEntity);
-        dba.loadInstanceAttributeValues(regulations, att);
+//        att = reactionCls.getAttribute(ReactomeJavaConstants.regulatedEntity);
+//        dba.loadInstanceAttributeValues(regulations, att);
         att = reactionCls.getAttribute(ReactomeJavaConstants.regulator);
         dba.loadInstanceAttributeValues(regulations, att);
         reactionCls = dba.getSchema().getClassByName(ReactomeJavaConstants.EntityWithAccessionedSequence);

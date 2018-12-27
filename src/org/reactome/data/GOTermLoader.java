@@ -26,11 +26,23 @@ public class GOTermLoader {
     private String goTermIdFileName;
     private String proteinIdToNameFileName;
     private FileUtility fu;
+    // As of 2018, we will escape GO annotations loaded from Reactome directly 
+    // for our NBC training by setting the following flag to true. However, for
+    // GO enrichment analysis, this flag should be false.
+    private boolean escapeReactomeAnnotations;
     
     public GOTermLoader() {
         fu = new FileUtility();
     }
     
+    public boolean isEscapeReactomeAnnotations() {
+        return escapeReactomeAnnotations;
+    }
+
+    public void setEscapeReactomeAnnotations(boolean escapeReactomeAnnotations) {
+        this.escapeReactomeAnnotations = escapeReactomeAnnotations;
+    }
+
     public String getGoaFileName() {
         return goaFileName;
     }
@@ -93,6 +105,9 @@ public class GOTermLoader {
             String term = tokens[4];
             if (escapeList.contains(term))
                 continue;
+            // Based on "Assigned by" as defined in http://www.geneontology.org/page/go-annotation-file-format-20
+            if (escapeReactomeAnnotations && tokens[14].equalsIgnoreCase("Reactome"))
+                continue;
             Set<String> termSet = proteinToTerms.get(protein);
             if (termSet == null) {
                 termSet = new HashSet<String>();
@@ -148,7 +163,7 @@ public class GOTermLoader {
     
     /**
      * As of 2016, only go.obo is downloaded and then processed to generate GO.terms_and_ids.txt
-     * file to keep to update. The original file was generated in 2012 and not udpated.
+     * file to keep to update. The original file was generated in 2012 and not updated.
      * @throws IOException
      */
     @Test

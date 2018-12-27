@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.gk.model.GKInstance;
+import org.gk.model.InstanceUtilities;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.gk.schema.SchemaAttribute;
@@ -465,7 +466,7 @@ public class FISourceTypeReader extends HibernateFIPersistence {
     private Set<GKInstance> getRegulators(GKInstance reaction,
                                           String clsName) throws Exception {
         Set<GKInstance> regulators = new HashSet<GKInstance>();
-        Collection regulations = reaction.getReferers(ReactomeJavaConstants.regulatedEntity);
+        Collection regulations = InstanceUtilities.getRegulations(reaction);
         if (regulations != null) {
             for (Iterator it1 = regulations.iterator(); it1.hasNext();) {
                 GKInstance regulation = (GKInstance) it1.next();

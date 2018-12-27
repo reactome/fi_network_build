@@ -339,7 +339,8 @@ public class PantherToReactomeConverterV25 implements Converter {
 	private void createRequirement(GKInstance event, GKInstance regulator) throws Exception {
 		GKInstance requirement = createInstance(ReactomeJavaConstants.Requirement);
 		requirement.addAttributeValue(ReactomeJavaConstants.regulator, regulator);
-		requirement.addAttributeValue(ReactomeJavaConstants.regulatedEntity, event);
+		if (event.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent))
+		    event.addAttributeValue(ReactomeJavaConstants.regulatedBy, requirement);
 		InstanceDisplayNameGenerator.setDisplayName(requirement);
 	}
 
@@ -505,8 +506,8 @@ public class PantherToReactomeConverterV25 implements Converter {
 //				GKInstance regulationType = instanceGenerator.getRegulationType(PantherConstants.INHIBITION_TYPE);
 //				nr.setAttributeValue(ReactomeJavaConstants.regulationType, regulationType);
 				nr.setAttributeValue(ReactomeJavaConstants.regulator, inhibitor);
-				nr.setAttributeValue(ReactomeJavaConstants.regulatedEntity, event);
-				nr.addAttributeValue(ReactomeJavaConstants.name, name);
+				if (event.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent))
+				    event.addAttributeValue(ReactomeJavaConstants.regulatedBy, nr);
 				InstanceDisplayNameGenerator.setDisplayName(nr);
 			}
 		} else {
@@ -1114,8 +1115,9 @@ public class PantherToReactomeConverterV25 implements Converter {
 		if (target == null)
 			return; // Just in case
 		GKInstance regulation = createInstance(clsType);
-		regulation.addAttributeValue(ReactomeJavaConstants.regulatedEntity, target);
 		regulation.addAttributeValue(ReactomeJavaConstants.regulator, regulator);
+		if (target.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent))
+		    target.addAttributeValue(ReactomeJavaConstants.regulatedBy, regulation);
 		InstanceDisplayNameGenerator.setDisplayName(regulation);
 	}
 
