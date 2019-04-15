@@ -6,6 +6,7 @@ package org.reactome.fi;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +14,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
+
+import javax.naming.spi.DirStateFactory.Result;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -21,6 +25,7 @@ import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.gk.schema.SchemaAttribute;
 import org.gk.schema.SchemaClass;
+import org.hibernate.engine.ResultSetMappingDefinition;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.junit.Test;
@@ -34,8 +39,68 @@ import org.reactome.fi.util.FileUtility;
  */
 public class CytoscapePlugInFileHandler {
     private final static Logger logger = Logger.getLogger(CytoscapePlugInFileHandler.class);
+    private final String WEB_DIR = "/Users/wug/git/FIVizWS_corews/src/main/webapp/WEB-INF/";
     
     public CytoscapePlugInFileHandler() {
+    }
+    
+    @Test
+    public void copyFilesToWebDir() throws IOException {
+        List<String> fileNames = getFilesForWebDir();
+//        System.out.println("There are " + fileNames.size() + " needing to be copied:");
+//        fileNames.forEach(System.out::println);
+        FileUtility fu = new FileUtility();
+        for (String fileName : fileNames) {
+            File srcFile = new File(fileName);
+            File destFile = new File(WEB_DIR, srcFile.getName());
+            logger.info("Copying " + srcFile.getName() + " from resultDir to webDir...");
+            fu.copy(srcFile, destFile);
+        }
+        logger.info("Total copied: " + fileNames.size());
+    }
+    
+    private List<String> getFilesForWebDir() throws IOException {
+        List<String> rtn = new ArrayList<>();
+        FIConfiguration config = FIConfiguration.getConfiguration();
+        String resultDir = config.get("RESULT_DIR");
+        // The following file names don't change
+        String[] fileNames = new String[] {
+                "gene_association.goa_human",
+                "GO.terms_and_ids.txt",
+                "kegg_map_title.tab",
+                "kegg_hsa.list",
+                "InteractionTypeMapper.xml",
+                "mcl_script.sh",
+                "CGISurvivalAnalysis.R",
+                "funcIntHibernate.cfg.xml",
+        };
+        Stream.of(fileNames).forEach(name -> rtn.add(resultDir + "/" + name));
+        // The following file names configured
+        fileNames = new String[] {
+                "SERVLET_CONFIG_FILE",
+                "GENE_FI_FILE_NAME",
+                "GENE_FI_ANNOTATION_FILE_NAME",
+                "GENE_FI_BIG_COMP_FILE_NAME",
+                "GENE_FI_PATHWAY_FILE_NAME",
+                "GENE_FI_PREDICTED_FILE_NAME",
+                "GENE_FI_PATHWAY_SOURCES_FILE_NAME",
+                "GENE_TO_TOPIC",
+                "PROTEIN_ACCESSION_TO_NAME_FILE",
+                "GENE_TO_REACTOME_PATHWAYS",
+        };
+        Stream.of(fileNames).forEach(name -> {
+            String fileName = config.get(name);
+            rtn.add(fileName);
+        });
+        // Special cases
+        fileNames = new String[] {
+                "HEAT_KERNEL_HOTNET_SER_FILE_NAME"
+        };
+        Stream.of(fileNames).forEach(name -> {
+            String fileName = config.get(name);
+            rtn.add(resultDir + "/" + fileName);
+        });
+        return rtn;
     }
     
     @Test

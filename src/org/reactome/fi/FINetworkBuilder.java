@@ -358,7 +358,12 @@ public class FINetworkBuilder {
         String preYear = (new Integer(year) - 1) + "";
         File dir = new File(config.get("RESULT_DIR"));
         Map<String, File> nameToFile = getNameToFile(dir);
-        File preDir = new File("results/" + preYear);
+        
+        // After migrating to git. For 2017 only.
+        String preDirName = "/Users/wug/Documents/eclipse_workspace/FINetworkBuild_CVS/results/";
+        File preDir = new File(preDirName + preYear);
+        
+//        File preDir = new File("results/" + preYear);
         Map<String, File> preNameToFile = getNameToFile(preDir);
         Set<String> allNames = new HashSet<String>(nameToFile.keySet());
         allNames.addAll(preNameToFile.keySet());

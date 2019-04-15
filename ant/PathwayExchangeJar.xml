@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Jul 1, 2005 3:47:49 PM                                                        
+
+     project    Jar Reactome APIs
+     description Create a jar files from gkdev to be used by caBigR3 project.
+                   
+     guanming                                                                
+     ====================================================================== -->
+<project name="PathwayExchangeJar" default="jar" basedir="..">
+	<property name="destDir" value="lib/" />
+	<property name="sourceClsDir" value="/Users/wug/git/Pathway-Exchange/class" />
+		
+	<target name="jar">
+		<mkdir dir="${destDir}" />
+        <jar destfile="${destDir}/pathwayExchange.jar">
+            <fileset dir="${sourceClsDir}">
+            	    <include name="org/biopax/model/**.class" />
+            		<include name="org/biopax/model/impl/**.class" />
+            	    <include name="org/reactome/b2rMapper/**.class" />
+            	    <include name="org/reactome/biopax/**.class" />
+            		<include name="org/reactome/convert/common/**.class" />
+            		<include name="org/reactome/model/**.class" />
+            		<include name="org/reactome/px/util/**.class" />
+            		<include name="org/reactome/gsea/**.class" />
+            		<!-- Don't add .class after **. Otherwise, classes in sub-directories
+            			will not be added -->
+            		<include name="org/gk/sbml/**" />
+            		<include name="org/gk/convert/common/**.class" />
+            		<include name="org/gk/layout/**.class" />
+            		<include name="org/gk/sbgn/**.class" />
+            </fileset>
+        </jar>
+    </target>
+
+</project>

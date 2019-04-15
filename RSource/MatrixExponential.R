@@ -21,9 +21,13 @@ calculate.matrix.exponential <- function(in.file.name,
 # in.file.name <- paste(dir.name, "SimpleMatrix.txt", sep="/")
 # out.file.name <- paste(dir.name, "SimpleMatrixResult.txt", sep="/")
 
-dir.name <- "/Users/gwu/Documents/EclipseWorkspace/FINetworkBuild/results/2016"
-in.file.name <- paste(dir.name, "HotNet_L_matrix_2016.txt", sep="/")
-out.file.name <- paste(dir.name, "HeatKernel_HotNet_time_01_2016_040417.txt", sep="/")
+# dir.name <- "/Users/gwu/Documents/EclipseWorkspace/FINetworkBuild/results/2016"
+# in.file.name <- paste(dir.name, "HotNet_L_matrix_2016.txt", sep="/")
+# out.file.name <- paste(dir.name, "HeatKernel_HotNet_time_01_2016_040417.txt", sep="/")
+
+dir.name <- "/Users/wug/git/FINetworkBuild/results/2018"
+in.file.name <- paste(dir.name, "HotNet_L_matrix_2018.txt", sep="/")
+out.file.name <- paste(dir.name, "HeatKernel_HotNet_time_01_2018_122718.txt", sep="/")
 
 calculate.matrix.exponential(in.file.name, out.file.name)
 

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -23,6 +22,8 @@ import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
+
+import com.ibm.icu.impl.StringUCharacterIterator;
 
 import cern.colt.function.DoubleFunction;
 import cern.colt.matrix.DoubleMatrix2D;
@@ -106,8 +107,22 @@ public class HotNetMatrixCalculator {
         DoubleMatrix2D matrix = new DenseDoubleMatrix2D(size, size);
         while ((line = fu.readLine()) != null) {
             tokens = line.split("\t");
-            if (size != tokens.length)
+            // Found a bug when the matrix was generated from MacBook Pro
+            // A line was split into two lines for some reason. The following
+            // fix is used to consider such a case
+            if (tokens.length < size) {
+                // Try to read in next line
+                String[] tokens1 = fu.readLine().split("\t");
+                // Merge these two tokens together
+                String[] tmp = new String[tokens.length + tokens1.length];
+                System.arraycopy(tokens, 0, tmp, 0, tokens.length);
+                System.arraycopy(tokens1, 0, tmp, tokens.length, tokens1.length);
+                logger.info("Merged two lines into one: " + tokens.length + " + " + tokens1.length + " = " + tmp.length);
+                tokens = tmp;
+            }
+            if (size != tokens.length) {
                 throw new IllegalStateException("Wrong tokens in a line: it should have " + size + " but has " + tokens.length);
+            }
             j = 0;
             for (String token : tokens) {
                 matrix.set(i, j, Double.parseDouble(token)); // Using parseDouble is a little faster than new Double().

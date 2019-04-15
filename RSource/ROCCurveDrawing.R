@@ -21,7 +21,8 @@ calculate.AUC <- function(rocData) {
 # fileName <- "/Users/gwu/Documents/EclipseWorkspace/FINetworkBuild/results/2013/ROC_100_120913.txt";
 # fileName <- "/Users/gwu/Documents/EclipseWorkspace/FINetworkBuild/results/2014/ROC_100_121514.txt";
 # fileName <- "/Users/gwu/Documents/EclipseWorkspace/FINetworkBuild/results/2016/ROC_100_122816.txt";
-fileName <- "/Users/wug/Documents/eclipse_workspace/FINetworkBuild/results/2017/ROC_100_122717.txt";
+# fileName <- "/Users/wug/Documents/eclipse_workspace/FINetworkBuild/results/2017/ROC_100_122717.txt";
+fileName <- "/Users/wug/git/FINetworkBuild/results/2018/ROC_100_122518.txt";
 # fileName <- "/Users/gwu/Documents/EclipseWorkspace/caBigR3/results/DriverGenes/ROC_10_FOLD_TWO_HOP_MAX_012114.txt";
 rocData <- read.table(fileName, sep="\t", header=TRUE);
 names(rocData);
