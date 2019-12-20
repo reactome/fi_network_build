@@ -27,11 +27,9 @@
 	<classpathentry kind="lib" path="lib/jta.jar"/>
 	<classpathentry kind="lib" path="lib/weka.jar"/>
 	<classpathentry kind="lib" path="lib/jacksum.jar"/>
-	<classpathentry kind="lib" path="lib/commons-math-2.2_no_license.jar"/>
+	<classpathentry kind="lib" path="lib/commons-math-2.2_no_license.jar" sourcepath="/Users/wug/ProgramFiles/commons-math-2.2-src/src/main/java"/>
 	<classpathentry kind="lib" path="lib/colt.jar"/>
 	<classpathentry kind="lib" path="lib/ensj-39.2.jar"/>
-	<classpathentry kind="lib" path="lib/jgraph.jar"/>
-	<classpathentry kind="lib" path="lib/jgrapht-jdk1.5.jar"/>
 	<classpathentry kind="lib" path="lib/TGGraphLayout.jar"/>
 	<classpathentry kind="lib" path="lib/owlsyntax.jar"/>
 	<classpathentry kind="lib" path="lib/protege-owl.jar"/>
@@ -44,5 +42,6 @@
 	<classpathentry kind="lib" path="lib/caBigR3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/jgrapht-core-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
