@@ -136,7 +136,10 @@ public class IRefIndexMITTabAnalyzer {
             // Starting from version 15.0, Reactome PPIs in the PSI-MI Tab format
             // are included. These PPIs should be excluded for our NBC training
             // If a PPI is from Reactome only, it should be excluded.
-            if (tokens[12].equals("MI:0467(reactome)")) {
+            if (tokens.length < 13) {
+                System.out.println("Line with less than 13 tokens: " + line);
+            }
+            if (tokens.length > 12 && tokens[12].equals("MI:0467(reactome)")) {
                 filtered ++;
                 continue;
             }
