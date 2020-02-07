@@ -94,22 +94,37 @@ public class ReactomeAnalyzerTopicHelper {
      * @throws Exception
      */
     public Set<GKInstance> grepRefPepSeqs(GKInstance interactor) throws Exception {
-        Set<GKInstance> refPepSeq = new HashSet<GKInstance>();
-        if (interactor.getSchemClass().isa(ReactomeJavaConstants.EntityWithAccessionedSequence)) {
-            GKInstance ref = (GKInstance) interactor.getAttributeValue(ReactomeJavaConstants.referenceEntity);
-            if (ref != null) {
-                if (ref.getSchemClass().isa(ReactomeJavaConstants.ReferencePeptideSequence) ||
-                    ref.getSchemClass().isa(ReactomeJavaConstants.ReferenceGeneProduct))
-                    refPepSeq.add(ref);
+        Set<GKInstance> refSeqs = new HashSet<GKInstance>();
+        grepRefSeqs(interactor, refSeqs);
+        return refSeqs;
+    }
+    
+    /**
+     * This is a big change: as of September 23, 2019, both ReferenceGeneProdcuts (for proteins)
+     * and REferenceDNASequence (for genes) are collected so that we can catch FIs between two genes, 
+     * and proteins and genes.
+     * @param pe
+     * @param refSeqs
+     * @throws Exception
+     */
+    private void grepRefSeqs(GKInstance pe, Set<GKInstance> refSeqs) throws Exception {
+        // As of December 15, 2014, hasCandidate will not be used, which
+        // reduces the total FIs about 12% (from 144733 to 127382).
+        Set<GKInstance> ewases = InstanceUtilities.getContainedInstances(pe,
+                                                                         ReactomeJavaConstants.hasComponent,
+                                                                         ReactomeJavaConstants.hasMember);
+        ewases.add(pe);
+        for (GKInstance ewas : ewases) {
+            if (!ewas.getSchemClass().isa(ReactomeJavaConstants.EntityWithAccessionedSequence))
+                continue;
+            GKInstance refEntity = (GKInstance) ewas.getAttributeValue(ReactomeJavaConstants.referenceEntity);
+            if (refEntity == null)
+                continue;
+            if (refEntity.getSchemClass().isa(ReactomeJavaConstants.ReferenceGeneProduct) ||
+                refEntity.getSchemClass().isa(ReactomeJavaConstants.ReferenceDNASequence)) {
+                refSeqs.add(refEntity);
             }
         }
-        else if (interactor.getSchemClass().isa(ReactomeJavaConstants.EntitySet)) {
-            grepRefPepSeqFromInstanceRecursively(interactor, refPepSeq);
-        }
-        else if (interactor.getSchemClass().isa(ReactomeJavaConstants.Complex)) {
-            grepRefPepSeqFromInstanceRecursively(interactor, refPepSeq);
-        }
-        return refPepSeq;
     }
     
     private void grepRefPepSeqFromInstanceRecursively(GKInstance complex, 

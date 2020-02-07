@@ -1,11 +1,11 @@
 # This is a configuration file. Make sure all directories and files are correct
-YEAR=2018
+YEAR=2019
 RESULT_DIR=results/${YEAR}
 # the data sets directory
 DATA_SET_DIR=datasets
 
 # local database that is used as the data source
-REACTOME_SOURCE_DB_NAME=reactome_67_plus_i
+REACTOME_SOURCE_DB_NAME=gk_current_ver71
 # Used for generate the list of pathways for release 63 before generating the FI network for Rory
 #REACTOME_SOURCE_DB_NAME=reactome_slice_63
 DB_USER=root
@@ -51,7 +51,7 @@ GENE_FI_PATHWAY_SOURCES_FILE_NAME=${RESULT_DIR}/PathwayFIToSources_122718.txt
 PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_122718.txt
 # We need a flattened list of pathways from Reactome for enrichment analysis
 #REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways022717.txt
-REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways122718.txt
+REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways013120.txt
 #REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways112717_TEST.txt
 # As of Decemember, 2013, we also want to dump all Reactome pathways in order
 # to do a hierarhy based pathway enrichment analysis
@@ -125,19 +125,19 @@ ENCODE_TFF_CONVERTED_FILE=${ENCODE_DIR}/tf-targets_122218.rtpj
 TRED_DIR=${DATA_SET_DIR}/TRED/
 TRED_CONVERTED_FILE=${TRED_DIR}/TRED_122218.rtpj
 # Constants for iRefIndex data files downloaded from iRefIndex
-IREFINDEX_DIR=${DATA_SET_DIR}/iRefIndex/15.0/
-IREFINDEX_HUMAN_FILE=${IREFINDEX_DIR}/9606.mitab.01-22-2018.txt
+IREFINDEX_DIR=${DATA_SET_DIR}/iRefIndex/16.0/
+IREFINDEX_HUMAN_FILE=${IREFINDEX_DIR}/9606.mitab.05-29-2019.txt
 IREFINDEX_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsInUniProt.txt
-IREFINDEX_YEAST_FILE=${IREFINDEX_DIR}/559292.mitab.01-22-2018.txt
+IREFINDEX_YEAST_FILE=${IREFINDEX_DIR}/559292.mitab.05-29-2019.txt
 IREFINDEX_YEAST_PPI_FILE=${IREFINDEX_DIR}/YeastPPIsInUniProt.txt
 IREFINDEX_YEAST_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromYeastInUniProt.txt
-IREFINDEX_FLY_FILE=${IREFINDEX_DIR}/7227.mitab.01-22-2018.txt
+IREFINDEX_FLY_FILE=${IREFINDEX_DIR}/7227.mitab.05-29-2019.txt
 IREFINDEX_FLY_PPI_FILE=${IREFINDEX_DIR}/FLyPPIsInUniProt.txt
 IREFINDEX_FLY_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromFLyInUniProt.txt
-IREFINDEX_WORM_FILE=${IREFINDEX_DIR}/6239.mitab.01-22-2018.txt
+IREFINDEX_WORM_FILE=${IREFINDEX_DIR}/6239.mitab.05-29-2019.txt
 IREFINDEX_WORM_PPI_FILE=${IREFINDEX_DIR}/WormPPIsInUniProt.txt
 IREFINDEX_WORM_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromWormInUniProt.txt
-IREFINDEX_MOUSE_FILE=${IREFINDEX_DIR}/10090.mitab.01-22-2018.txt
+IREFINDEX_MOUSE_FILE=${IREFINDEX_DIR}/10090.mitab.05-29-2019.txt
 IREFINDEX_MOUSE_PPI_FILE=${IREFINDEX_DIR}/MousePPIsInUniProt.txt
 IREFINDEX_MOUSE_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromMouseInUniProt.txt
 # For storing normalized PPIs mapped from non-human species

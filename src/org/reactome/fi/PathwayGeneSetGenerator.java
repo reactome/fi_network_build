@@ -368,6 +368,7 @@ public class PathwayGeneSetGenerator {
             GKInstance inst = dba.fetchInstance(r.getReactomeId());
             if (inst.getSchemClass().isa(ReactomeJavaConstants.PhysicalEntity)) {
                 pathways.add(pathway);
+                break;
             }
         }
         if (pathways.contains(pathway))

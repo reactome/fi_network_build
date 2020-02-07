@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -27,6 +29,7 @@ import org.reactome.factorgraph.Variable;
 import org.reactome.fi.util.FIConfiguration;
 import org.reactome.pathway.factorgraph.PathwayToFactorGraphConverter;
 import org.reactome.pathway.factorgraph.ReactomePathwayFGRunner;
+import org.reactome.pathway.factorgraph.VariableRole;
 import org.reactome.r3.util.FileUtility;
 import org.reactome.r3.util.JAXBBindableList;
 
@@ -52,6 +55,26 @@ public class FactorGraphDumper {
     }
     
     /**
+     * Get a set of variables converted from outputs in pathways.
+     * Note: This method is copied from PlugInUtitlies in the CytoscapeDev
+     * repo.
+     * @param fg
+     * @return
+     */
+    private Set<Variable> getOutputVariables(FactorGraph fg) {
+        Set<Variable> outputVar = new HashSet<Variable>();
+        // If a variable's reactome id is in this list, it should be an output
+        for (Variable var : fg.getVariables()) {
+            String roles = var.getProperty("role");
+            if (roles == null || roles.length() == 0)
+                continue;
+            if (roles.contains(VariableRole.OUTPUT.toString()))
+                outputVar.add(var);
+        }
+        return outputVar;
+    }
+    
+    /**
      * This is the actual method to perform dumping.
      * @throws Exception
      */
@@ -72,12 +95,15 @@ public class FactorGraphDumper {
         int count = 1;
         JAXBBindableList<FactorGraph> fgList = new JAXBBindableList<FactorGraph>();
         for (GKInstance pathway : pathways) {
-//            if (!pathway.getDBID().equals(446203L))
+//            if (!pathway.getDBID().equals(381183L)) // Check for migration of regulation
 //                continue;
             logger.info(count +": " + pathway);
             FactorGraph fg = converter.convertPathway(pathway);
             if (fg == null)
                 throw new IllegalStateException(pathway + " cannot be converted into a factor graph!");
+            Set<Variable> outputs = getOutputVariables(fg);
+            if (outputs.size() == 0)
+                continue; // We don't want to collect these FGs that don't have outputs for batch analysis.
 //            fg.exportFG(System.out);
             fgList.getList().add(fg);
             count ++;
@@ -88,6 +114,7 @@ public class FactorGraphDumper {
 //            return;
         long time2 = System.currentTimeMillis();
         logger.info("Total time: " + (time2 - time1) + " ms");
+        logger.info("Total number of factor graphs converted from pathways for zipping: " + fgList.getList().size());
         resetIds(fgList);
         // Export into a file
         // Have to list both classes here.

@@ -5,6 +5,8 @@
 package org.reactome.data;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.reactome.fi.util.FIConfiguration;
@@ -271,6 +274,27 @@ public class GODataAnalyzerV2 {
         return rtn;
     }
     
+    @Test
+    public void checkCGCGOMapping() throws IOException {
+        Set<String> cgcGenes = Files.lines(Paths.get("datasets/COSMIC", "cancer_gene_census.csv"))
+                                    .skip(1)
+                                    .map(line -> line.split(",")[0])
+                                    .collect(Collectors.toSet());
+        Map<String, Set<String>> geneNamesToUniprotMap = new UniProtAnalyzer().generateGeneNameToUniAccessMap(true);
+        Map<String, Set<String>> proteinToTerms = loadProteinToGOBPTerms();
+        for (String cgcGene : cgcGenes) {
+            Set<String> ids = geneNamesToUniprotMap.get(cgcGene);
+            if (ids == null) {
+                System.out.println(cgcGene + " doesn't have UniProt id!");
+                continue;
+            }
+            Set<String> shared = InteractionUtilities.getShared(ids, proteinToTerms.keySet());
+            if (shared.size() == 0) {
+                System.out.println(cgcGene);
+            }
+        }
+    }
+    
     /**
      * This method is used to check GO terms as features based on Odds ratio.
      * @throws Exception
@@ -281,6 +305,11 @@ public class GODataAnalyzerV2 {
         // Get the proteinToTerms
         List<Map<String, Set<String>>> proteinToTermsList = new ArrayList<Map<String, Set<String>>>();
         Map<String, Set<String>> proteinToTerms = loadProteinToGOBPTerms();
+//        
+//        System.out.println("Total proteins annotated for GO-BP: " + proteinToTerms.size());
+//        if (true)
+//            return;
+        
         proteinToTermsList.add(proteinToTerms);
         proteinToTerms = loadProteinToGOMFTerms();
         proteinToTermsList.add(proteinToTerms);

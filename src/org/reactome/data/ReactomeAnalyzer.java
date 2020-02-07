@@ -409,6 +409,53 @@ public class ReactomeAnalyzer {
         }
     }
     
+    @Test
+    public void extractInteractionsInGenes() throws Exception {
+        Collection reactions = prepareReactions();
+        Collection complexes = prepareComplexes();
+        Set<String> interactions = new HashSet<String>();
+        GKInstance rxn = null;
+        Set<GKInstance> interactors = new HashSet<GKInstance>();
+        long time1 = System.currentTimeMillis();
+        for (Iterator it = reactions.iterator(); it.hasNext();) {
+            rxn = (GKInstance) it.next();
+            //System.out.println("Reaction: " + c++);
+            extractInteractorsFromReaction(rxn, interactors);
+            generateInteractions(interactors, interactions, rxn, true);
+            interactors.clear();
+        }
+        System.out.println("Total interactions from reactions: " + interactions.size());
+        GKInstance complex = null;
+        for (Iterator it = complexes.iterator(); it.hasNext();) {
+            complex = (GKInstance) it.next();
+            //System.out.println("Complex: " + c++ + " " + complex.getDBID());
+            interactors.clear();
+            grepComplexComponents(complex, interactors);
+            // No need
+            //if (interactors.size() > 10)
+            //    continue; // cutoff set manually
+            generateInteractions(interactors, interactions, complex, true);
+        }
+        long time2 = System.currentTimeMillis();
+        System.out.println("Time for looping: " + (time2 - time1));
+        System.out.println("Total interactions from Reactome: " + interactions.size());
+        // Perform some cleaning up
+        Set<String> cleaned = new HashSet<>();
+        int index = 0;
+        for (String fi : interactions) {
+            index = fi.indexOf("\t");
+            fi = InteractionUtilities.generateFIFromGene(fi.substring(0, index),
+                                                         fi.substring(index + 1));
+            cleaned.add(fi);
+        }
+        System.out.println("Total FIs after reordering: " + cleaned.size());
+        FileUtility fu = new FileUtility();
+        String fileName = FIConfiguration.getConfiguration().get("REACTOME_FI_FILE");
+        index = fileName.lastIndexOf(".");
+        fileName = fileName.substring(0, index) + "_Genes.txt";
+        fu.saveInteractions(cleaned, fileName);
+    }
+    
     /**
      * This method is used to dump FIs extracted from the Reactome database to 
      * an external file.

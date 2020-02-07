@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!-- Generate a jar file from the FINetwork build project. -->
+<project name="package" default="FINetworkJar" basedir="..">
+	<property name="targetDir" value="install_jar" />
+	<property name="projectDir" value="${basedir}" />
+	<property name="projectVersion" value="1.0.1" />
+	<property name="projectJar" value="${targetDir}/build-${projectVersion}.jar" />
+	
+	<!-- Package some needed classes from the caBigR3 project -->
+	<target name="FINetworkJar">
+		<delete file="${projectJar}" />
+		<jar destfile="${projectJar}">
+			<fileset dir="${projectDir}/src">
+				<include name="org/reactome/**/*.*" />
+				<!-- We also need .xml files for mapping -->
+				<!-- include name="org/reactome/funcInt/*.*" / -->
+			</fileset>
+			<fileset dir="${projectDir}/bin">
+				<include name="org/reactome/**/*.*" />
+				<!-- We also need .xml files for mapping -->
+				<!-- include name="org/reactome/funcInt/*.*" / -->
+			</fileset>
+		</jar>
+		<exec executable="${targetDir}/installJar.sh">
+			<!-- file anem -->
+			<arg value="${projectJar}"/>
+			<!-- groupId -->
+			<arg value="org.reactome.fi" />
+			<!-- artifactId -->
+			<arg value="build" />
+			<!-- version -->
+			<arg value="${projectVersion}" />
+		</exec>
+	</target>
+</project>

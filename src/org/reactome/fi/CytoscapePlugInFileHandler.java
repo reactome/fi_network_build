@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.naming.spi.DirStateFactory.Result;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.gk.model.GKInstance;
@@ -25,7 +23,6 @@ import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.gk.schema.SchemaAttribute;
 import org.gk.schema.SchemaClass;
-import org.hibernate.engine.ResultSetMappingDefinition;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.junit.Test;
