@@ -261,4 +261,6 @@
     <type name="GErel: dephosphorylation, expression" reverse="GErel: dephosphorylated by, expressed by" direction="-" />
     <!-- Added for 2018 -->
     <type name="PCrel: activation, missing interaction" reverse="PCrel: activated, missing interaction" direction="->" />
+    <!-- Added for 2019 -->
+    <type name="GErel: inhibition, repression" reverse="GErel: inhibited, repressed" direction="-|" />
 </InteractionTypeMapper>

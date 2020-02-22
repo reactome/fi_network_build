@@ -5,14 +5,14 @@ RESULT_DIR=results/${YEAR}
 DATA_SET_DIR=datasets
 
 # local database that is used as the data source
-REACTOME_SOURCE_DB_NAME=gk_current_ver71
+REACTOME_SOURCE_DB_NAME=reactome_71_plus_i
 # Used for generate the list of pathways for release 63 before generating the FI network for Rory
 #REACTOME_SOURCE_DB_NAME=reactome_slice_63
 DB_USER=root
 DB_PWD=macmysql01
 
 # A snapshot of gk_central database used to copy human ReferenceGeneProducts
-REACTOME_GK_CENTRAL_DB_NAME=gk_central_122118
+REACTOME_GK_CENTRAL_DB_NAME=gk_central_010720
 
 # This database name should be the same as the name used in funcIntHibernate.cfg.xml
 FI_DB_NAME=FI_${YEAR}
@@ -38,50 +38,51 @@ TRED_FI_FILE=${RESULT_DIR}/FIs_TRED.txt
 #INTERACTION_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIs_042109_BigComp.txt
 # The minimum size used for a pathway
 MINIMUM_PAHTWAY_SIZE = 3
-GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_122718_BigComp.txt
-GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_122718.txt
+GENE_FI_BIG_COMP_FILE_NAME=${RESULT_DIR}/FIsInGene_020720_BigComp.txt
+GENE_FI_FILE_NAME=${RESULT_DIR}/FIsInGene_020720.txt
 # This file will be handled later on using the caBigR3Web project. However, it is listed here
 # for creating the configuration file
-GENE_FI_ANNOTATION_FILE_NAME=${RESULT_DIR}/FIsInGene_122718_with_annotations.txt
-GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_122718.txt
-GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_122718.txt
+GENE_FI_ANNOTATION_FILE_NAME=${RESULT_DIR}/FIsInGene_020720_with_annotations.txt
+GENE_FI_PATHWAY_FILE_NAME=${RESULT_DIR}/FIsInGene_Pathway_020720.txt
+GENE_FI_PREDICTED_FILE_NAME=${RESULT_DIR}/FIsInGene_Predicted_020720.txt
 # Used in order to create a quick map from FIs to their pathway sources
-GENE_FI_PATHWAY_SOURCES_FILE_NAME=${RESULT_DIR}/PathwayFIToSources_122718.txt
+GENE_FI_PATHWAY_SOURCES_FILE_NAME=${RESULT_DIR}/PathwayFIToSources_020720.txt
 # File for mapping accession to names dumped from the FI network
-PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_122718.txt
+PROTEIN_ACCESSION_TO_NAME_FILE = ${RESULT_DIR}/ProteinAccessionToName_020720.txt
 # We need a flattened list of pathways from Reactome for enrichment analysis
 #REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways022717.txt
-REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways013120.txt
+REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways020720.txt
 #REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways112717_TEST.txt
 # As of Decemember, 2013, we also want to dump all Reactome pathways in order
 # to do a hierarhy based pathway enrichment analysis
-PROTEIN_ID_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinIdToReactomePathways122718.txt
-GENE_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinNameToReactomePathways122718.txt
+PROTEIN_ID_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinIdToReactomePathways020720.txt
+GENE_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinNameToReactomePathways020720.txt
 # For Reactome reaction-based enrichment analysis
-GENE_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeGenesToReactions122718.txt
-FI_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeFIsToReactions122718.txt
+GENE_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeGenesToReactions020720.txt
+FI_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeFIsToReactions020720.txt
 # Gene sets based on pathways
-PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic122718.txt
-GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics122718.txt
-REACTOME_GMT_FILE_NAME = ${RESULT_DIR}/ReactomePathways_122718.gmt
+PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic020720.txt
+GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics020720.txt
+REACTOME_GMT_FILE_NAME = ${RESULT_DIR}/ReactomePathways_020720.gmt
 
 CUT_OFF_VALUE=0.50d
-PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_122518.txt
+PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_020720.txt
 
 # Used to control the UniProt version
-UNIPROT_DIR=${DATA_SET_DIR}/UniProt/release_2018_12/
+UNIPROT_DIR=${DATA_SET_DIR}/UniProt/release_2019_18/
     
 # Directory for pFam
+# For 2019 version of the FI network, 32 is used. Not updated in 2019.
 PFAM_DIR_NAME=${DATA_SET_DIR}/Pfam/32.0/
 # Directory for RH file
 RH_DIR_NAME=${DATA_SET_DIR}/GenomeResearch_RH_Map/fully_combined_RH_network/
 
 # These parameters are related to KEGG pathways
-KEGG_DIR=${DATA_SET_DIR}/KEGG/122218/
+KEGG_DIR=${DATA_SET_DIR}/KEGG/020420/
 # Unzipped human KGML files should be in this directory
 KEGG_HSA_KGML_DIR=${KEGG_DIR}/hsa/
 # The converted KEGG pathways is saved in this project file
-KEGG_CONVERTED_FILE=${KEGG_DIR}/KEGG_122218.rtpj
+KEGG_CONVERTED_FILE=${KEGG_DIR}/KEGG_020720.rtpj
 # This file is used to map KEGG gene ids to UniProt ids
 KEGG_ID_TO_UNIPROT_MAP_FILE=${KEGG_DIR}/hsa_genes_uniprot.list
 
@@ -90,19 +91,19 @@ KEGG_ID_TO_UNIPROT_MAP_FILE=${KEGG_DIR}/hsa_genes_uniprot.list
 PANTHER_DIR=${DATA_SET_DIR}/Panther/Version3.0.1/
 PANTHER_FILES_DIR=${PANTHER_DIR}/SBML/
 PANTHER_MAPPING_FILE=${PANTHER_DIR}/SequenceAssociationPathway3.01.txt
-PANTHER_CONVERTED_FILE=${PANTHER_DIR}/Panther_3_0_1_122218.rtpj
+PANTHER_CONVERTED_FILE=${PANTHER_DIR}/Panther_3_0_1_020720.rtpj
     
 # Used for the Nature-PID database files
 # There is no need to change the dir since this is not updated any more
 NATURE_PID_DIR=${DATA_SET_DIR}/NCI-Pathways/011612/
 NATURE_PID_CURATED=${NATURE_PID_DIR}/NCI-Nature_Curated.bp2.owl
-NATURE_PID_CURATED_CONVERTED=${NATURE_PID_DIR}/NCI-Nature_Curated.bp2.122218.rtpj
+NATURE_PID_CURATED_CONVERTED=${NATURE_PID_DIR}/NCI-Nature_Curated.bp2.020720.rtpj
 NATURE_PID_BIOCARTA=${NATURE_PID_DIR}/BioCarta.bp2.owl
-NATURE_PID_BIOCARTA_CONVERTED=${NATURE_PID_DIR}/BioCarta.bp2.122218.rtpj
+NATURE_PID_BIOCARTA_CONVERTED=${NATURE_PID_DIR}/BioCarta.bp2.020720.rtpj
     
 # This file is used to map Entrez id to UniProt accession number
-IPROCLASS_HUMAN_FILE = ${DATA_SET_DIR}/iproclass/122118/h_sapiens.tb
-ENTREZ_TO_UNIPROT_MAP_FILE_NAME=${DATA_SET_DIR}/iproclass/122118/EntrezToUniProt.txt
+IPROCLASS_HUMAN_FILE = ${DATA_SET_DIR}/iproclass/010320/h_sapiens.tb
+ENTREZ_TO_UNIPROT_MAP_FILE_NAME=${DATA_SET_DIR}/iproclass/010320/EntrezToUniProt.txt
 
 # For IntAct data set
 INTACT_DIR=${DATA_SET_DIR}/IntAct/022412/
@@ -110,55 +111,55 @@ INTACT_HUMAN_DIR=${INTACT_DIR}/human/
 # For NCI_Nature
 NCI_NATURE_DIR=${DATA_SET_DIR}/NCI-Pathways/031709/
 # For ensembl related files
-ENSEMBL_DIR=${DATA_SET_DIR}/Ensembl/release_94/
-ENSEMBL_COMPARA_DATABASE=ensembl_compara_94
+ENSEMBL_DIR=${DATA_SET_DIR}/Ensembl/release_98/
+ENSEMBL_COMPARA_DATABASE=ensembl_compara_98
 ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies.txt
 #ENSEMBL_PROTEIN_FAMILIES=${ENSEMBL_DIR}/ProteinFamilies_Zebrafish.txt
 # For GO related files
-GO_DIR=${DATA_SET_DIR}/GO/122218/
+GO_DIR=${DATA_SET_DIR}/GO/010320/
 GOA_FILE_NAME=${GO_DIR}/goa_human.gaf
 # ENCODE data
 ENCODE_DIR=${DATA_SET_DIR}/encode
 ENCODE_TFF_FILE=${ENCODE_DIR}/tf-targets.txt
-ENCODE_TFF_CONVERTED_FILE=${ENCODE_DIR}/tf-targets_122218.rtpj
+ENCODE_TFF_CONVERTED_FILE=${ENCODE_DIR}/tf-targets_020720.rtpj
 # For TRED files
 TRED_DIR=${DATA_SET_DIR}/TRED/
-TRED_CONVERTED_FILE=${TRED_DIR}/TRED_122218.rtpj
+TRED_CONVERTED_FILE=${TRED_DIR}/TRED_020720.rtpj
 # Constants for iRefIndex data files downloaded from iRefIndex
-IREFINDEX_DIR=${DATA_SET_DIR}/iRefIndex/16.0/
-IREFINDEX_HUMAN_FILE=${IREFINDEX_DIR}/9606.mitab.05-29-2019.txt
-IREFINDEX_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsInUniProt.txt
-IREFINDEX_YEAST_FILE=${IREFINDEX_DIR}/559292.mitab.05-29-2019.txt
-IREFINDEX_YEAST_PPI_FILE=${IREFINDEX_DIR}/YeastPPIsInUniProt.txt
-IREFINDEX_YEAST_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromYeastInUniProt.txt
-IREFINDEX_FLY_FILE=${IREFINDEX_DIR}/7227.mitab.05-29-2019.txt
-IREFINDEX_FLY_PPI_FILE=${IREFINDEX_DIR}/FLyPPIsInUniProt.txt
-IREFINDEX_FLY_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromFLyInUniProt.txt
-IREFINDEX_WORM_FILE=${IREFINDEX_DIR}/6239.mitab.05-29-2019.txt
-IREFINDEX_WORM_PPI_FILE=${IREFINDEX_DIR}/WormPPIsInUniProt.txt
-IREFINDEX_WORM_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromWormInUniProt.txt
-IREFINDEX_MOUSE_FILE=${IREFINDEX_DIR}/10090.mitab.05-29-2019.txt
-IREFINDEX_MOUSE_PPI_FILE=${IREFINDEX_DIR}/MousePPIsInUniProt.txt
-IREFINDEX_MOUSE_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromMouseInUniProt.txt
+IREFINDEX_DIR=${DATA_SET_DIR}/iRefIndex/15.0/
+IREFINDEX_HUMAN_FILE=${IREFINDEX_DIR}/9606.mitab.01-22-2018.txt
+IREFINDEX_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsInUniProt_021820.txt
+IREFINDEX_YEAST_FILE=${IREFINDEX_DIR}/559292.mitab.01-22-2018.txt
+IREFINDEX_YEAST_PPI_FILE=${IREFINDEX_DIR}/YeastPPIsInUniProt_021820.txt
+IREFINDEX_YEAST_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromYeastInUniProt_021820.txt
+IREFINDEX_FLY_FILE=${IREFINDEX_DIR}/7227.mitab.01-22-2018.txt
+IREFINDEX_FLY_PPI_FILE=${IREFINDEX_DIR}/FLyPPIsInUniProt_021820.txt
+IREFINDEX_FLY_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromFLyInUniProt_021820.txt
+IREFINDEX_WORM_FILE=${IREFINDEX_DIR}/6239.mitab.01-22-2018.txt
+IREFINDEX_WORM_PPI_FILE=${IREFINDEX_DIR}/WormPPIsInUniProt_021820.txt
+IREFINDEX_WORM_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromWormInUniProt_021820.txt
+IREFINDEX_MOUSE_FILE=${IREFINDEX_DIR}/10090.mitab.01-22-2018.txt
+IREFINDEX_MOUSE_PPI_FILE=${IREFINDEX_DIR}/MousePPIsInUniProt_021820.txt
+IREFINDEX_MOUSE_TO_HUMAN_PPI_FILE=${IREFINDEX_DIR}/HumanPPIsFromMouseInUniProt_021820.txt
 # For storing normalized PPIs mapped from non-human species
-HUMAN_PPIS_FROM_YEAST_FILE=${RESULT_DIR}/HumanPPIsFromYeast122218.txt
-HUMAN_PPIS_FROM_WORM_FILE=${RESULT_DIR}/HumanPPIsFromWorm122218.txt
-HUMAN_PPIS_FROM_FLY_FILE=${RESULT_DIR}/HumanPPIsFromFly122218.txt
-HUMAN_PPIS_FROM_MOUSE_FILE=${RESULT_DIR}/HumanPPIsFromMouse122218.txt
+HUMAN_PPIS_FROM_YEAST_FILE=${RESULT_DIR}/HumanPPIsFromYeast020720.txt
+HUMAN_PPIS_FROM_WORM_FILE=${RESULT_DIR}/HumanPPIsFromWorm020720.txt
+HUMAN_PPIS_FROM_FLY_FILE=${RESULT_DIR}/HumanPPIsFromFly020720.txt
+HUMAN_PPIS_FROM_MOUSE_FILE=${RESULT_DIR}/HumanPPIsFromMouse020720.txt
 
 # The following propertied are used during NBC training
-ROC_CURVE_FILE=${RESULT_DIR}/ROC_100_122518.txt
+ROC_CURVE_FILE=${RESULT_DIR}/ROC_100_021820.txt
 BP_DOMAIN_SHARED_PAIRS=${RESULT_DIR}/BP_Domain_Shared_Pairs.txt
 
 # Used for Reactome servlet configuration. Usually don't need to change
 SERVLET_CONFIG_FILE=${RESULT_DIR}/reactomews${YEAR}.config.prop
 
 # For Hotnet
-HEAT_KERNEL_HOTNET_FILE_NAME=HeatKernel_HotNet_time_01_2018_010419
+HEAT_KERNEL_HOTNET_FILE_NAME=HeatKernel_HotNet_time_01_2019_021920
 # For configuration
 HEAT_KERNEL_HOTNET_SER_FILE_NAME=${HEAT_KERNEL_HOTNET_FILE_NAME}.ser
 
 # For web app. This is used to generate the configuration file for the web app.
-WEBAPP_DIR=/usr/local/apache-tomcat/webapps/caBigR3WebApp2016/WEB-INF
+WEBAPP_DIR=/usr/local/apache-tomcat/webapps/caBigR3WebApp2019/WEB-INF
 # For converting infor factor graphs
 FACTOR_GRAPH_FILE=${RESULT_DIR}/PathwayDiagramsFactorGraphs.xml.zip

@@ -1,6 +1,8 @@
 # This R script is used to calculate matrix exponential
-# library("Matrix")
-# library("MASS")
+# expm should take care of Matrix. 
+#library("Matrix")
+# Required for write.matrx
+library("MASS")
 library("expm")
 
 calculate.matrix.exponential <- function(in.file.name,
@@ -25,9 +27,13 @@ calculate.matrix.exponential <- function(in.file.name,
 # in.file.name <- paste(dir.name, "HotNet_L_matrix_2016.txt", sep="/")
 # out.file.name <- paste(dir.name, "HeatKernel_HotNet_time_01_2016_040417.txt", sep="/")
 
-dir.name <- "/Users/wug/git/FINetworkBuild/results/2018"
-in.file.name <- paste(dir.name, "HotNet_L_matrix_2018.txt", sep="/")
-out.file.name <- paste(dir.name, "HeatKernel_HotNet_time_01_2018_122718.txt", sep="/")
+# dir.name <- "/Users/wug/git/FINetworkBuild/results/2018"
+# in.file.name <- paste(dir.name, "HotNet_L_matrix_2018.txt", sep="/")
+# out.file.name <- paste(dir.name, "HeatKernel_HotNet_time_01_2018_122718.txt", sep="/")
+
+dir.name <- "/Users/wug/git/FINetworkBuild/results/2019"
+in.file.name <- paste(dir.name, "HotNet_L_matrix_2019.txt", sep="/")
+out.file.name <- paste(dir.name, "HeatKernel_HotNet_time_01_2019_021920.txt", sep="/")
 
 calculate.matrix.exponential(in.file.name, out.file.name)
 

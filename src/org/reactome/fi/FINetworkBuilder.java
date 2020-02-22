@@ -339,7 +339,7 @@ public class FINetworkBuilder {
         // Don't forget to generate FIsInGene_xxxxxx_with_annotations.txt file by using
         // the method in caBigR3 project: 
         // The method should be run is in class org.reactome.r3.fi.InteractionAnnotator.annotateAllFIs()
-        // in project caBigR3WebApp. This should be moved to here in the future.
+        // in project FIVizWS_corews. This should be moved to here in the future.
 //        logger.info("Running InteractionAnnotator.annotateAllFIs()...");
 //        InteractionAnnotator annotator = new InteractionAnnotator();
 //        annotator.annoateAllFIs();
@@ -360,10 +360,10 @@ public class FINetworkBuilder {
         Map<String, File> nameToFile = getNameToFile(dir);
         
         // After migrating to git. For 2017 only.
-        String preDirName = "/Users/wug/Documents/eclipse_workspace/FINetworkBuild_CVS/results/";
-        File preDir = new File(preDirName + preYear);
+//        String preDirName = "/Users/wug/Documents/eclipse_workspace/FINetworkBuild_CVS/results/";
+//        File preDir = new File(preDirName + preYear);
         
-//        File preDir = new File("results/" + preYear);
+        File preDir = new File("results/" + preYear);
         Map<String, File> preNameToFile = getNameToFile(preDir);
         Set<String> allNames = new HashSet<String>(nameToFile.keySet());
         allNames.addAll(preNameToFile.keySet());
