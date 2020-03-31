@@ -23,7 +23,11 @@ public class FIConfiguration {
     private Properties properties;
     
     private FIConfiguration() {
-        init();
+        init("resources/configuration.prop"); // Default
+    }
+    
+    private FIConfiguration(String propFileName) {
+        init(propFileName);
     }
     
     public static Connection getConnection(String dbName) throws Exception {
@@ -42,6 +46,18 @@ public class FIConfiguration {
         return configuration;
     }
     
+    /**
+     * Provide a configuration based on the passed configuration file. The original configuration
+     * object will be overwritten. 
+     * @param configFileName
+     * @return
+     */
+    public static FIConfiguration getConfiguration(String configFileName) {
+        if (configuration == null)
+            configuration = new FIConfiguration(configFileName);
+        return configuration;
+    }
+    
     public String get(String name) {
         return properties.getProperty(name);
     }
@@ -50,11 +66,11 @@ public class FIConfiguration {
         return this.properties;
     }
     
-    private void init() {
+    private void init(String fileName) {
         // Load configurations from a configuration file
         properties = new Properties();
         try {
-            File file = new File("resources/configuration.prop");
+            File file = new File(fileName);
             properties.load(new FileInputStream(file));
             normalizeProperties();
         }
