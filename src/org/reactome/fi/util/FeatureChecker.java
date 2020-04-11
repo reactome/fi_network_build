@@ -30,6 +30,14 @@ public class FeatureChecker {
         }
     }
     
+    public Set<String> getInteractionSet() {
+        return interactionSet;
+    }
+    
+    public void setInteractionSet(Set<String> fis) {
+        this.interactionSet = fis;
+    }
+    
     /**
      * This method is used to check a feature's odd ratio. The feature has been wrapped
      * in the passed positiveChecker parameter.

@@ -4,8 +4,9 @@
  */
 package org.reactome.fi.util;
 
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
@@ -23,11 +24,16 @@ public class FIConfiguration {
     private Properties properties;
     
     private FIConfiguration() {
-        init("resources/configuration.prop"); // Default
+        try {
+            init(new FileInputStream("resources/configuration.prop")); // Default
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
     }
     
-    private FIConfiguration(String propFileName) {
-        init(propFileName);
+    private FIConfiguration(InputStream is) {
+        init(is);
     }
     
     public static Connection getConnection(String dbName) throws Exception {
@@ -52,9 +58,9 @@ public class FIConfiguration {
      * @param configFileName
      * @return
      */
-    public static FIConfiguration getConfiguration(String configFileName) {
+    public static FIConfiguration getConfiguration(InputStream is) {
         if (configuration == null)
-            configuration = new FIConfiguration(configFileName);
+            configuration = new FIConfiguration(is);
         return configuration;
     }
     
@@ -66,12 +72,11 @@ public class FIConfiguration {
         return this.properties;
     }
     
-    private void init(String fileName) {
+    private void init(InputStream is) {
         // Load configurations from a configuration file
         properties = new Properties();
         try {
-            File file = new File(fileName);
-            properties.load(new FileInputStream(file));
+            properties.load(is);
             normalizeProperties();
         }
         catch(Exception e) {

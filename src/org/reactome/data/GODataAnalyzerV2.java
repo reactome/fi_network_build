@@ -42,6 +42,10 @@ public class GODataAnalyzerV2 {
         termLoader.setGoaFileName(GOA_FILE_NAME);
     }
     
+    public GOTermLoader getTermLoader() {
+        return this.termLoader;
+    }
+    
     public Map<String, Set<String>> loadProteinToGOBPTerms() throws IOException {
         return termLoader.loadProteinToGOBPTerms();
     }

@@ -22,7 +22,7 @@ import org.reactome.fi.util.InteractionUtilities;
 import org.reactome.fi.util.PositiveChecker;
 
 public class PfamAnalyzer {
-    private final String PFAM_DIR_NAME = FIConfiguration.getConfiguration().get("PFAM_DIR_NAME");
+    private String pFamDirName = FIConfiguration.getConfiguration().get("PFAM_DIR_NAME");
     private FileUtility fu;
     // Cache these mappings
     private Map<String, Set<String>> uni2PfamMap;
@@ -32,6 +32,14 @@ public class PfamAnalyzer {
         fu = new FileUtility();
     }
     
+    public String getpFamDirName() {
+        return pFamDirName;
+    }
+
+    public void setpFamDirName(String pFamDirName) {
+        this.pFamDirName = pFamDirName;
+    }
+
     /**
      * This method is used to check domain-domain interaction as a feature
      * using Odds ratio.
@@ -100,7 +108,7 @@ public class PfamAnalyzer {
     }
     
     public Set<String> loadIntPfam() throws IOException {
-        String fileName = PFAM_DIR_NAME + "IntPFamIDs.txt";
+        String fileName = pFamDirName + "IntPFamIDs.txt";
         return fu.loadInteractions(fileName);
     }
     
@@ -113,8 +121,8 @@ public class PfamAnalyzer {
     @Test
     public void convertIntToPfamIDs() throws IOException {
         //String intFileName = PFAM_DIR_NAME + "int_pfamAs.txt";
-        String intFileName = PFAM_DIR_NAME + "pfamA_interactions.txt";
-        String destFileName = PFAM_DIR_NAME + "IntPFamIDs.txt";
+        String intFileName = pFamDirName + "pfamA_interactions.txt";
+        String destFileName = pFamDirName + "IntPFamIDs.txt";
         // As of 2015, the above file is what we need actually. So
         // We just make a copy of this file to the required file name
         Files.copy(FileSystems.getDefault().getPath(intFileName), 
@@ -151,7 +159,7 @@ public class PfamAnalyzer {
     }
     
     private Map<String, String> getDBId2PFamId() throws IOException {
-        String pfamFileName = PFAM_DIR_NAME + "pfamA.txt";
+        String pfamFileName = pFamDirName + "pfamA.txt";
         Map<String, String> db2Pfam = new HashMap<String, String>();
         String line = null;
         fu.setInput(pfamFileName);
