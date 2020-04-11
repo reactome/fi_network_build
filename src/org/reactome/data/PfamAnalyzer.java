@@ -23,6 +23,7 @@ import org.reactome.fi.util.PositiveChecker;
 
 public class PfamAnalyzer {
     private String pFamDirName = FIConfiguration.getConfiguration().get("PFAM_DIR_NAME");
+    private String uniprotDirName = FIConfiguration.getConfiguration().get("UNIPROT_DIR");
     private FileUtility fu;
     // Cache these mappings
     private Map<String, Set<String>> uni2PfamMap;
@@ -38,6 +39,14 @@ public class PfamAnalyzer {
 
     public void setpFamDirName(String pFamDirName) {
         this.pFamDirName = pFamDirName;
+    }
+
+    public String getUniprotDirName() {
+        return uniprotDirName;
+    }
+
+    public void setUniprotDirName(String uniprotDirName) {
+        this.uniprotDirName = uniprotDirName;
     }
 
     /**
@@ -103,7 +112,7 @@ public class PfamAnalyzer {
     
     private Map<String, Set<String>> loadUni2PfamMap() throws IOException {
         //String fileName = FileNameManager.getManager().getFileName("Uni2Pfam.txt");
-        String fileName = FIConfiguration.getConfiguration().get("UNIPROT_DIR") + "Uni2Pfam.txt";
+        String fileName = uniprotDirName + "Uni2Pfam.txt";
         return fu.loadSetMap(fileName);
     }
     
