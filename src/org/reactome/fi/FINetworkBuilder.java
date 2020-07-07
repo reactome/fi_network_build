@@ -315,6 +315,8 @@ public class FINetworkBuilder {
         genesetGenerator.generateReactomeGeneToPathwayMap();
         // Generate GMT file for GSEA analysis
         genesetGenerator.generateReactomeGMTFile();
+        // For mouse files
+        genesetGenerator.generateMouseFiles();
         // Dump MySQL databases to MyISAM types so that they can be loaded into the deployment machine
         // or be backed up
         MySQLDatabaseHandler dbHandler = new MySQLDatabaseHandler();

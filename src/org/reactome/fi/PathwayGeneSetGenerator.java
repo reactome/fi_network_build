@@ -4,6 +4,9 @@
  */
 package org.reactome.fi;
 
+import static org.gk.model.ReactomeJavaConstants.Pathway;
+import static org.gk.model.ReactomeJavaConstants.dataSource;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -382,7 +385,8 @@ public class PathwayGeneSetGenerator {
     @Test
     public void generateReactomeGMTFile() throws Exception {
         ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
-        Collection<GKInstance> pathways = getPathwaysForExport(reactomeAnalyzer);
+        Long humanDbId = 48887L;
+        Collection<GKInstance> pathways = getPathwaysForExport(reactomeAnalyzer, humanDbId);
 
         ReactomeToMsigDBExport gmtExporter = new ReactomeToMsigDBExport();
         gmtExporter.setSizeCutoff(MINIMUM_PATHWAY_SIZE);
@@ -392,26 +396,29 @@ public class PathwayGeneSetGenerator {
         gmtExporter.exportInGMT(pathways, fos);
     }
     
-    private Collection<GKInstance> getPathwaysForExport(ReactomeAnalyzer reactomeAnalyzer) throws Exception {
+    private Collection<GKInstance> getPathwaysForExport(ReactomeAnalyzer reactomeAnalyzer,
+                                                        Long speciesId) throws Exception {
         MySQLAdaptor dba = (MySQLAdaptor) reactomeAnalyzer.getMySQLAdaptor();
-        // Got all human pathways
-        // This is humna DB_ID
-        Long humanDbId = 48887L;
-        GKInstance human = dba.fetchInstance(humanDbId);
+        GKInstance species = dba.fetchInstance(speciesId);
         List<QueryRequest> query = new ArrayList<MySQLAdaptor.QueryRequest>();
-        query.add(dba.createAttributeQueryRequest(ReactomeJavaConstants.Pathway,
+        query.add(dba.createAttributeQueryRequest(Pathway,
                                                   ReactomeJavaConstants.species, 
                                                   "=",
-                                                  human));
-        query.add(dba.createAttributeQueryRequest(ReactomeJavaConstants.Pathway, 
-                                                  ReactomeJavaConstants.dataSource, 
-                                                  "IS NULL", 
-                                                  null));
+                                                  species));
+        // So that it can be used for the normal release database
+        if (dba.getSchema().getClassByName(Pathway).isValidAttribute(dataSource)) {
+            query.add(dba.createAttributeQueryRequest(Pathway, 
+                                                      dataSource, 
+                                                      "IS NULL", 
+                                                      null));
+        }
         @SuppressWarnings("unchecked")
         Collection<GKInstance> pathways = dba.fetchInstance(query);
-        logger.info("Total human pathways in Reactome: " + pathways.size());
+        logger.info("Total " + species.getDisplayName() + " pathways in Reactome: " + pathways.size());
         // Did a fix on July 23, 2016 to get non-disease pathways only
-        pathways = getNonDiseasePathways(dba, pathways);
+        if (species.getDisplayName().equals("Homo sapiens"))
+            pathways = getNonDiseasePathways(dba, pathways); // For mouse, we will just use all pathways since disease pathways are not inferred.
+                                                             // However, this may change in the future.
         logger.info("After removing pathways in Disease: " + pathways.size());
         return pathways;
     }
@@ -423,7 +430,8 @@ public class PathwayGeneSetGenerator {
     @Test
     public void generateReactomeGeneToPathwayMap() throws Exception {
         ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
-        Collection<GKInstance> pathways = getPathwaysForExport(reactomeAnalyzer);
+        Long humanDbId = 48887L;
+        Collection<GKInstance> pathways = getPathwaysForExport(reactomeAnalyzer, humanDbId);
         logger.info("generateReactomeGeneToPathwayMap(): total " + pathways.size() + " pathways.");
         // Get a map from protein ids to topics (pathways)
         Map<String, Set<String>> id2Topics = new HashMap<String, Set<String>>();
@@ -441,6 +449,40 @@ public class PathwayGeneSetGenerator {
         // Convert UniProt ids to gene names
         fileName = FIConfiguration.getConfiguration().get("GENE_TO_REACTOME_PATHWAYS");
         generateNameToTopicMap(id2Topics, fileName);
+    }
+    
+    /**
+     * This method is used to generate gene name to pathway map for all pathways in the Reactome
+     * database. Both genes to pathways and the mouse gmt file are generated here.
+     */
+    @Test
+    public void generateMouseFiles() throws Exception {
+        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
+        Long mouseDbId = 48892L;
+        Collection<GKInstance> pathways = getPathwaysForExport(reactomeAnalyzer, mouseDbId);
+        logger.info("generateMouseReactomeGeneToPathwayMap(): total " + pathways.size() + " pathways.");
+        
+        ReactomeToMsigDBExport msigDbExport = new ReactomeToMsigDBExport();
+        msigDbExport.setSpeciesId(mouseDbId);
+        msigDbExport.setUseUniProt(true); // So that we can map to gene names
+        msigDbExport.setSizeCutoff(MINIMUM_PATHWAY_SIZE);
+        
+        String gmtFileName = FIConfiguration.getConfiguration().get("MOUSE_REACTOME_GMT_FILE_NAME");
+        msigDbExport.exportInGMT(pathways, new FileOutputStream(gmtFileName));
+        
+        String geneToPathwayFileName = FIConfiguration.getConfiguration().get("MOUSE_GENE_TO_REACTOME_PATHWAYS");
+        // Read back the GMT file so that we can generate gene to pathway mapping. This is a little bit weird though.
+        fu.setInput(gmtFileName);
+        fu.setOutput(geneToPathwayFileName);
+        String line = null;
+        while ((line = fu.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            for (int i = 2; i < tokens.length; i++) {
+                // The first token is pathway name and the second is the stable id. All others are gene names.
+                fu.printLine(tokens[i] + "\t" + tokens[0]);
+            }
+        }
+        fu.close();
     }
     
     // This is a fix performed on July 23, 2016 to remove pathways under Disease since they have
