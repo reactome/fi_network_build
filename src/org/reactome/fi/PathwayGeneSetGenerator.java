@@ -8,6 +8,7 @@ import static org.gk.model.ReactomeJavaConstants.Pathway;
 import static org.gk.model.ReactomeJavaConstants.dataSource;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -382,20 +383,6 @@ public class PathwayGeneSetGenerator {
             grepPathwaysWithDiagrams(comp, pathways, dba);
     }
     
-    @Test
-    public void generateReactomeGMTFile() throws Exception {
-        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
-        Long humanDbId = 48887L;
-        Collection<GKInstance> pathways = getPathwaysForExport(reactomeAnalyzer, humanDbId);
-
-        ReactomeToMsigDBExport gmtExporter = new ReactomeToMsigDBExport();
-        gmtExporter.setSizeCutoff(MINIMUM_PATHWAY_SIZE);
-        
-        String reactomeGmtFileName = FIConfiguration.getConfiguration().get("REACTOME_GMT_FILE_NAME");
-        FileOutputStream fos = new FileOutputStream(reactomeGmtFileName);
-        gmtExporter.exportInGMT(pathways, fos);
-    }
-    
     private Collection<GKInstance> getPathwaysForExport(ReactomeAnalyzer reactomeAnalyzer,
                                                         Long speciesId) throws Exception {
         MySQLAdaptor dba = (MySQLAdaptor) reactomeAnalyzer.getMySQLAdaptor();
@@ -425,9 +412,10 @@ public class PathwayGeneSetGenerator {
     
     /**
      * This method is used to generate gene name to pathway map for all pathways in the Reactome
-     * database.
+     * database. This method has been deprecated. Use generateHumanFiles() instead.
      */
     @Test
+    @Deprecated
     public void generateReactomeGeneToPathwayMap() throws Exception {
         ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
         Long humanDbId = 48887L;
@@ -452,26 +440,46 @@ public class PathwayGeneSetGenerator {
     }
     
     /**
-     * This method is used to generate gene name to pathway map for all pathways in the Reactome
+     * This method is used to generate mouse gene name to pathway map for all pathways in the Reactome
      * database. Both genes to pathways and the mouse gmt file are generated here.
      */
     @Test
     public void generateMouseFiles() throws Exception {
-        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
         Long mouseDbId = 48892L;
+        String gmtFileName = FIConfiguration.getConfiguration().get("MOUSE_REACTOME_GMT_FILE_NAME");
+        String geneToPathwayFileName = FIConfiguration.getConfiguration().get("MOUSE_GENE_TO_REACTOME_PATHWAYS");
+        
+        generatePathwayEnrichmentFiles(mouseDbId, gmtFileName, geneToPathwayFileName);
+    }
+    
+    /**
+     * This method is used to generate human gene name to pathway map for all pathways in the Reactome
+     * database. Both genes to pathways and the mouse gmt file are generated here.
+     */
+    @Test
+    public void generateHumanFiles() throws Exception {
+        Long humanDbId = 48887L;
+        String gmtFileName = FIConfiguration.getConfiguration().get("REACTOME_GMT_FILE_NAME");
+        String geneToPathwayFileName = FIConfiguration.getConfiguration().get("GENE_TO_REACTOME_PATHWAYS");
+        
+        generatePathwayEnrichmentFiles(humanDbId, gmtFileName, geneToPathwayFileName);
+    }
+
+    private void generatePathwayEnrichmentFiles(Long mouseDbId, String gmtFileName, String geneToPathwayFileName)
+            throws Exception, FileNotFoundException, IOException {
+        ReactomeAnalyzer reactomeAnalyzer = new ReactomeAnalyzer();
         Collection<GKInstance> pathways = getPathwaysForExport(reactomeAnalyzer, mouseDbId);
         logger.info("generateMouseReactomeGeneToPathwayMap(): total " + pathways.size() + " pathways.");
         
         ReactomeToMsigDBExport msigDbExport = new ReactomeToMsigDBExport();
         msigDbExport.setSpeciesId(mouseDbId);
-        msigDbExport.setUseUniProt(true); // So that we can map to gene names
+        // Use gene names. Reactome release database have gene names filled for mouse ReferenceGeneProducts since release 72.
+        msigDbExport.setUseUniProt(false); 
         msigDbExport.setSizeCutoff(MINIMUM_PATHWAY_SIZE);
-        
-        String gmtFileName = FIConfiguration.getConfiguration().get("MOUSE_REACTOME_GMT_FILE_NAME");
         msigDbExport.exportInGMT(pathways, new FileOutputStream(gmtFileName));
         
-        String geneToPathwayFileName = FIConfiguration.getConfiguration().get("MOUSE_GENE_TO_REACTOME_PATHWAYS");
         // Read back the GMT file so that we can generate gene to pathway mapping. This is a little bit weird though.
+        // But it works.
         fu.setInput(gmtFileName);
         fu.setOutput(geneToPathwayFileName);
         String line = null;

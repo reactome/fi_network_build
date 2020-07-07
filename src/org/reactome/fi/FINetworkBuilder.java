@@ -312,9 +312,8 @@ public class FINetworkBuilder {
         genesetGenerator.generateProteinNameToPathwayMap();
         // Generate a list of all pathways in the Reactome database. This list of pathways is used for 
         // pathway enrichment analysis in a hierarchical way (aka not based on flatenned list)
-        genesetGenerator.generateReactomeGeneToPathwayMap();
         // Generate GMT file for GSEA analysis
-        genesetGenerator.generateReactomeGMTFile();
+        genesetGenerator.generateHumanFiles();
         // For mouse files
         genesetGenerator.generateMouseFiles();
         // Dump MySQL databases to MyISAM types so that they can be loaded into the deployment machine
