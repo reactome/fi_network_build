@@ -15,7 +15,7 @@
 				<!-- We also need .xml files for mapping -->
 				<!-- include name="org/reactome/funcInt/*.*" / -->
 			</fileset>
-			<fileset dir="${projectDir}/bin">
+			<fileset dir="${projectDir}/target/classes">
 				<include name="org/reactome/**/*.*" />
 				<!-- We also need .xml files for mapping -->
 				<!-- include name="org/reactome/funcInt/*.*" / -->
