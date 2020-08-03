@@ -311,6 +311,7 @@ public class NBCAnalyzer {
                                                                                  testFIs);
         // Remove any known FIs from Reactome.
         testNegativePairs.removeAll(fis);
+        System.out.println("Total negative fis for AUC: " + testNegativePairs.size());
         // Check true positive rate
         FileUtility rocFU = null;
         if (rocPointFile != null) {
