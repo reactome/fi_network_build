@@ -6,10 +6,10 @@ DATA_SET_DIR=datasets
 
 # local database that is used as the data source
 #REACTOME_SOURCE_DB_NAME=reactome_71_plus_i
-# Temp setting to generate mouse genes to pathways file
-REACTOME_SOURCE_DB_NAME=gk_current_ver73
-# Used for generate the list of pathways for release 63 before generating the FI network for Rory
-#REACTOME_SOURCE_DB_NAME=reactome_slice_63
+# The database with mouse pathways 
+REACTOME_SOURCE_DB_NAME=reactome_71_plus_i_mm
+# To get the mouse pathways
+MOUSE_SOURCE_DB_NAME=gk_current_ver71
 DB_USER=root
 DB_PWD=macmysql01
 
@@ -59,17 +59,17 @@ REACTOME_PATHWAYS = ${RESULT_DIR}/ReactomePathways020720.txt
 # As of Decemember, 2013, we also want to dump all Reactome pathways in order
 # to do a hierarhy based pathway enrichment analysis
 PROTEIN_ID_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinIdToReactomePathways020720.txt
-GENE_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinNameToReactomePathways_Rel_73_070720.txt
+GENE_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/ProteinNameToReactomePathways_Rel_71_091720.txt
 # FOr mouse genes to pathways: added on July 6, 2020
-MOUSE_GENE_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/MouseGeneToReactomePathways_Rel_73_070720.txt
+MOUSE_GENE_TO_REACTOME_PATHWAYS = ${RESULT_DIR}/MouseGeneToReactomePathways_Rel_71_091720.txt
 # For Reactome reaction-based enrichment analysis
 GENE_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeGenesToReactions020720.txt
 FI_TO_REACTOME_REACTIONS = ${RESULT_DIR}/ReactomeFIsToReactions020720.txt
 # Gene sets based on pathways
 PROTEIN_ID_TO_TOPIC = ${RESULT_DIR}/ProteinIdToTopic020720.txt
 GENE_TO_TOPIC = ${RESULT_DIR}/ProteinNameToTopics020720.txt
-REACTOME_GMT_FILE_NAME = ${RESULT_DIR}/ReactomePathways_Rel_73_070720.gmt
-MOUSE_REACTOME_GMT_FILE_NAME = ${RESULT_DIR}/MouseReactomePathways_Rel_73_070720.gmt
+REACTOME_GMT_FILE_NAME = ${RESULT_DIR}/ReactomePathways_Rel_71_091720.gmt
+MOUSE_REACTOME_GMT_FILE_NAME = ${RESULT_DIR}/MouseReactomePathways_Rel_71_091720.gmt
 
 CUT_OFF_VALUE=0.50d
 PREDICTED_FI_FILE=${RESULT_DIR}/PredictedFIs_020720.txt
