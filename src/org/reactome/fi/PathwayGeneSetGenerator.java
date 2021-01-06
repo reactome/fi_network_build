@@ -459,7 +459,7 @@ public class PathwayGeneSetGenerator {
     @Test
     public void generateBovineFiles() throws Exception {
         Long bovineDbId = 48898L; // Bos taurus
-        String gmtFileName = "Bovine_Relese75_01062020.gmt";
+        String gmtFileName = "Bovine_Release75_01062020.gmt";
         String geneToPathwayFileName = "Bovine_Release75_Gene2Pathway_01062020.txt";
         
         generatePathwayEnrichmentFiles(bovineDbId, gmtFileName, geneToPathwayFileName);
