@@ -453,6 +453,19 @@ public class PathwayGeneSetGenerator {
     }
     
     /**
+     * This method is used to fulfill a request from an outside Reactome user.
+     * @throws Exception
+     */
+    @Test
+    public void generateBovineFiles() throws Exception {
+        Long bovineDbId = 48898L; // Bos taurus
+        String gmtFileName = "Bovine_Relese75_01062020.gmt";
+        String geneToPathwayFileName = "Bovine_Release75_Gene2Pathway_01062020.txt";
+        
+        generatePathwayEnrichmentFiles(bovineDbId, gmtFileName, geneToPathwayFileName);
+    }
+    
+    /**
      * This method is used to generate human gene name to pathway map for all pathways in the Reactome
      * database. Both genes to pathways and the mouse gmt file are generated here.
      */

@@ -208,6 +208,7 @@ public class CytoscapePlugInFileHandler {
             for (String key : keyToFileName.keySet()) {
                 if (line.startsWith(key)) {
                     String value = FIConfiguration.getConfiguration().get(keyToFileName.get(key));
+                    logger.info(key + ": " + value);
                     // Just need the file only
                     File file = new File(value);
                     if (!file.exists()) {
@@ -242,7 +243,7 @@ public class CytoscapePlugInFileHandler {
         map.put("name.to.pathways", "GENE_TO_TOPIC");
         map.put("protein.acc.to.name", "PROTEIN_ACCESSION_TO_NAME_FILE");
         map.put("name.to.reactome.pathways", "GENE_TO_REACTOME_PATHWAYS");
-        map.put("heat.kernel.file", "HEAT_KERNEL_HOTNET_SER_FILE_NAME");
+//        map.put("heat.kernel.file", "HEAT_KERNEL_HOTNET_SER_FILE_NAME");
         map.put("webapp.dir", "WEBAPP_DIR");
         return map;
     }

@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math.stat.inference.TestUtils;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.reactome.data.GODataAnalyzerV2;
 import org.reactome.data.PfamAnalyzer;
@@ -38,6 +39,7 @@ import org.reactome.weka.NaiveBayesClassifier;
  *
  */
 public class NBCAnalyzer {
+    private static final Logger logger = Logger.getLogger(NBCAnalyzer.class);
     // Saved NBC file name
     private final String NBC_FILE_NAME = FIConfiguration.getConfiguration().get("RESULT_DIR") + "/NaiveBayesClassifier_100_Random.ser";
     private int NEGATIVE_TO_POSITIVE_RATIO = 100;
@@ -511,6 +513,7 @@ public class NBCAnalyzer {
         FileUtility fu = new FileUtility();
         fu.setOutput(outFileName);
         double cutoff = new Double(FIConfiguration.getConfiguration().get("CUT_OFF_VALUE"));
+        logger.info("Cutoff: " + cutoff);
         Set<String> predicted = new HashSet<String>();
         for (String pair : allPairs) {
             Double score = classifier.calculateScore(pair, featureToChecker);

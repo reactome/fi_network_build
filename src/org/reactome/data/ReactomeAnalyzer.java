@@ -6,7 +6,16 @@ package org.reactome.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.gk.model.GKInstance;
 import org.gk.model.InstanceUtilities;
@@ -23,6 +32,7 @@ import org.reactome.fi.util.FileUtility;
 import org.reactome.fi.util.InteractionUtilities;
 import org.reactome.fi.util.ReactomeUtilities;
 import org.reactome.fi.util.Value;
+import org.reactome.kegg.KeggToReactomeConverter;
 import org.reactome.weka.FeatureHandlerForV3;
 
 @SuppressWarnings("unchecked")
@@ -70,7 +80,9 @@ public class ReactomeAnalyzer {
 //        dataSourceIds.add(sourceId);
         sourceId = fetchDatasourceId("BioCarta - Imported by PID", null, dba);
         dataSourceIds.add(sourceId);
-        sourceId = fetchDatasourceId("KEGG", "http://www.genome.jp/kegg/", dba);
+        sourceId = fetchDatasourceId(KeggToReactomeConverter.KEGG_PATHWAY_DB_NAME,
+                                     KeggToReactomeConverter.KEGG_PATHWAY_URL,
+                                     dba);
         dataSourceIds.add(sourceId);
         for (Long dataSourceId : dataSourceIds) {
             ReactomeAnalyzer tmp = new CPathAnalyzer();

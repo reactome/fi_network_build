@@ -1,5 +1,7 @@
 package org.reactome.data;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
@@ -32,6 +35,7 @@ import org.reactome.fi.util.FIConfiguration;
  */
 @SuppressWarnings("unchecked")
 public class MousePathwaysDumper extends ProjectBasedSlicingEngine {
+    private final Long MOUSE_DB_ID = 48892L;
     private static final Logger logger = Logger.getLogger(MousePathwaysDumper.class);
     private MySQLAdaptor sourceDBA;
     private MySQLAdaptor targetDBA;
@@ -46,8 +50,7 @@ public class MousePathwaysDumper extends ProjectBasedSlicingEngine {
         sourceDBA = new MySQLAdaptor("localhost",
                                FIConfiguration.getConfiguration().get("MOUSE_SOURCE_DB_NAME"), 
                                FIConfiguration.getConfiguration().get("DB_USER"),
-                               FIConfiguration.getConfiguration().get("DB_PWD"),
-                               3306);
+                               FIConfiguration.getConfiguration().get("DB_PWD"));
         logger.info("Initializing sourceDBA: " + sourceDBA.getDBName());
         return sourceDBA;
     }
@@ -58,8 +61,7 @@ public class MousePathwaysDumper extends ProjectBasedSlicingEngine {
         targetDBA = new MySQLAdaptor("localhost",
                                      FIConfiguration.getConfiguration().get("REACTOME_SOURCE_DB_NAME"), 
                                      FIConfiguration.getConfiguration().get("DB_USER"),
-                                     FIConfiguration.getConfiguration().get("DB_PWD"),
-                                     3306);
+                                     FIConfiguration.getConfiguration().get("DB_PWD"));
         logger.info("Initializing targetDBA: " + targetDBA.getDBName());
         return targetDBA;
     }
@@ -79,8 +81,71 @@ public class MousePathwaysDumper extends ProjectBasedSlicingEngine {
         Map<Long, GKInstance> topHuman2mouse = getTopLevelHumanToMouseMap();
         extractPathwayDiagrams();
         removeTargetInstances();
-        if(_dumpInstances())
+        if(_dumpInstances()) {
             updateHumanTopLevelPathways(topHuman2mouse);
+            fixMouseGeneNames();
+        }
+    }
+    
+    /**
+     * This most likely is a one-time thing. Previously we don't have the geneName slot filled for mouse
+     * ReferenceGeneProduct instances. Since version 72 (?), we have done this. This method is to use
+     * version 73 data to fix version 71 problem.
+     * @throws Exception
+     */
+    @Test
+    public void fixMouseGeneNames() throws Exception {
+        // We cannot use a release database with gene names filled since some of mouse genes
+        // may not be in the current database.
+        logger.info("Loading id to gene name mapping from an external file...");
+        // Note: The following file used contains both reviewed and unreviewed entries because 
+        // there are many unreviewed entries have been used in our inference.
+        String fileName = "datasets/UniProt/mouse_2020_09/uniprot-proteome-mouse.tab";
+        Map<String, List<String>> idToGenes = new HashMap<>();
+        try (Stream<String> lines = Files.lines(Paths.get(fileName))) {
+            lines.forEach(line -> {
+                String[] tokens = line.split("\t");
+                String[] geneNames = tokens[4].split(" ");
+                idToGenes.put(tokens[0], Stream.of(geneNames).collect(Collectors.toList()));
+            });
+        }
+        logger.info("Total mapping size: " + idToGenes.size());
+        // Load all mouse ReferenceGeneProduct instances
+        MySQLAdaptor targetDBA = getTargetDBA();
+        GKInstance mouse = targetDBA.fetchInstance(MOUSE_DB_ID);
+        Collection<GKInstance> mouseRefGeneProduct = targetDBA.fetchInstanceByAttribute(ReactomeJavaConstants.ReferenceGeneProduct,
+                                                                 ReactomeJavaConstants.species,
+                                                                 "=",
+                                                                 mouse);
+        targetDBA.loadInstanceAttributeValues(mouseRefGeneProduct,
+                                              new String[] {ReactomeJavaConstants.identifier});
+        logger.info("Mouse ReferenceGeneProducts in the target database: " + mouseRefGeneProduct.size());
+        logger.info("Filling gene names...");
+        // Try to use transaction
+        boolean isTnSupported = targetDBA.supportsTransactions();
+        if (isTnSupported)
+            targetDBA.startTransaction();
+        try {
+            for (GKInstance inst : mouseRefGeneProduct) {
+                String identifier = (String) inst.getAttributeValue(ReactomeJavaConstants.identifier);
+                List<String> geneNames = idToGenes.get(identifier);
+                if (geneNames == null) {
+                    logger.warn("Cannot find gene names for " + identifier);
+                    continue;
+                }
+                inst.setAttributeValue(ReactomeJavaConstants.geneName,
+                                       geneNames);
+                targetDBA.updateInstanceAttribute(inst, ReactomeJavaConstants.geneName);
+            }
+            if (isTnSupported)
+                targetDBA.commit();
+        }
+        catch (Exception e) {
+            if (isTnSupported)
+                targetDBA.rollback();
+            logger.error("SlicingEngine.fixMouseGeneNames(): " + e, e);
+        }
+        logger.info("Done fixMouseGeneNames.");
     }
     
     protected GKInstance fetchDiagramForPathway(GKInstance pathway,
@@ -212,10 +277,8 @@ public class MousePathwaysDumper extends ProjectBasedSlicingEngine {
     @Override
     public Map<Long, GKInstance> extractEvents() throws Exception {
         // This is a simple version to get all mouse events
-        // This is mouse DB_ID
-        Long mouseId = 48892L;
         MySQLAdaptor sourceDBA = getSourceDBA();
-        GKInstance mouse = sourceDBA.fetchInstance(mouseId);
+        GKInstance mouse = sourceDBA.fetchInstance(MOUSE_DB_ID);
         Collection<GKInstance> mouseEvents = sourceDBA.fetchInstanceByAttribute(ReactomeJavaConstants.Event,
                                                                                 ReactomeJavaConstants.species,
                                                                                 "=",
@@ -295,6 +358,9 @@ public class MousePathwaysDumper extends ProjectBasedSlicingEngine {
                     if (r.getInstance() != null)
                         r.setReactomeId(r.getInstance().getDBID());
                 }
+                // Don't forget to update reactomeDigaramId. Otherwise, the old, wrong DB_IDs
+                // will be saved.
+                diagram.setReactomeDiagramId(pd.getDBID());
                 String xml = writer.generateXMLString(diagram);
                 // Get the newly saved instance
                 GKInstance targetPd = targetDBA.fetchInstance(pd.getDBID()); // DBID should be updated.

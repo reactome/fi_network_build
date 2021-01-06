@@ -39,6 +39,8 @@ import org.reactome.fi.util.FIConfiguration;
  *
  */
 public class KeggToReactomeConverter {
+    public static final String KEGG_PATHWAY_URL = "https://www.genome.jp/kegg/pathway.html";
+    public static final String KEGG_PATHWAY_DB_NAME = "KEGG Pathway";
     private static Logger logger = Logger.getLogger(KeggToReactomeConverter.class);
     
     private XMLFileAdaptor fileAdaptor;
@@ -194,9 +196,9 @@ public class KeggToReactomeConverter {
         if (keggDb != null)
             return keggDb;
         keggDb = fileAdaptor.createNewInstance(ReactomeJavaConstants.ReferenceDatabase);
-        keggDb.addAttributeValue(ReactomeJavaConstants.name, "KEGG");
-        keggDb.addAttributeValue(ReactomeJavaConstants.url, "http://www.genome.jp/kegg/");
-        keggDb.setDisplayName("KEGG");
+        keggDb.addAttributeValue(ReactomeJavaConstants.name, KEGG_PATHWAY_DB_NAME);
+        keggDb.addAttributeValue(ReactomeJavaConstants.url, KEGG_PATHWAY_URL);
+        keggDb.setDisplayName("KEGG Pathway");
         return keggDb;
     }
     

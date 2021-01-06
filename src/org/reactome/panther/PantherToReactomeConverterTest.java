@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
@@ -25,6 +26,7 @@ import org.reactome.fi.util.FIConfiguration;
 import org.reactome.fi.util.FileUtility;
 
 public class PantherToReactomeConverterTest {
+    private static final Logger logger = Logger.getLogger(PantherToReactomeConverterTest.class);
     //private final String PANTHER_DIR = "/Users/wgm/Documents/caBIG_R3/datasets/Panther/Version1.3/SBML_1.3/SBML/";
     //private final String PANTHER_DIR = "/Users/wgm/Documents/gkteam/Arabidopsis/";
     private PantherToReactomeConverter converter;
@@ -131,12 +133,12 @@ public class PantherToReactomeConverterTest {
         fileNames.add(0, tmp);
         ConverterHandler handler = ConverterHandler.getInstance();
         for (String fileName : fileNames) {
-            System.out.println("Converting " + fileName + "...");
+            logger.info("Converting " + fileName + "...");
             Converter converter = handler.getConverter(fileName);
             converter.setDatabaseAdaptor(dbAdaptor);
             converter.setFileAdaptor(fileAdaptor);
             GKInstance pathway = converter.convertBeforePost(fileName);
-            System.out.println("Done: " + pathway.getDisplayName());
+            logger.info("Done: " + pathway.getDisplayName());
         }
         // Do post-processing.
         PantherPostProcessor postProcessor = new PantherPostProcessor();

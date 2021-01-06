@@ -327,8 +327,8 @@ public class FINetworkBuilder {
         // The generated matrix should be moved to the OICR to calculate the heat kernel for the HotNet implementation
         // using R (using script runHeatKernel_R.sh, which should be modified for the correct file names). 
         // The generated matrix text file should NOT be copied into the WEB-INF folder.
-        HotNetMatrixCalculator hotnetMatrixCalculator = new HotNetMatrixCalculator();
-        hotnetMatrixCalculator.testCalculateHeatKernel();
+//        HotNetMatrixCalculator hotnetMatrixCalculator = new HotNetMatrixCalculator();
+//        hotnetMatrixCalculator.testCalculateHeatKernel();
         // The following method should be called after the kernel file was generated from using R
 //        HotNetMatrixCalculator hotnetMatrixCalculator = new HotNetMatrixCalculator();
 //        hotnetMatrixCalculator.generateSerializedMatrixFile();
@@ -338,7 +338,7 @@ public class FINetworkBuilder {
         FactorGraphDumper fgDumper = new FactorGraphDumper();
         fgDumper.dump();
         // Don't forget to generate FIsInGene_xxxxxx_with_annotations.txt file by using
-        // the method in caBigR3 project: 
+        // the method in the fiviz_corews project: 
         // The method should be run is in class org.reactome.r3.fi.InteractionAnnotator.annotateAllFIs()
         // in project FIVizWS_corews. This should be moved to here in the future.
 //        logger.info("Running InteractionAnnotator.annotateAllFIs()...");

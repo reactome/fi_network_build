@@ -104,8 +104,8 @@ public class KEGGPostProcess extends PostProcessTemplate {
     @Override
     protected void attachDataSource(MySQLAdaptor dbAdaptor,
                                     XMLFileAdaptor fileAdaptor) throws Exception {
-        String dbName = "KEGG";
-        String url = "http://www.genome.jp/kegg/";
+        String dbName = KeggToReactomeConverter.KEGG_PATHWAY_DB_NAME;
+        String url = KeggToReactomeConverter.KEGG_PATHWAY_URL;
         attachDataSource(dbName, 
                          url, 
                          dbAdaptor, 

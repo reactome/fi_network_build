@@ -6,6 +6,7 @@ package org.reactome.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -33,6 +34,28 @@ public class IRefIndexMITTabAnalyzer {
     private FileUtility fu = new FileUtility();
     
     public IRefIndexMITTabAnalyzer() {
+    }
+    
+    @Test
+    public void checkDataSources() throws Exception {
+        String fileName = FIConfiguration.getConfiguration().get("IREFINDEX_WORM_FILE");
+//        fileName = "/Users/wug/Documents/datasets/iRefIndex/15.0/6239.mitab.01-22-2018.txt";
+        Map<String, Integer> sourceToCounts = new HashMap<>();
+        FileUtility fu = new FileUtility();
+        fu.setInput(fileName);
+        String line = fu.readLine();
+        while ((line = fu.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            sourceToCounts.compute(tokens[12], (key, value) -> {
+                if (value == null)
+                    value = 1;
+                else 
+                    value++;
+                return value;
+            });
+        }
+        fu.close();
+        sourceToCounts.keySet().stream().sorted().forEach(key -> System.out.println(key + ": " + sourceToCounts.get(key)));
     }
     
     /**
@@ -139,7 +162,9 @@ public class IRefIndexMITTabAnalyzer {
             if (tokens.length < 13) {
                 System.out.println("Line with less than 13 tokens: " + line);
             }
-            if (tokens.length > 12 && tokens[12].equals("MI:0467(reactome)")) {
+            if (tokens.length > 12 && (tokens[12].equals("MI:0467(reactome)") ||
+                                      (tokens[12].equals("psi-mi:\"MI:0467\"(reactome)") ||
+                                       tokens[12].equals("psi-mi:\"MI:0463\"(biogrid)")))) { // The format has been changed to this in version 17.0 
                 filtered ++;
                 continue;
             }

@@ -75,7 +75,9 @@ public class PantherPostProcessor extends PostProcessTemplate {
     public void otherProcesses(MySQLAdaptor dbAdaptor,
                               XMLFileAdaptor fileAdaptor) throws Exception {
         processSimpleEntities(dbAdaptor, fileAdaptor);
-        PostProcessHelper.processLiteratureReferences(dbAdaptor, fileAdaptor);
+        // As of December 23, 2020, disable literature reference processing since it is too slow after switching to
+        // EUtil for auto-processing PMCIDs. 
+//        PostProcessHelper.processLiteratureReferences(dbAdaptor, fileAdaptor);
         attachSpecies(dbAdaptor, fileAdaptor);
     }
     

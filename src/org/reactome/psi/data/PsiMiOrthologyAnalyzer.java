@@ -26,6 +26,8 @@ import org.reactome.fi.util.InteractionUtilities;
  *
  */
 public class PsiMiOrthologyAnalyzer {
+    // This is an arbitray number: any mapped human orthology proteins are needed not reliable after this threshold.
+    public static final int HUMAN_ORTHO_MAP_SIZE = 1000;
     private FileUtility fu = new FileUtility();
     private ProteinIdFilters proteinFilter;
     
@@ -269,22 +271,24 @@ public class PsiMiOrthologyAnalyzer {
         int index = 0;
         int compare = 0;
         for (String otherPPI : otherPPIs) {
-            // In 2018, this mouse PPI is excluded explicitily since the extremely large
+            // In 2018, this mouse PPI is excluded explicitly since the extremely large
             // map: over 20,000 * 20,000 mapping
-            if (otherPPI.equals("P01899\tP01900"))
+            if (otherPPI.equals("P01899\tP01900") ||
+                otherPPI.equals("P01901\tP97484")) // Mouse PPI mapped to 11,962,548 human PPIs
                 continue;
             index = otherPPI.indexOf("\t");
             String yeastId1 = otherPPI.substring(0, index);
             Set<String> humanIds1 = toHumanMap.get(yeastId1);
-            if (humanIds1 == null)
+            if (humanIds1 == null || humanIds1.size() > HUMAN_ORTHO_MAP_SIZE) // This is an arbitray number
                 continue;
 //            System.out.println(yeastId1 + " -> " + humanIds1.size());
             String yeastId2 = otherPPI.substring(index + 1);
             Set<String> humanIds2 = toHumanMap.get(yeastId2);
-            if (humanIds2 == null)
+            if (humanIds2 == null || humanIds2.size() > HUMAN_ORTHO_MAP_SIZE)
                 continue;
 //            System.out.println(yeastId2 + " -> " + humanIds2.size());
             // Create human PPIs
+//            int preSize = humanPPIs.size();
             for (String humanId1 : humanIds1) {
                 String mapped1 = idMap.get(humanId1);
                 if (mapped1 == null)
@@ -300,6 +304,9 @@ public class PsiMiOrthologyAnalyzer {
                         humanPPIs.add(mapped2 + "\t" + mapped1);
                 }
             }
+//            int increased = humanPPIs.size() - preSize;
+//            System.out.println("Mapped PPIs: " + increased);
+//            System.out.println(otherPPI + "\t" + increased);
 //            System.out.println("Human PPIs: " + humanPPIs.size());
         }
         // Total human PPIs in checksums
