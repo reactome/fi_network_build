@@ -9,10 +9,17 @@
 		<attribute name="created" />
 		<attribute name="__is_ghost" />
         <attribute name="stableIdentifier" />
+        <attribute name="orthologousEvent" />
         <!-- auto-generate by some software tool -->
         <attribute name="shortName" />
         <attribute name="releaseStatus" />
+        <!-- Value should be generated during slicing for complexes -->
+        <attribute name="includedLocation" />
 	</uneditableAttributes>
+	<uncreatableClass contact="Peter D'Eustachio"> <!-- Only the contact can create instances for these cases" -->
+		<class name = "Compartment" />
+		<class name = "Species" />
+	</uncreatableClass>        
 	<hiddenAttributes>
 		<attribute name="_Protege_id" />
 		<attribute name="__is_ghost" />
@@ -21,10 +28,16 @@
         this text should not be edited by the curator. -->
         <attribute name="storedATXML" />
 	</hiddenAttributes>
+	<stoichiometryAttributes>
+		<stoichiometryAttribute>Complex.hasComponent</stoichiometryAttribute>
+		<stoichiometryAttribute>ReactionlikeEvent.input</stoichiometryAttribute>
+		<stoichiometryAttribute>ReactionlikeEvent.output</stoichiometryAttribute>
+	</stoichiometryAttributes>
 	<QACheckers>
-		<QAChecker name="Imbalance Check" class="org.gk.qualityCheck.ImbalanceChecker" />
+		<QAChecker name="Imbalance Check" class="org.gk.qualityCheck.ImbalanceCheck" />
         <QAChecker name="Mandatory Attribute Check" class="org.gk.qualityCheck.MandatoryAttributesCheck" />
 		<QAChecker name="Required Attributes Check" class="org.gk.qualityCheck.RequiredAttributesCheck" />
+        <QAChecker name="EntitySet Type Check" class="org.gk.qualityCheck.EntitySetTypeCheck" />
 		<Group name="Compartment Check for">
             <QAChecker name="EntitySet"
                 class="org.gk.qualityCheck.EntitySetCompartmentCheck" />        
@@ -41,11 +54,17 @@
             <QAChecker name="Pathway" class="org.gk.qualityCheck.PathwaySpeciesCheck"></QAChecker>
         </Group>
         <Group name="Pathway Diagram Check" dbOnly="true">
-            <QAChecker name="Deleted Objects in Diagram" class="org.gk.qualityCheck.PathwayDiagramCheck"></QAChecker>
-            <QAChecker name="Missing Reactions in Diagram" class="org.gk.qualityCheck.DiagramReactionsCheck"></QAChecker>
+            <QAChecker name="Deleted Objects in Diagram" class="org.gk.qualityCheck.DiagramInstanceDeletionCheck"></QAChecker>
+            <QAChecker name="Missing Reactions in Diagram" class="org.gk.qualityCheck.DiagramMissingReactionsCheck"></QAChecker>
+            <QAChecker name="Unsynchronized Reactions in Diagram" class="org.gk.qualityCheck.DiagramReactionSyncCheck"></QAChecker>
 	        <QAChecker name="Reactions in All Diagrams" class="org.gk.qualityCheck.ReactionsInAllDiagramsCheck"></QAChecker>
             <QAChecker name="Pathways in All Digrams" class="org.gk.qualityCheck.PathwaysInAllDiagramsCheck"></QAChecker>
        </Group>
+       <Group name="EntityFunctionalStatue Check">
+       		<QAChecker name="DiseaseEntity" class="org.gk.qualityCheck.EntityFunctionalStatusDiseaseEntityCheck"></QAChecker>
+       		<QAChecker name="NormalEntity" class="org.gk.qualityCheck.EntityFunctionalStatusNormalEntityCheck"></QAChecker>
+       </Group>
+       <QAChecker name="New StableIdentifier Check" class="org.gk.qualityCheck.StableIdentifierCheck" dbOnly="true" />
     </QACheckers>
 	<autoPropagateAtts>
 		<schemaClass name="Event">
@@ -70,20 +89,24 @@
 	    <autoFiller target="PsiMod.identifier" class="org.gk.database.util.PsiModAttributeAutoFiller" />
         <autoFiller target="ReferenceMolecule.identifier" class="org.gk.database.util.ChEBIAttributeAutoFiller"></autoFiller>
         <autoFiller target="Disease.identifier" class="org.gk.database.util.DiseaseAttributeAutoFiller"/>
+        <autoFiller target="SequenceOntology.identifier" class="org.gk.database.util.SOAttributeAutoFiller" />
+        <autoFiller target="CellType.identifier" class="org.gk.database.util.CellTypeAttributeAutoFiller" />
+        <autoFiller target="Anatomy.identifier" class="org.gk.database.util.AnatomyAttributeAutoFiller" />
+        <autoFiller target="ReferenceTherapeutic.identifier" class="org.gk.database.util.ReferenceTherapeuticAutoFiller" />
     </attributeAutoFillers>
 	<deletedInstances>
 		<controlledVocabulary instanceClass="DeletedControlledVocabulary" />
 	</deletedInstances>
     <importedPathwayDb>
-        <dataSource dbId="210689" name="Panther Pathways" />
-        <dataSource dbId="424025" name="NCI-Nature PID" />
-        <dataSource dbId="229095" name="Cancer Cell Map" />
-        <dbHost>brie8.cshl.edu</dbHost>
-        <dbName>test_reactome_plus_i_v2</dbName>
+        <dataSource dbId="9055298" name="Panther Pathways" />
+        <dataSource dbId="8981351" name="NCI-Nature PID" />
+<!--         <dataSource dbId="229095" name="Cancer Cell Map" /> -->
+        <dbHost>reactomecurator.oicr.on.ca</dbHost>
+        <dbName>test_reactome_59_plus_i</dbName>
     </importedPathwayDb>
     <!-- These URLs for UniProt since they are not stable so an external config is used -->
     <uniprot>
-        <UNIPROT_DOWNLOAD_URL>http://www.uniprot.org/uniprot/</UNIPROT_DOWNLOAD_URL>
+        <UNIPROT_DOWNLOAD_URL>https://www.uniprot.org/uniprot/</UNIPROT_DOWNLOAD_URL>
         <UNIPROT_XML_FORMAT>.xml</UNIPROT_XML_FORMAT>
         <UNIPROT_FLAT_FORMAT>.txt</UNIPROT_FLAT_FORMAT>
     </uniprot>
@@ -92,7 +115,7 @@
          these instances are generated from some software bugs, and should never be committed to the central
          database. -->
     <enableCommitLocalHasMoreInstance>false</enableCommitLocalHasMoreInstance>
-    <central_db dbName="gk_central" dbHost="reactomedev.oicr.on.ca" />
+    <central_db dbName="gk_central" dbHost="curator.reactome.org" />
     <!-- The following values are used for modification mapping in the entity-level view -->
     <modifiedResidues>
         <residue name="Serine [ChEBI:9116]" shortName="Ser" />
@@ -150,6 +173,7 @@
     <psiModifications>
         <modification name="acetyl" shortName="Ac" />
         <modification name="carboxyl" shortName="CA" />
+        <modification name="carboxyglutamic" shortName="CA" />
         <modification name="cysteinyl" shortName="CY" />
         <modification name="half-cystyl" shortName="HC" />
         <modification name="hydroxyl" shortName="HO" />
@@ -181,7 +205,24 @@
         <entity name="Orthophosphate" type="SimpleEntity" />
     </ensureMultipleCopies>
 <!--    <pdURL value="http://localhost:8080/ELVWebApp/ElvService" /> -->
-    <!-- pdURL value="http://brie8.cshl.edu:8080/ELVWebApp/ElvService" / -->
-    <pdURL value="http://reactomedev.oicr.on.ca:8080/ELVWebApp/ElvService" />
-    <devWebELV value="http://reactomedev.oicr.on.ca:8084/entitylevelview/PathwayBrowser.html" />
+    <!-- Used to perform some server-side activities (e.g. build project, server-side QA)-->
+    <pdURL value="https://curator.reactome.org/ELVWebApp/ElvService" />
+    <!-- Used to fetch pubmed detailed information. It is broken into two parts for easy update. -->
+    <pubmedurl>
+    	<url1>https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&amp;retmode=xml&amp;id=</url1>
+    	<!-- empty for the time being -->
+    	<url2></url2>
+    </pubmedurl>
+    <!-- Used to handle reach NLP work -->
+<!--     <reachURL>http://localhost:8080/ELVWebApp/ElvService</reachURL> -->
+	<!-- For release, use the cpws server for the time being-->
+    <reachURL>http://cpws.reactome.org/ELVWebApp/ElvService</reachURL>
+    <reachJarURL>http://cpws.reactome.org/ELVWebApp/reach-1.5.2-SNAPSHOT-FAT.jar</reachJarURL>
+    <reachGraphQLUrl>https://reach-api.nrnb-docker.ucsd.edu</reachGraphQLUrl>
+    <allowableAminoAcids>A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y</allowableAminoAcids>
+    <!-- After the database is connected, there is a background thread running, which pings the database 
+    to keep the connection stable. The following value controls how long the thread should wait to make
+    another ping. In other words, it controls the frequency of the ping. The default value is 1 minute, if 
+    this value is not provided. -->
+    <backgroundThreadDbCheck>1.0</backgroundThreadDbCheck> <!-- The unit is minute. -->
 </curator>

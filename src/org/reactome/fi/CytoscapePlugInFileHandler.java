@@ -245,6 +245,8 @@ public class CytoscapePlugInFileHandler {
         map.put("name.to.reactome.pathways", "GENE_TO_REACTOME_PATHWAYS");
 //        map.put("heat.kernel.file", "HEAT_KERNEL_HOTNET_SER_FILE_NAME");
         map.put("webapp.dir", "WEBAPP_DIR");
+        map.put("mouse.name.to.reactome.pathways", "MOUSE_GENE_TO_REACTOME_PATHWAYS");
+        map.put("reactome.pathway.list", "REACTOME_PATHWAYS");
         return map;
     }
     

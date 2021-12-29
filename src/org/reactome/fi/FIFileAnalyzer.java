@@ -5,6 +5,8 @@
 package org.reactome.fi;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,6 +43,21 @@ public class FIFileAnalyzer {
     
     public FIFileAnalyzer() {
         fu = new FileUtility();
+    }
+    
+    @Test
+    public void checkUsedReactomePathwaysAndGenes() throws Exception {
+        String fileName = "/Users/wug/git/FIVizWS_corews/src/main/webapp/WEB-INF/ProteinNameToReactomePathways_Rel_71_091720.txt";
+        Set<String> genes = new HashSet<>();
+        Set<String> pathways = new HashSet<>();
+        Files.lines(Paths.get(fileName))
+             .map(line -> line.split("\t"))
+             .forEach(tokens -> {
+                 genes.add(tokens[0]);
+                 pathways.add(tokens[1]);
+             });
+        System.out.println("Total genes: " + genes.size());
+        System.out.println("Total pathways: " + pathways.size());
     }
     
     @Test

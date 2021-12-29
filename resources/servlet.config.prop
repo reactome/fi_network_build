@@ -4,7 +4,6 @@ jdbc.dbUser=authortool
 jdbc.dbPwd=T001test
 jdbc.dbPort=3306
 Reactome.src.dbName=test_reactome_28_plus_i_myisam
-elv.dbName=test_reactome_40
 resources.dir=/usr/local/apache-tomcat/webapps/caBigR3WebApp/WEB-INF/
 survival.analysis.temp.dir=/usr/local/apache-tomcat/temp
 fi.gene.file=FIsInGene.txt
@@ -15,6 +14,8 @@ fi.pathway.gene.file=FIsInGene_Pathway_041709.txt
 fi.predicted.gene.file=FIsInGene_Predicted_041709.txt
 name.to.pathways=ProteinNameToTopics_041709.txt
 name.to.reactome.pathways=ReactomeGeneToPathway_111413.txt
+# For mouse genes to mouse pathway
+mouse.name.to.reactome.pathways=MouseGeneToReactomePathways_Rel_71_091720.txt
 # Test code
 reactome.reaction.to.pathways=ReactomeReactionsToPathways_051017.txt
 reactome.pathway.list=ReactomePathways071718.txt
@@ -28,8 +29,14 @@ r.script.command=/usr/bin/Rscript
 survival.analysis.r.script=CGISurvivalAnalysis.R
 mcl.script=mcl_script.sh
 # For HotNet analysis. This should be a serialized matrix file.
-heat.kernel.file=HeatKernel_HotNet_time_01_2014_121514.ser
+# HotNet feature has been turned off in Sep, 2020
+#heat.kernel.file=HeatKernel_HotNet_time_01_2014_121514.ser
 tomcat.lib=/usr/local/apache-tomcat/lib
 webapp.dir=/usr/local/apache-tomcat/webapps/caBigR3WebApp2014/WEB-INF
+# The following files are in the original corews WEB-INF folder.
 # for loading drugcentral drug/target interactions
 drugcentral.file=drug.target.interaction.08292017.tsv
+# For mouse to human gene map. Downloaded from http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt
+mouse.human.gene.map=HOM_MouseHumanSequence.rpt.txt
+dorothea.hs=dorothea_hs.tsv
+dorothea.mm=dorothea_mm.tsv

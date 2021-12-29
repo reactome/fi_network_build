@@ -301,7 +301,7 @@ public class InteractionUtilities {
             return "N";
         if (displayName.equals("BioCarta - Imported by PID"))
             return "B";
-        if (displayName.equalsIgnoreCase("KEGG"))
+        if (displayName.equals("KEGG Pathway")) // For release 2020, the data source name has been changed from KEGG to KEGG Pathway
             return "K";
         if (displayName.equals("TRED"))
             return "T"; // There should be no pathways from TRED

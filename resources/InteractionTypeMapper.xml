@@ -263,4 +263,7 @@
     <type name="PCrel: activation, missing interaction" reverse="PCrel: activated, missing interaction" direction="->" />
     <!-- Added for 2019 -->
     <type name="GErel: inhibition, repression" reverse="GErel: inhibited, repressed" direction="-|" />
+    <!-- Added for 2020 -->
+    <type name="PPrel: activation, phosphorylation, indirect" reverse="PPrel: activated, phosphorylation, indirect" direction="->" />
+	<type name="PCrel: activation, indirect" reverse="PCrel: activated, indirect" direction="->" />
 </InteractionTypeMapper>
