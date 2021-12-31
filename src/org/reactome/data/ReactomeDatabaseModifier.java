@@ -92,7 +92,7 @@ public class ReactomeDatabaseModifier {
      */
     @Test
     public void changeMyISAMToInnodb() throws Exception {
-        MySQLAdaptor dba = new MySQLAdaptor("localhost", // Alwasy 
+        MySQLAdaptor dba = new MySQLAdaptor("localhost", // Always 
                                             config.get("REACTOME_SOURCE_DB_NAME"),
                                             config.get("DB_USER"), 
                                             config.get("DB_PWD"));
