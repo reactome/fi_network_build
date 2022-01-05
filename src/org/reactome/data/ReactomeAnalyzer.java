@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
 import org.gk.model.InstanceUtilities;
 import org.gk.model.PersistenceAdaptor;
@@ -37,6 +38,7 @@ import org.reactome.weka.FeatureHandlerForV3;
 
 @SuppressWarnings("unchecked")
 public class ReactomeAnalyzer {
+	private static final Logger logger = Logger.getLogger(ReactomeAnalyzer.class);
     // Used to control if complex should be used
     protected boolean excludeComplex = false;
     protected PersistenceAdaptor dba;
@@ -319,22 +321,20 @@ public class ReactomeAnalyzer {
             topics2Ids.put(topic, ids);
         }
         long time2 = System.currentTimeMillis();
-        System.out.println("Time for grepping IDs for topics: " + (time2 - time1));
+        logger.info("Time for grepping IDs for topics: " + (time2 - time1));
         // Print out the id numbers in each topic.
         for (Iterator<GKInstance> it = topics2Ids.keySet().iterator(); it.hasNext();) {
             GKInstance topic = it.next();
             Set<String> ids = topics2Ids.get(topic);
-            System.out.println(topic.getDisplayName() + ": " + ids.size());
+            logger.info(topic.getDisplayName() + ": " + ids.size());
         }
         return topics2Ids;
     }
     
-    @SuppressWarnings("unchecked")
     protected Set<GKInstance> grepPathwayParticipants(GKInstance pathway) throws Exception {
         return topicHelper.grepPathwayParticipants(pathway);
     }
     
-    @SuppressWarnings("unchecked")
     public Set<String> grepIDsFromTopic(GKInstance topic) throws Exception {
         Set<String> ids = new HashSet<String>();
         // First load all PhysicalEntities involved in Reactions
