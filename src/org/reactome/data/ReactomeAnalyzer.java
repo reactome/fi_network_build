@@ -50,6 +50,10 @@ public class ReactomeAnalyzer {
         topicHelper = new ReactomeAnalyzerTopicHelper();
     }
     
+    public ReactomeAnalyzerTopicHelper getTopicHelper() {
+    	return this.topicHelper;
+    }
+    
     /**
      * Make sure dataSourceIds are correct for the version the database.
      * @return

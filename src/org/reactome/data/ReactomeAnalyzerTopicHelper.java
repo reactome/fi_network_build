@@ -30,13 +30,23 @@ import org.reactome.fi.util.InteractionUtilities;
  * @author guanming
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ReactomeAnalyzerTopicHelper {
+	// A flag to control is hadCandidate is used
+	private boolean needCandidateMemebers = false;
     
     public ReactomeAnalyzerTopicHelper() {
     }
     
-    /**
+    public boolean isNeedCandidateMemebers() {
+		return needCandidateMemebers;
+	}
+
+	public void setNeedCandidateMemebers(boolean needCandidateMemebers) {
+		this.needCandidateMemebers = needCandidateMemebers;
+	}
+
+	/**
      * Get the numbers of ids used in a passed pathway instance.
      * @param topic
      * @return
@@ -108,11 +118,20 @@ public class ReactomeAnalyzerTopicHelper {
      * @throws Exception
      */
     private void grepRefSeqs(GKInstance pe, Set<GKInstance> refSeqs) throws Exception {
-        // As of December 15, 2014, hasCandidate will not be used, which
-        // reduces the total FIs about 12% (from 144733 to 127382).
-        Set<GKInstance> ewases = InstanceUtilities.getContainedInstances(pe,
-                                                                         ReactomeJavaConstants.hasComponent,
-                                                                         ReactomeJavaConstants.hasMember);
+    	Set<GKInstance> ewases = null;
+    	if (needCandidateMemebers) {
+    		ewases = InstanceUtilities.getContainedInstances(pe,
+                    ReactomeJavaConstants.hasComponent,
+                    ReactomeJavaConstants.hasMember,
+                    ReactomeJavaConstants.hasCandidate);
+    	}
+    	else {
+    		// As of December 15, 2014, hasCandidate will not be used, which
+    		// reduces the total FIs about 12% (from 144733 to 127382).
+    		ewases = InstanceUtilities.getContainedInstances(pe,
+    				ReactomeJavaConstants.hasComponent,
+    				ReactomeJavaConstants.hasMember);
+    	}
         ewases.add(pe);
         for (GKInstance ewas : ewases) {
             if (!ewas.getSchemClass().isa(ReactomeJavaConstants.EntityWithAccessionedSequence))
@@ -124,56 +143,6 @@ public class ReactomeAnalyzerTopicHelper {
                 refEntity.getSchemClass().isa(ReactomeJavaConstants.ReferenceDNASequence)) {
                 refSeqs.add(refEntity);
             }
-        }
-    }
-    
-    private void grepRefPepSeqFromInstanceRecursively(GKInstance complex, 
-                                                      Set<GKInstance> refPepSeq) throws Exception {
-        Set<GKInstance> current = new HashSet<GKInstance>();
-        current.add(complex);
-        Set<GKInstance> next = new HashSet<GKInstance>();
-        Set<GKInstance> children = new HashSet<GKInstance>();
-        while (current.size() > 0) {
-            for (GKInstance inst : current) {
-                children.clear();
-                if (inst.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasComponent)) {
-                    List list = inst.getAttributeValuesList(ReactomeJavaConstants.hasComponent);
-                    if (list != null)
-                        children.addAll(list);
-                }
-                if (inst.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasMember)) {
-                    List list = inst.getAttributeValuesList(ReactomeJavaConstants.hasMember);
-                    if (list != null)
-                        children.addAll(list);
-                }
-                // As of December 15, 2014, hasCandidate will not be used, which
-                // reduces the total FIs about 12% (from 144733 to 127382).
-                // Check for candidate set: added on June 24, 2009
-//                if (inst.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasCandidate)) {
-//                    List list = inst.getAttributeValuesList(ReactomeJavaConstants.hasCandidate);
-//                    if (list != null)
-//                        children.addAll(list);
-//                }
-                if (children.size() == 0)
-                    continue;
-                for (Iterator it = children.iterator(); it.hasNext();) {
-                    GKInstance tmp = (GKInstance) it.next();
-                    if (tmp.getSchemClass().isa(ReactomeJavaConstants.EntitySet))
-                        next.add(tmp);
-                    else if (tmp.getSchemClass().isa(ReactomeJavaConstants.Complex))
-                        next.add(tmp);
-                    else if (tmp.getSchemClass().isa(ReactomeJavaConstants.EntityWithAccessionedSequence)) {
-                        GKInstance ref = (GKInstance) tmp.getAttributeValue(ReactomeJavaConstants.referenceEntity);
-                        if (ref != null &&
-                            (ref.getSchemClass().isa(ReactomeJavaConstants.ReferencePeptideSequence) ||
-                             ref.getSchemClass().isa(ReactomeJavaConstants.ReferenceGeneProduct)))
-                            refPepSeq.add(ref);
-                    }
-                }
-            }
-            current.clear();
-            current.addAll(next);
-            next.clear();
         }
     }
     
@@ -252,7 +221,6 @@ public class ReactomeAnalyzerTopicHelper {
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     private List<GKInstance> grepPathwayParticipantsInList(GKInstance pathway) throws Exception {
         // First load all PhysicalEntities involved in Reactions
         List<GKInstance> participants = new ArrayList<GKInstance>();
@@ -310,7 +278,6 @@ public class ReactomeAnalyzerTopicHelper {
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     public Set<GKInstance> grepPathwayParticipants(GKInstance pathway) throws Exception {
         return InstanceUtilities.grepPathwayParticipants(pathway);
     }
