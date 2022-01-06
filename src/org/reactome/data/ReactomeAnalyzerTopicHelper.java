@@ -33,17 +33,17 @@ import org.reactome.fi.util.InteractionUtilities;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ReactomeAnalyzerTopicHelper {
 	// A flag to control is hadCandidate is used
-	private boolean needCandidateMemebers = false;
+	private boolean needCandidateRepeatedUnit = false;
     
     public ReactomeAnalyzerTopicHelper() {
     }
-    
-    public boolean isNeedCandidateMemebers() {
-		return needCandidateMemebers;
+
+	public boolean isNeedCandidateRepeatedUnit() {
+		return needCandidateRepeatedUnit;
 	}
 
-	public void setNeedCandidateMemebers(boolean needCandidateMemebers) {
-		this.needCandidateMemebers = needCandidateMemebers;
+	public void setNeedCandidateRepeatedUnit(boolean needCandidateRepeatedUnit) {
+		this.needCandidateRepeatedUnit = needCandidateRepeatedUnit;
 	}
 
 	/**
@@ -119,11 +119,12 @@ public class ReactomeAnalyzerTopicHelper {
      */
     private void grepRefSeqs(GKInstance pe, Set<GKInstance> refSeqs) throws Exception {
     	Set<GKInstance> ewases = null;
-    	if (needCandidateMemebers) {
+    	if (needCandidateRepeatedUnit) {
     		ewases = InstanceUtilities.getContainedInstances(pe,
                     ReactomeJavaConstants.hasComponent,
                     ReactomeJavaConstants.hasMember,
-                    ReactomeJavaConstants.hasCandidate);
+                    ReactomeJavaConstants.hasCandidate,
+                    ReactomeJavaConstants.repeatedUnit);
     	}
     	else {
     		// As of December 15, 2014, hasCandidate will not be used, which

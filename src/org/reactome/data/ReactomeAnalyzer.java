@@ -903,6 +903,17 @@ public class ReactomeAnalyzer {
     }
     
     @Test
+    public void testGeneratePathwayIds() throws Exception {
+    	PersistenceAdaptor dba = getMySQLAdaptor();
+        // For a single test
+        GKInstance pathway = dba.fetchInstance(9609736L);
+        getTopicHelper().setNeedCandidateRepeatedUnit(true);
+        Set<String> ids = grepIDsFromTopic(pathway);
+        System.out.println("Total ids: " + ids.size());
+        ids.stream().sorted().forEach(System.out::println);
+    }
+    
+    @Test
     public void testGenerateFIsForSingleReaction() throws Exception {
         PersistenceAdaptor dba = getMySQLAdaptor();
         // For a single test
