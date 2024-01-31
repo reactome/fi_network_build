@@ -104,6 +104,7 @@ public class PantherIdToUniProtMapper {
         return token.substring(index + key.length());
     }
     
+    @Test
     public void testPantherToUniProtMap() throws IOException {
         UniProtAnalyzer uniAnalyzer = new UniProtAnalyzer();
         Map<String, String> uniIDMap = uniAnalyzer.loadUniProtIDsMap();
@@ -115,6 +116,11 @@ public class PantherIdToUniProtMapper {
             ids.addAll(panther2UniMap.get(id));
         }
         System.out.println("Total Mapped UniProt Ids: " + ids.size());
+        // Check one id
+        String pantherId = "P05760";
+        Set<String> tmp = panther2UniMap.get(pantherId);
+        System.out.println("pantherId: " + pantherId);
+        tmp.stream().sorted().forEach(System.out::println);
     }
     
     /**

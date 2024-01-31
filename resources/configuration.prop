@@ -94,6 +94,7 @@ KEGG_ID_TO_UNIPROT_MAP_FILE=${KEGG_DIR}/hsa_genes_uniprot.list
 PANTHER_DIR=${DATA_SET_DIR}/Panther/Version3.0.1
 PANTHER_FILES_DIR=${PANTHER_DIR}/SBML/
 PANTHER_MAPPING_FILE=${PANTHER_DIR}/SequenceAssociationPathway3.01.txt
+#PANTHER_MAPPING_FILE=/Volumes/ssd/datasets_2022_fi/fi-data/Panther/Version3.0.1/SequenceAssociationPathway3.6.5.txt
 PANTHER_CONVERTED_FILE=${PANTHER_DIR}/Panther_3_0_1_122921.rtpj
     
 # Used for the Nature-PID database files

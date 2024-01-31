@@ -269,6 +269,10 @@ public class PathwayGeneSetGenerator {
         if (diagrams == null || diagrams.size() != 1) {
             String message = pathway + " doesn't have diagram or has more than one diagram: " + diagrams;
             logger.error(message);
+            // A skip for release 79
+            if (pathway.getDBID().equals(177128L) ||
+                pathway.getDBID().equals(622312L))
+            	return;
             throw new IllegalStateException(message);
         }
         // Need to check its contained pathways

@@ -3,7 +3,8 @@
 <project name="package" default="FINetworkJar" basedir="..">
 	<property name="targetDir" value="install_jar" />
 	<property name="projectDir" value="${basedir}" />
-	<property name="projectVersion" value="1.0.2" />
+	<!-- Make sure this is Java 8 only -->
+	<property name="projectVersion" value="1.0.3" />
 	<property name="projectJar" value="${targetDir}/build-${projectVersion}.jar" />
 	
 	<!-- Package some needed classes from the caBigR3 project -->
